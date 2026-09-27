@@ -267,7 +267,7 @@ table.users th{color:var(--red)}
           <button class="btn sm" onclick="logout()" data-i18n="logout"></button>
         </div>
       </div>
-      <h1 onclick="secretTap()" style="cursor:default">thepilottmnl001 <small style="font-size:10px;opacity:.55;font-weight:normal">v3.77</small></h1>
+      <h1 onclick="secretTap()" style="cursor:default">thepilottmnl001 <small style="font-size:10px;opacity:.55;font-weight:normal">v3.81</small></h1>
       <div class="welcome"><b data-i18n="welcome"></b><span id="hello"></span></div>
       <p class="chip"><span data-i18n="yourCode"></span>: <span class="code" id="myCode"></span></p>
       <p class="chip"><span data-i18n="refLink"></span>:</p>
@@ -520,7 +520,7 @@ function landingHtml(){
     <div class="tzt"><h3>${t("teaserLbl")}</h3><p>${t("tzSub")}</p></div>
     <div class="teaser ${teaser&&teaser.img?'':'tall'}" ${tzClick}>${tz}<div class="lbl"><span>${teaser?teaser.title:t("teaserLbl")}</span><span>F.o.r.m.u.l</span></div></div>
     ${rest.length?`<div class="vids"><h3>${t("videos")}</h3><div class="media">${rest.map(m=>{const yy=ytId(m.link);const body=yy?`<iframe src="https://www.youtube.com/embed/${yy}" allowfullscreen loading="lazy"></iframe>`:m.img?`<img src="${m.img}" alt="">`:`<div class="ph">🎬</div>`;const btn=m.link&&!yy?`<a class="btn sm" href="${m.link}" target="_blank" rel="noopener">${t("mWatch")}</a>`:"";return`<div class="m">${body}<div class="mt"><b>${m.title||""}</b>${btn}</div></div>`;}).join("")}</div></div>`:""}
-    <div class="foot"><a href="https://t.me/Formul0123" target="_blank">Telegram</a>·<a href="https://theformul.blogfa.com/post/2" target="_blank">Blog</a>·<a href="https://t.me/thepilotTmnl0010" target="_blank">@thepilotTmnl0010</a><div style="margin-top:8px;opacity:.6">${t("footer")} · v3.77</div></div>
+    <div class="foot"><a href="https://t.me/Formul0123" target="_blank">Telegram</a>·<a href="https://theformul.blogfa.com/post/2" target="_blank">Blog</a>·<a href="https://t.me/thepilotTmnl0010" target="_blank">@thepilotTmnl0010</a><div style="margin-top:8px;opacity:.6">${t("footer")} · v3.81</div></div>
   </div>
   <div id="drawer"><div class="bg" onclick="closeDrawer()"></div><div class="pane">
     <div class="top"><b>${t("menu")}</b><button class="x" onclick="closeDrawer()">×</button></div>
@@ -707,7 +707,7 @@ function eqHtml(e){
   }
   if(k===0)rows+=hr+`<tr class="res outrow"><td></td><td class="n"></td><td class="n"></td><td></td></tr>`;
   const head=m?`<div class="mhead">${m.R} ${m.L===m.R?"=":"≈"} <b>${m.L}</b></div>`:"";
-  const badge="";
+  const badge=e.axisTag?`<div class="mhead" style="background:#5e35b1;color:#fff;margin-top:6px">${e.axisTag}</div>`:"";   // L123: ⚖️ محور تعادل
   return`<div class="eq ${cls}" data-kind="${e.kind||""}" data-combo="${e.comboHit||""}">${head}<div class="title">${e.title}</div><div class="gap">${e.gap!==undefined?e.gap:(e.L[0]<0?"-":"")+Math.abs(Math.abs(e.L[1])-Math.abs(e.L[0]))}</div><table>${rows}</table>${badge}</div>`;
 }
 /* L109b: معادلهٔ ± جدید با همان شکل معادله‌ها (eqHtml) + یک خط کوچک زیر عنوان: −56 −47 +11 = −92 */
@@ -935,8 +935,30 @@ function buildFromRes(res){
   // خط تشخیصی امضاها (برای دیدن این‌که چرا همخوانی رنگ نشده)
   const fs_=v=>v===null?"–":forms(v).join("/");
   window.__SIG=`امضاها — جداشدهٔ +: ${fs_(sP)} | جداشدهٔ −: ${fs_(sM)} ⇄ ⑦ راست: ${fs_(o7)} | ⑧ راست: ${fs_(o8)} | ⑨ راست: ${fs_(o9)}`;
+  // L123: ⚖️ محور تعادل
+  window.__AXIS=null;
+  try{const EQS=[E1,E2,E3,G[0],G[1],G[2],O[0],O[1],O[2]];EQS.forEach(e=>{delete e.axisTag;});
+   const S=EQS.map(axisSum);const s2=S[1];let best=null;
+   if(s2!==null)S.forEach((v,i)=>{if(i===1||v===null)return;const d=Math.abs(v-s2);if(d<=1&&(!best||d<best.d))best={i,d,v};});
+   const ent=[];if(pick==="plus")ent.push(7);if(pick==="minus")ent.push(8);if(O[2].comboHit)ent.push(9,6);
+   const mainE=pick==="plus"?7:(pick==="minus"?8:(O[2].comboHit?9:null));
+   let rule="",txt="";
+   if(best){const n=best.i+1;
+     if(ent.includes(n))rule="روی نقطهٔ ورود ← پوزیشن تا ارتفاع ترمینال";
+     else if(mainE===null)rule="نقطهٔ ورود در ریل رنگ نشده";
+     else if(n<mainE)rule="پشت نقطهٔ ورود ← پوزیشن تا هدف می‌رسد";
+     else rule="بعد از نقطهٔ ورود ← پوزیشن ۲ نصف می‌شود و به قله نمی‌رسد";
+     E2.axisTag=`⚖️ جمع معادلهٔ ۲ = ${s2} (بقیه با این مقایسه می‌شوند)`;
+     EQS[best.i].axisTag=`⚖️ محور تعادل: ${best.v} ${best.d?"≈":"="} ${s2}`;
+     txt=`⚖️ محور تعادل: ${AXIS_NAMES[best.i]} — جمع ${best.v} ${best.d?"≈":"="} ${s2} (معادلهٔ ۲) — ${rule}`;}
+   else txt=`⚖️ محور تعادل پیدا نشد (جمع معادلهٔ ۲ = ${s2===null?"–":s2})`;
+   window.__AXIS={S,s2,best,ent,mainE,rule,txt};
+  }catch(e){console.warn("axis",e);}
   try{buildA2(res,E2,G[0],G[1],G[2],O,E1,E3,[XP,XM,XC]);}catch(e){console.warn("A2",e);}
-  const all=[E1,E2,E3,["h",t("gapsEq")],...G,["h",t("outsEq")],...O,...(isRealAdmin()?[["h","🔒 "+t("extracted")],XP,XM,XC]:[])];
+  const all=[E1,E2,E3,["h",t("gapsEq")],...G,["h",t("outsEq")],...O,...(window.__AXIS&&window.__AXIS.txt?[["h",window.__AXIS.txt]]:[]),...(()=>{try{const A=window.__AXIS;const ai=A&&A.best?A.best.i:-1;const EQn=[E1,E2,E3,G[0],G[1],G[2],O[0],O[1],O[2]];
+   const st=(i,big)=>({sym:AXIS_NAMES[i].split(" ")[0],name:AXIS_NAMES[i].split(" ").slice(1).join(" "),e:EQn[i],big,box:i===1?"#1e88e5":(i===ai?"#8e24aa":null),tag:i===1?"ترمینال — باکس":(i===ai?"محور تعادل — باکس":null)});
+   const S=[st(2,true),st(1,false),st(0,false),st(3,false),st(4,false),st(5,true),st(6,false),st(7,false),st(8,true)];
+   return [["html",pathHtml("🧭 مسیر تایم‌های ریل (ترمینال و محور)",S,true,"از «📅 تاریخ شروع» و «🕐 تایم شروع» زنجیرهٔ پوزیشن‌ها ؛ هر عدد = ساعت بعدی روی ساعت ؛ ترتیب ③ ② ① ④ ⑤ ⑥ ⑦ ⑧ ⑨ ؛ ± و ③ = تایم بزرگ (+۱۲). اگر تاریخ و تایم شروع وارد نشده باشد فقط ساعت‌ها نوشته می‌شود.")]];}catch(e){console.warn("railpath",e);return[];}})(),...(isRealAdmin()?[["h","🔒 "+t("extracted")],XP,XM,XC]:[])];
   // L108: ارتفاع پوزیشن = کل اعداد معادلهٔ ± (E3) منهای فاصله و بنفش‌ها
   {const neg_=E3.L[0]<0;
    const hInfo=eqHeightDetails(E3, neg_);
@@ -951,6 +973,47 @@ function buildFromRes(res){
   else{$("rNext").classList.remove("hidden");railNext();}
 }
 
+/* L123 (۲۷ سپتامبر): ⚖️ محور تعادل — جمع هر معادله = فاصله + خروجی راست + بنفشِ عددِ یک‌پله‌مانده‌به‌خروجی (راست).
+   مبنا = معادلهٔ ۲ ؛ معادله‌ای از بین ۹ معادله که جمعش برابر یا ۱ اختلاف دارد = محور تعادل.
+   محور روی ورود (رنگی‌ها ۷/۸/۹ ، و ⑥ وقتی ⑨ رنگ شد) → مگا پوزیشن نصف ؛ پشت ورود (مثلاً ۴ ، ۵ ، ۶) → تا هدف ؛ جلوی ورود (مثلاً ورود ۷ و محور ۸) → دو مرحله. */
+const AXIS_NAMES=["① معادلهٔ ۱","② معادلهٔ ۲","③ معادلهٔ ۳","④ فاصله‌ها (+)","⑤ فاصله‌ها (−)","⑥ فاصله‌ها ±","⑦ خروجی‌ها (+)","⑧ خروجی‌ها (−)","⑨ خروجی‌ها ±"];
+function axisSum(e){try{
+  const gp=Math.abs(e.gap!==undefined?+e.gap:(Math.abs(e.L[1])-Math.abs(e.L[0])));
+  const rs=e.R[0]+e.R[1];
+  const rc=(e.mixed||e.rev)?[Math.abs(e.L[2]),...chain(e.L[2])]:[rs,...chain(rs)];
+  if(!rc.length||isNaN(gp))return null;
+  const out=Math.abs(rc[rc.length-1]);
+  const pre=rc.length>1?Math.abs(rc[rc.length-2]):null;
+  const pur=pre===null?0:(pre>9?mateRV(pre):pre);
+  // L125: جمع همیشه = فاصله + خروجی راست + بنفش (مثل v3.78). «منفی از خروجی شروع می‌شود» فقط برای ترتیبِ مسیرِ تایم‌هاست، نه جمع.
+  const s=gp+out+pur;return isNaN(s)?null:s;}catch(x){return null;}}
+function axisA2Html(){const A=window.__AXIS;if(!A)return "";
+  const cells=A.S.map((v,i)=>`<span style="display:inline-block;margin:2px 6px;${A.best&&A.best.i===i?"color:#fff;background:#5e35b1;border-radius:6px;padding:1px 6px;font-weight:800":(i===1?"color:#f7c948;font-weight:800":"")}">${AXIS_NAMES[i].split(" ")[0]} ${v===null?"–":v}</span>`).join("");
+  return `<div class="sechead">⚖️ محور تعادل</div><div class="card"><p class="welcome" style="font-size:14px;font-weight:800">${A.txt}</p><div style="direction:rtl;text-align:center;font-family:monospace;font-size:14px">${cells}</div><p class="welcome" style="font-size:11px;opacity:.7">جمع هر معادله = فاصله + خروجی راست + بنفشِ یک‌پله‌مانده‌به‌خروجی ؛ جمع معادلهٔ ۲ (زرد) با بقیه مقایسه می‌شود ؛ برابر یا ۱ اختلاف.</p></div>`;}
+/* L126 (۲۸ سپتامبر): 🧭 مسیر تایم‌ها (برای چک کاربر)
+   هر معادله ۳ عدد: مثبت = فاصله ← بنفش ← خروجی ؛ منفی = خروجی ← بنفش ← فاصله.
+   هر عدد = ساعت بعدی روی ساعت (نه چند ساعت بعد). معادله‌های ± (و معادلهٔ ۳) = تایم بزرگ = عدد + ۱۲.
+   مسیر ریل: ③ ← ② (ترمینال، باکس) ← ① ← ④ ← ⑤ ← ⑥ ← ⑦ ← ⑧ ← ⑨ ؛ معادلهٔ محور هم باکس دارد. */
+function pathDigits(e){
+  const gp=Math.abs(e.gap!==undefined?+e.gap:(Math.abs(e.L[1])-Math.abs(e.L[0])));
+  const rs=e.R[0]+e.R[1];
+  const rc=(e.mixed||e.rev)?[Math.abs(e.L[2]),...chain(e.L[2])]:[rs,...chain(rs)];
+  const out=rc.length?Math.abs(rc[rc.length-1]):null;
+  const pre=rc.length>1?Math.abs(rc[rc.length-2]):null;
+  const pur=pre===null?null:(pre>9?mateRV(pre):pre);
+  return e.L[0]<0?[["خروجی",out],["بنفش",pur],["فاصله",gp]]:[["فاصله",gp],["بنفش",pur],["خروجی",out]];}
+function pathHour(v,big){if(v===null||v===undefined||isNaN(v))return null;let h=big?v+12:v;h=((h%24)+24)%24;return h;}
+function pathStart(){const d=POS_PRICES.date||"";const s=POS_PRICES.start;if(!d||s===""||s===undefined||s===null||isNaN(parseInt(s,10)))return null;const t=new Date(d+"T00:00:00");t.setHours(parseInt(s,10));return t;}
+function pathHtml(title,steps,withDates,note){
+  let cur=withDates?pathStart():null;
+  const fmtD=t=>`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:00`;
+  const row=s=>{if(s.mark)return `<div style="margin:8px 0;color:#f7c948;font-weight:800">${s.mark}</div>`;
+    const d=pathDigits(s.e);const neg=s.e.L[0]<0;
+    const items=d.map(([k,v])=>{const h=pathHour(v,s.big);let when=h===null?"–":`${h===0?24:h}:00`;
+      if(cur&&h!==null){const t=new Date(cur.getTime());t.setMinutes(0,0,0);t.setHours(h);if(t<=cur)t.setDate(t.getDate()+1);cur=t;when=fmtD(t);}
+      return `${k} <b>${v===null?"–":v}</b> ← <span style="direction:ltr;unicode-bidi:isolate">${when}</span>`;}).join(" ، ");
+    return `<div style="margin:4px 0;padding:6px 8px;border:1px solid #3a3170;border-radius:8px;${s.pos?"background:rgba(0,200,83,.10)":""}${s.box?";border-color:"+s.box:""}"><b>${s.pos?"✓ ":""}${s.sym} ${s.name}</b> <small style="opacity:.75">(${neg?"منفی":"مثبت"}${s.big?" ، تایم بزرگ +۱۲":""})</small>${s.tag?` <span style="color:#fff;background:${s.box||"#5e35b1"};border-radius:6px;padding:0 6px;font-size:11px">${s.tag}</span>`:""}<br>${items}</div>`;};
+  return `<div class="sechead">${title}</div><div class="card" style="direction:rtl;font-size:13px">${steps.map(row).join("")}<p class="welcome" style="font-size:11px;opacity:.75">${note}</p></div>`;}
 /* ================= تحلیل ۲ (فقط مدیر) ================= */
 // معادله‌ی ۴: بنفش‌ها + یک عدد خروجی + فاصله
 function eq4Nums(e){const rs=e.R[0]+e.R[1];const lc=chain(e.L[2]);const outL=Math.abs(lc.length?lc[lc.length-1]:e.L[2]);
@@ -964,10 +1027,13 @@ function eqAllNums(e){const rs=e.R[0]+e.R[1];const rc=[rs,...chain(rs)];const lc
   const nums=[Math.abs(e.gap),Math.abs(e.R[0]),Math.abs(e.R[1]),...rc.map(Math.abs)];
   if(Math.abs(e.L[2])>9)nums.push(mate(e.L[2]));if(lc.length&&Math.abs(lc[0])>9)nums.push(mate(lc[0]));return nums;}
 function buildA2(res,E2,E4,E5,E6,O,E1,E3,X){
-  const box=$("a2Eqs");if(!box)return;box.innerHTML="";window.__POSCHAIN=[];window.__MEGAQ=null;
+  const box=$("a2Eqs");if(!box)return;box.innerHTML="";window.__POSCHAIN=[];window.__MEGAQ=null;window.__REV=null;
   const first=E2.kind==="plus";const P=res.extP,N=res.extN;
   const blocks=[];
-  const add=(h,x)=>{if(x)blocks.push(`<div class="sechead">${h}</div>`+x)};
+  // L124: ✓ = این معادله شامل پوزیشن است (④ ، ⑤ ، ② همیشه ؛ ⑦/⑧ هر کدام در ریل رنگ شد ؛ ⑥ و ⑨ اگر ± رنگ شد)
+  const pk_=window.__RAILPICK,pm_=!!(O&&O[2]&&O[2].comboHit);
+  const inc_=new Set(["④","⑤","②",...(pk_==="plus"?["⑦"]:[]),...(pk_==="minus"?["⑧"]:[]),...(pm_?["⑥","⑨"]:[])]);
+  const add=(h,x)=>{if(x)blocks.push(`<div class="sechead">${inc_.has(String(h).trim().charAt(0))?"✓ ":""}${h}</div>`+x)};
   // ۴ / ۵ (ستون ۱)  — ترتیب طبق علامت معادله ۲
   const b4=()=>add("④ "+t("a2Tbl")+" (+)",a2Block(res,E4,true,0," (+)"));
   const b5=()=>add("⑤ "+t("a2Tbl")+" (−)",a2Block(res,E5||E4,false,0," (−)"));
@@ -992,6 +1058,27 @@ function buildA2(res,E2,E4,E5,E6,O,E1,E3,X){
     const rsQ=Q.R[0]+Q.R[1],rcQ=[rsQ,...chain(rsQ)],preQ=Math.abs(rcQ.length>1?rcQ[rcQ.length-2]:rsQ),pQ=preQ>9?mateRV(preQ):preQ,fourQ=[pQ,pQ+12,pQ,pQ+12];
     window.__MEGAQ={Q,pre:preQ,p:pQ,four:fourQ};
     add("③ −",`<div class="card"><p class="welcome" style="direction:ltr;font-family:monospace;font-size:16px">${list.map(v=>v===0?"−0":(v>0?"+":"")+v).join("")} = <b>${S}</b></p></div><div class="card">${eqHtml(Q)}<div style="margin-top:8px;text-align:center;direction:rtl;color:#f7c948;font-weight:800">🏁 مگا: <span style="direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:monospace;font-size:17px">${preQ} → ${fourQ.join("  ")}</span></div></div>`);}
+  // L124: 🔄 معادلات معکوس بازار (بعد از مگا پامپ) — اعداد بزرگِ معادلهٔ محور تعادل و معادلهٔ ۳ → + ، − ، ±
+  {const A=window.__AXIS;const eqsA=[E1,E2,E3,E4,E5,E6,O&&O[0],O&&O[1],O&&O[2]];
+   if(A&&A.best&&eqsA[A.best.i]&&E3){const ax=eqsA[A.best.i];const arr=[Math.abs(ax.L[2]),Math.abs(E3.L[2])];
+     const Pr=calcPlus(arr),Mr=calcMinus(arr),Cr=calcCombo(Math.abs(Pr.L[2]),Math.abs(Mr.L[2]));
+     Pr.title="🔄 معکوس (+)";Mr.title="🔄 معکوس (−)";Cr.title="🔄 معکوس ±";window.__REV=[Pr,Mr,Cr];
+     add("🔄 معادلات معکوس بازار",`<div class="card"><p class="welcome" style="font-size:13px">اعداد بزرگ: محور تعادل ${AXIS_NAMES[A.best.i]} = <b>${arr[0]}</b> و معادلهٔ ۳ = <b>${arr[1]}</b></p></div><div class="card">${eqHtml(Pr)}</div><div class="card">${eqHtml(Mr)}</div><div class="card">${eqHtml(Cr)}</div>`);}
+   else add("🔄 معادلات معکوس بازار",`<div class="card"><p class="welcome">محور تعادل در ریل پیدا نشد؛ معادلات معکوس ساخته نمی‌شود.</p></div>`);}
+  // L126: 🧭 مسیر تحلیل ۲ (برای چک) — پوزیشن‌ها ✓ و معادله‌های بینشان ← اعداد جداشده ← مگا ← ۳ معکوس ← تکرار دوم
+  try{const pk=window.__RAILPICK,pm=!!(O&&O[2]&&O[2].comboHit);const S=[];
+   const push=(sym,name,e,pos,big)=>{if(e&&e.L&&e.R)S.push({sym,name,e,pos,big});};
+   const s4=()=>push("④","فاصله‌ها (+)",E4,true,false),s5=()=>push("⑤","فاصله‌ها (−)",E5,true,false);
+   first?(s4(),s5()):(s5(),s4());
+   push("⑥","فاصله‌ها ±",E6,pm,true);push("⑨","خروجی‌ها ±",O&&O[2],pm,true);
+   push("⑧","خروجی‌ها (−)",O&&O[1],pk==="minus",false);push("⑦","خروجی‌ها (+)",O&&O[0],pk==="plus",false);
+   push("①","معادلهٔ ۱",E1,false,false);push("②","معادلهٔ ۲",E2,true,false);
+   S.push({mark:"— بعد از آخرین پوزیشن: اعداد جداشده —"});
+   if(X){push("","اعداد جداشده (+)",X[0],false,false);push("","اعداد جداشده (−)",X[1],false,false);push("","اعداد جداشده ±",X[2],false,true);}
+   S.push({mark:"🏁 مگا پامپ (③)"});
+   const R=window.__REV;if(R){push("🔄","معکوس (+)",R[0],false,false);push("🔄","معکوس (−)",R[1],false,false);push("🔄","معکوس ±",R[2],false,true);}
+   S.push({mark:"↻ بعد: همین ترتیب یک بار دیگر ، تا معکوس نهایی"});
+   blocks.push(pathHtml("🧭 مسیر تحلیل ۲ (برای چک)",S,false,"✓ = پوزیشن ؛ بقیه فقط با همین ۳ عدد مسیر را طی می‌کنند ؛ هر عدد = ساعت بعدی روی ساعت ؛ ± = تایم بزرگ (+۱۲). تایم پوزیشن‌ها هنوز از خود زنجیرهٔ پوزیشن می‌آید؛ این فهرست فقط ترتیب و ساعت‌ها را نشان می‌دهد."));}catch(e){console.warn("a2path",e);}
   /* L111 (۲۵ سپتامبر): پوزیشن‌ها — ④ و ⑤ همیشه ؛ ⑦ ، ⑧ ، ⑨ هر کدام در ریل رنگ شد ؛ اگر ± (⑨) در ریل رنگ شد → ⑥ و ⑨ فعال ؛ در آخر ② (معادلهٔ اصلی) */
   {const pick=window.__RAILPICK,pm=!!(O&&O[2]&&O[2].comboHit);
    const keep=tg=>tg==="(+)"||tg==="(−)"||tg==="②"||(tg==="⑦"&&pick==="plus")||(tg==="⑧"&&pick==="minus")||((tg==="⑨"||tg==="(±)")&&pm);
@@ -1213,7 +1300,7 @@ function a2Rest(A,S,sg,plus,tag,src){
     (window.__POSCHAIN=window.__POSCHAIN||[]).push({tag:tag.trim(),neg:neg_,plus:!neg_,t:TC_.t,c:TC_.c,nums:[CP_.reduce((a,b)=>a+b,0)],posNums:CP_,subNums:[],numsA:[Math.abs(A.L[0]),Math.abs(A.L[1])],entry:TC_.entry,simR:TC_.simR,rev:TC_.rev,out:TC_.out,A:A.L.slice(0,2),AR:A.R.slice(0,2)});}catch(e){}
   const mini=(ttl,ta,ca)=>{const n=Math.max(ta.length,ca.length,1);const c="padding:2px 7px;border:1px solid #3a3170;font-family:monospace;font-size:14px;text-align:center";
     return `<div style="text-align:center"><div style="font-size:11px;color:#3ddc84;margin-bottom:2px">${ttl}</div><table style="border-collapse:collapse;direction:rtl"><tr><th style="${c};font-size:10px;color:var(--muted);font-family:inherit">تایم</th><th style="${c};font-size:10px;color:var(--muted);font-family:inherit">کندل</th></tr>${Array.from({length:n},(_,k)=>`<tr><td style="${c};color:#7c9cff">${ta[k]??""}</td><td style="${c};color:#ffb74d">${ca[k]??""}</td></tr>`).join("")}</table></div>`;};
-  const tbl=`<div class="card"><h2>${t("a2Tbl")}${tag} — ${T} <small style="font-size:9px;opacity:.4">v3.77</small></h2><div style="display:flex;gap:14px;justify-content:center;align-items:flex-start;direction:rtl;flex-wrap:wrap"><table class="eq" style="direction:ltr">${rows.map(([n,m],i)=>`<tr><td class="r${i}">${sg<0?"−":""}${n}</td><td class="${EN.mark[m]||""}">${m}</td></tr>`).join("")}<tr class="line"><td></td><td><b>${plus?"−":""}${W}</b></td></tr><tr class="line"><td></td><td class="${EN.mark.w||""}"><b>${plus?"−":""}${w}</b></td></tr></table></div></div>`;
+  const tbl=`<div class="card"><h2>${t("a2Tbl")}${tag} — ${T} <small style="font-size:9px;opacity:.4">v3.81</small></h2><div style="display:flex;gap:14px;justify-content:center;align-items:flex-start;direction:rtl;flex-wrap:wrap"><table class="eq" style="direction:ltr">${rows.map(([n,m],i)=>`<tr><td class="r${i}">${sg<0?"−":""}${n}</td><td class="${EN.mark[m]||""}">${m}</td></tr>`).join("")}<tr class="line"><td></td><td><b>${plus?"−":""}${W}</b></td></tr><tr class="line"><td></td><td class="${EN.mark.w||""}"><b>${plus?"−":""}${w}</b></td></tr></table></div></div>`;
   return src+`<div class="card">${eqHtml(A)}</div>`+tbl+`<div class="card">${eqHtml(B)}</div><div class="card">${eqHtml(C)}</div><div class="card">${eqHtmlF(D)}</div>`+entry;
 }
 /* ---- نقطه ورود: تایم‌ها / کندل‌ها / تشابه / معادله‌ی «ب» (L17–L20) ---- */
@@ -1425,6 +1512,7 @@ function railNext(){
   if(k==="s")$("rStepsBody").textContent+=v+"\n";
   else if(k==="x"){if(isRealAdmin())$("rExt").classList.remove("hidden");}
   else if(k==="h"){const h=document.createElement("div");h.className="sechead";h.textContent=v;$("rEqs").appendChild(h);}
+  else if(k==="html"){const h=document.createElement("div");h.innerHTML=v;$("rEqs").appendChild(h);}   // L126
   else{const d=document.createElement("div");d.className="card";d.innerHTML=eqHtml(v);$("rEqs").appendChild(d);d.scrollIntoView&&d.scrollIntoView({behavior:"smooth",block:"nearest"});}
   if(R_PTR>=R_STEPS.length){$("rNext").classList.add("hidden");applyComboColor($("rEqs"));}
 }
@@ -1448,5 +1536,5 @@ render();
           <div id="ladderBody"></div>
         </div>
       </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40b6c6bbcf007ca',t:'MTc5MDM1MzkzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41cbb0adc93206c',t:'MTc5MDUzNTQxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
