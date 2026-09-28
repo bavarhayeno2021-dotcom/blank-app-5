@@ -267,7 +267,7 @@ table.users th{color:var(--red)}
           <button class="btn sm" onclick="logout()" data-i18n="logout"></button>
         </div>
       </div>
-      <h1 onclick="secretTap()" style="cursor:default">thepilottmnl001 <small style="font-size:10px;opacity:.55;font-weight:normal">v3.81</small></h1>
+      <h1 onclick="secretTap()" style="cursor:default">thepilottmnl001 <small style="font-size:10px;opacity:.55;font-weight:normal">v3.84</small></h1>
       <div class="welcome"><b data-i18n="welcome"></b><span id="hello"></span></div>
       <p class="chip"><span data-i18n="yourCode"></span>: <span class="code" id="myCode"></span></p>
       <p class="chip"><span data-i18n="refLink"></span>:</p>
@@ -520,7 +520,7 @@ function landingHtml(){
     <div class="tzt"><h3>${t("teaserLbl")}</h3><p>${t("tzSub")}</p></div>
     <div class="teaser ${teaser&&teaser.img?'':'tall'}" ${tzClick}>${tz}<div class="lbl"><span>${teaser?teaser.title:t("teaserLbl")}</span><span>F.o.r.m.u.l</span></div></div>
     ${rest.length?`<div class="vids"><h3>${t("videos")}</h3><div class="media">${rest.map(m=>{const yy=ytId(m.link);const body=yy?`<iframe src="https://www.youtube.com/embed/${yy}" allowfullscreen loading="lazy"></iframe>`:m.img?`<img src="${m.img}" alt="">`:`<div class="ph">🎬</div>`;const btn=m.link&&!yy?`<a class="btn sm" href="${m.link}" target="_blank" rel="noopener">${t("mWatch")}</a>`:"";return`<div class="m">${body}<div class="mt"><b>${m.title||""}</b>${btn}</div></div>`;}).join("")}</div></div>`:""}
-    <div class="foot"><a href="https://t.me/Formul0123" target="_blank">Telegram</a>·<a href="https://theformul.blogfa.com/post/2" target="_blank">Blog</a>·<a href="https://t.me/thepilotTmnl0010" target="_blank">@thepilotTmnl0010</a><div style="margin-top:8px;opacity:.6">${t("footer")} · v3.81</div></div>
+    <div class="foot"><a href="https://t.me/Formul0123" target="_blank">Telegram</a>·<a href="https://theformul.blogfa.com/post/2" target="_blank">Blog</a>·<a href="https://t.me/thepilotTmnl0010" target="_blank">@thepilotTmnl0010</a><div style="margin-top:8px;opacity:.6">${t("footer")} · v3.83</div></div>
   </div>
   <div id="drawer"><div class="bg" onclick="closeDrawer()"></div><div class="pane">
     <div class="top"><b>${t("menu")}</b><button class="x" onclick="closeDrawer()">×</button></div>
@@ -678,11 +678,12 @@ function eqSig(e,side){
   // امضا (J2/J3) = جمع دو هم‌ستون: چپ = هم‌ستون(عدد بزرگ) + هم‌ستون(یک‌پله‌مانده‌ی چپ) ؛ راست = هم‌ستون(جمع راست) + هم‌ستون(عدد زیر آن)
   // اگر یکی تک‌رقمی باشد فقط دیگری؛ اگر هر دو تک‌رقمی، امضا ندارد
   if(!e.kind)return null;
-  if(side==="R"){const rs=e.R[0]+e.R[1];const rc=chain(rs);const a=Math.abs(rs)>9?mate(rs):null;const b=(rc.length&&Math.abs(rc[0])>9)?mate(rc[0]):null;return a===null&&b===null?Math.abs(rs):(a||0)+(b||0);}   // L71: همه تک‌رقمی (۴/۵ → ۹) → خودِ ۹ امضاست   // بنفش راست = همان قاعدهٔ چپ (۱۷ سپتامبر)
+  if(side==="R"){const rs=e.R[0]+e.R[1];const rc=chain(rs);const a=Math.abs(rs)>9?mate(rs):null;const b=(rc.length&&Math.abs(rc[0])>9)?mate(rc[0]):null;if(b!==null)return b;   /* v3.84 (۲۹ سپتامبر): وقتی زیر جمع راست عدد دورقمی است (۱۰ زیر ۱۹) فقط همان عدد بنفش است ؛ هم‌ستونِ عدد بزرگ بالایی (۸) اصلاً حساب نمی‌شود → ۱۰ با ۱۲ = ۲ اختلاف ✓ */
+  return a===null&&b===null?Math.abs(rs):(a||0)+(b||0);}   // L71: همه تک‌رقمی (۴/۵ → ۹) → خودِ ۹ امضاست   // بنفش راست = همان قاعدهٔ چپ (۱۷ سپتامبر)
   const lc=chain(e.L[2]);const a=Math.abs(e.L[2])>9?mate(e.L[2]):null;const b=(lc.length&&Math.abs(lc[0])>9)?mate(lc[0]):null;return a===null&&b===null?Math.abs(e.L[2]):(a||0)+(b||0);   // L71
 }
 function eqMatch(e){return e.match||null;}   // در ریل تعیین می‌شود
-function eqHtml(e){
+function eqHtml(e,rail){   /* v3.84: rail=true → معادلات ریل */
   const leftChain=chain(e.L[2]);
   const rightSum=e.R[0]+e.R[1];
   const rightChain=(e.mixed||e.rev)?[...leftChain]:[rightSum,...chain(rightSum)];   // L54: چپ منفی → راست همان چپ ؛ L113: معادلهٔ برعکس هم زیر خط راست = چپ (15)
@@ -702,7 +703,7 @@ function eqHtml(e){
     const preIdx=Math.max(0,rightChain.length-2);
     const rSecond=(i===1&&rightChain.length>2);   // خط دوم راست (مثلاً ۱۰ زیر ۱۹): عدد اصلی — بنفش، هم‌ستونِ خط اول کنارش
     const rCell=r!==undefined?(rSecond?`<span class="mate">${numHtml(r)}</span>`:numHtml(r)):"";
-    const rMate=r!==undefined?(rSecond?rpCell(rightChain[0]):(i===0&&rightChain.length>2?"<td></td>":(i===0?rpCell(r):mateCell(r,false,true)))):"<td></td>";
+    const rMate=r!==undefined?(rSecond?(rail?"<td></td>":rpCell(rightChain[0])):(i===0&&rightChain.length>2?"<td></td>":(i===0?rpCell(r):mateCell(r,false,true)))):"<td></td>";
     rows+=hr+`<tr class="res ${i===k-1?'outrow':''} ${i===preIdx?'prerow':''}">${(i===lRowIdx&&lSum!==null)?lSumCell:"<td></td>"}<td class="n">${l!==undefined?numHtml(l):""}</td><td class="n">${rCell}</td>${rMate}</tr>`;
   }
   if(k===0)rows+=hr+`<tr class="res outrow"><td></td><td class="n"></td><td class="n"></td><td></td></tr>`;
@@ -919,7 +920,7 @@ function buildFromRes(res){
   const sP=eqSig(XP,"L"),sM=eqSig(XM,"L"),o7=eqSig(O[0],"R"),o8=eqSig(O[1],"R"),o9=eqSig(O[2],"R");
   // فاصلهٔ دو امضا: خودِ عدد یا شکل تک‌رقمی‌شده‌اش (۱۶ → ۴ با قاعدهٔ راست، ۵ با قاعدهٔ چپ) — کوچک‌ترین اختلاف
   const forms=v=>v===null?[]:[...new Set([v,v>9?mateR(v):v,v>9?mate(v):v,v>9?ads(v):v])];
-  const diff=(a,b)=>{if(a===null||b===null)return 99;let d=99;for(const x of forms(a))for(const y of forms(b))d=Math.min(d,Math.abs(x-y));return d;};
+  const diff=(a,b)=>(a===null||b===null)?99:Math.abs(a-b);   // v3.82 (۲۸ سپتامبر): در همخوانی هم‌ستون کاربرد ندارد — فقط خودِ عدد (۱۷ و ۶ = ۱۱ فاصله → رنگ نمی‌شود)
   // منابع: جداشدهٔ + (sP) و جداشدهٔ − (sM). جداشدهٔ ± هرگز مقایسه نمی‌شود. برابر یا ۱ اختلاف.
   const best=(o)=>{const dP=diff(sP,o),dM=diff(sM,o);const d=Math.min(dP,dM);return d<=2?{d,R:dP<=dM?sP:sM}:null;};   // L59: برابر ، ۱ اختلاف ، ۲ اختلاف (کم‌رنگ‌تر)
   const h7=best(o7),h8=best(o8),h9=best(o9);
@@ -933,7 +934,7 @@ function buildFromRes(res){
   O[2].comboHit=null;
   if(h9){O[2].comboHit=pick||(h9.R===sM?"minus":"plus");O[2].match={L:o9,R:h9.R,d:h9.d};}   // ⑨ می‌تواند به‌تنهایی همخوانی داشته باشد
   // خط تشخیصی امضاها (برای دیدن این‌که چرا همخوانی رنگ نشده)
-  const fs_=v=>v===null?"–":forms(v).join("/");
+  const fs_=v=>v===null?"–":String(v);
   window.__SIG=`امضاها — جداشدهٔ +: ${fs_(sP)} | جداشدهٔ −: ${fs_(sM)} ⇄ ⑦ راست: ${fs_(o7)} | ⑧ راست: ${fs_(o8)} | ⑨ راست: ${fs_(o9)}`;
   // L123: ⚖️ محور تعادل
   window.__AXIS=null;
@@ -1010,7 +1011,7 @@ function pathHtml(title,steps,withDates,note){
   const row=s=>{if(s.mark)return `<div style="margin:8px 0;color:#f7c948;font-weight:800">${s.mark}</div>`;
     const d=pathDigits(s.e);const neg=s.e.L[0]<0;
     const items=d.map(([k,v])=>{const h=pathHour(v,s.big);let when=h===null?"–":`${h===0?24:h}:00`;
-      if(cur&&h!==null){const t=new Date(cur.getTime());t.setMinutes(0,0,0);t.setHours(h);if(t<=cur)t.setDate(t.getDate()+1);cur=t;when=fmtD(t);}
+      if(cur&&h!==null){const t=new Date(cur.getTime());t.setMinutes(0,0,0);t.setHours(h);if(t<=cur)t.setDate(t.getDate()+1);{let g=0;while(!mktOpenAt(t.getFullYear(),t.getMonth()+1,t.getDate(),t.getHours())&&g++<7)t.setDate(t.getDate()+1);}cur=t;when=fmtD(t);}   /* v3.84: تعطیلی آخر هفته */
       return `${k} <b>${v===null?"–":v}</b> ← <span style="direction:ltr;unicode-bidi:isolate">${when}</span>`;}).join(" ، ");
     return `<div style="margin:4px 0;padding:6px 8px;border:1px solid #3a3170;border-radius:8px;${s.pos?"background:rgba(0,200,83,.10)":""}${s.box?";border-color:"+s.box:""}"><b>${s.pos?"✓ ":""}${s.sym} ${s.name}</b> <small style="opacity:.75">(${neg?"منفی":"مثبت"}${s.big?" ، تایم بزرگ +۱۲":""})</small>${s.tag?` <span style="color:#fff;background:${s.box||"#5e35b1"};border-radius:6px;padding:0 6px;font-size:11px">${s.tag}</span>`:""}<br>${items}</div>`;};
   return `<div class="sechead">${title}</div><div class="card" style="direction:rtl;font-size:13px">${steps.map(row).join("")}<p class="welcome" style="font-size:11px;opacity:.75">${note}</p></div>`;}
@@ -1093,6 +1094,22 @@ function applyDir(ch){ch.forEach(p=>{p.neg=!!p.neg;});}
 function posView(){const parse=s=>String(s??"").trim().split(/[,،;\s]+/).filter(x=>x!=="").map(x=>parseInt(x,10)).filter(x=>!isNaN(x));
   return (window.__POSCHAIN||[]).map((p,i)=>{const t=parse(POS_PRICES["t"+i]),c=parse(POS_PRICES["c"+i]),e=parse(POS_PRICES["e"+i]);
     return {...p,t:t.length?t:p.t,c:c.length?c:p.c,entry:e.length?e[0]:p.entry,manual:t.length>0||c.length>0||e.length>0,manualE:e.length>0};});}   /* L98: نقطهٔ ورود هم دستی می‌شود */
+/* v3.84 (۲۹ سپتامبر): بازار فارکس آخر هفته بسته است — از جمعه ۱۷:۰۰ تا یکشنبه ۱۷:۰۰ نیویورک
+   (تابستان = کل شنبه و یکشنبه به وقت تهران). ساعت h تهران = کندل h:30 روی چارت.
+   تایم‌ها و کندل‌ها فقط در ساعت‌های باز بازار شمرده می‌شوند (تایم ۴ بعد از جمعه ۲۱:۰۰ → دوشنبه ۰۴:۰۰). */
+function mktOpenAt(Y,M,D,h){const t=Date.UTC(Y,M-1,D,h,30)-12600000;const y=new Date(t).getUTCFullYear();
+  const m1=new Date(Date.UTC(y,2,1)).getUTCDay(),n1=new Date(Date.UTC(y,10,1)).getUTCDay();
+  const s=Date.UTC(y,2,1+((7-m1)%7)+7,7),e=Date.UTC(y,10,1+((7-n1)%7),6);   // ساعت تابستانی نیویورک
+  const ny=new Date(t+((t>=s&&t<e)?-4:-5)*3600000);const w=ny.getUTCDay(),hr=ny.getUTCHours();
+  return !(w===6||(w===5&&hr>=17)||(w===0&&hr<17));}
+const DAY_FA=["یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنج‌شنبه","جمعه","شنبه"];
+function chainClock(date){const ok=!!date&&/^\d{4}-\d{2}-\d{2}$/.test(date);const [Y,M,D]=ok?date.split("-").map(Number):[0,0,0];
+  const open=h=>!ok||mktOpenAt(Y,M,D,h);
+  const fwd=h=>{let g=0;while(!open(h)&&g++<400)h++;return h;};            // اگر بسته است → اولین ساعت باز
+  const adv=(h,n)=>{for(let i=0;i<n;i++)h=fwd(h+1);return h;};             // n کندل جلو (فقط ساعت‌های باز)
+  const next=(from,v,inc)=>{const a=((v%12)+24)%24;for(let k=inc?0:1;k<=400;k++){const x=from+k,hh=((x%24)+24)%24;if((hh===a||hh===(a+12)%24)&&open(x))return x;}return from+1;};   // نزدیک‌ترین n یا n+12 که بازار باز است
+  const day=h=>ok?DAY_FA[new Date(Date.UTC(Y,M-1,D)+h*3600000).getUTCDay()]:"";
+  return{ok,open,fwd,adv,next,day};}
 function posChainHtml(){
   const ch=posView();if(!ch.length)return "";   /* L93: همهٔ معادله‌ها + L96: دستی اگر وارد شده باشد */
   applyDir(ch);   // L88
@@ -1101,23 +1118,23 @@ function posChainHtml(){
   const dec=Math.max(2,String(mul).length-1);
   const startT=POS_PRICES.start||"";           // تایم شروع (ساعت)
   const h24=v=>((v%24)+24)%24;
-  let cursor=startT===""?null:parseInt(startT,10);   // ساعت جاری زنجیره
-  const rows=ch.map((p,i)=>{const total=p.rev?p.nums.reduce((a,b)=>a+b,0):((p.entry>0?+p.entry:0)+p.c.reduce((a,b)=>a+b,0))*10;const key="p"+i;const price=parseFloat(POS_PRICES[key]);   /* L117: ارتفاع = کندل‌ها به پیپ */
+  let cursor=startT===""?null:parseInt(startT,10);const CK=chainClock(POS_PRICES.date||"");if(cursor!==null)cursor=CK.fwd(cursor);const hl=h=>(CK.ok?CK.day(h)+" ":"")+String(h24(h)).padStart(2,"0")+":00";   /* v3.84: تعطیلی رد می‌شود + اسم روز */   // ساعت جاری زنجیره
+  const rows=ch.map((p,i)=>{const total=p.rev?p.nums.reduce((a,b)=>a+b,0):(p.hNums?Math.max(...p.hNums):((p.entry>0?+p.entry:0)+p.c.reduce((a,b)=>a+b,0))*10);   /* v3.82: ارتفاع = اعداد بزرگ چپ معادلهٔ B و C */const key="p"+i;const price=parseFloat(POS_PRICES[key]);   /* L117: ارتفاع = کندل‌ها به پیپ */
     const tgt=isNaN(price)?null:(p.neg?price+total/mul:price-total/mul);
     /* L113 (۲۵ سپتامبر): ارتفاعِ معادلهٔ برعکس — فاز ۱ = جمع کندل‌ها (ورود + کندل‌ها) به پیپ (12+12+3 = 27) ؛ فاز ۲ = خروجی × ۱۰ پیپ (6 → 60)
        مثبتِ برعکس: اول نزولی (−27) بعد صعودی (+60) ؛ منفیِ برعکس: اول صعودی بعد نزولی — ۱ پیپ = ۱۰ واحد */
     const rv=p.rev?(()=>{const dn=(+p.entry||0)+p.c.slice(0,-1).reduce((a,b)=>a+b,0),up=(+p.out||0)*10,s1=p.neg?1:-1,u=10/mul;const t1=isNaN(price)?null:price+s1*dn*u;const p2=parseFloat(POS_PRICES[key+"b"]);return{dn,up,s1,u,t1,p2,t2:isNaN(p2)?null:p2-s1*up*u};})():null;
     // جای‌گذاری اتومات تایم‌ها و کندل‌ها روی ساعت (L63-12): از ساعت جاری، تایم‌ها پشت‌سرهم، بعد کندل‌ها یکی‌یکی
-    let tl="";if(cursor!==null){const nextClock=(from,h,inc)=>{const a=((h%12)+24)%24;for(let k=inc?0:1;k<=24;k++){const hh=((from+k)%24+24)%24;if(hh===a||hh===(a+12)%24)return from+k;}return from+1;};
+    let tl="";if(cursor!==null){const nextClock=CK.next;
       /* L105: اولویت تایم‌ها = هر کدام در مسیر جلو زودتر شناسایی شد همان اول است — L107: کارت/معادله اعداد فرمول را نشان می‌دهد (بدون تغییر)؛ تشخیص نزدیک‌ترین ساعت فقط روی چارت/خط زمان */
       let cur=cursor;const occ=p.t.map(v=>nextClock(cur,v,true));const ord=occ.map((h,k)=>k).sort((x,y)=>occ[x]-occ[y]||(x-y));
-      let last=cur;const tt=ord.map((k,j)=>{const hh=j===0?occ[k]:(occ[k]>last?occ[k]:nextClock(last,p.t[k],false));last=hh;return `${p.t[k]}→${String(h24(hh)).padStart(2,"0")}:00`;});
+      let last=cur;const tt=ord.map((k,j)=>{const hh=j===0?occ[k]:(occ[k]>last?occ[k]:nextClock(last,p.t[k],false));last=hh;return `${p.t[k]}→${hl(hh)}`;});
       cur=last;
       /* L103: ورود خودش کندل است — ساعت جدا، اولین کندل بعد از تایم‌ها ؛ بعد کندل‌ها به ترتیب */
-      let ent="";if(p.entry>0){cur=cur+p.entry;ent=`${p.entry}→${String(h24(cur)).padStart(2,"0")}:00 🎯ورود/ثبت`;}else{ent=`(هم‌ساعتِ آخرین تایم) 🎯ورود/ثبت`;}
-      const cc=p.c.map((v,k)=>{cur=cur+v;return `${v}→${String(h24(cur)).padStart(2,"0")}:00`+(p.rev&&k===p.c.length-2?(p.neg?" 🔄 🎯 ورود ۲ نزولی ▼":" 🔄 🎯 ورود ۲ صعودی ▲"):(p.rev&&k===p.c.length-1?" 🏁 خروجی":""));});
-      tl=`<div style="margin-top:6px;font-size:12px;color:var(--muted);direction:rtl">🕐 شروع ${String(h24(cursor)).padStart(2,"0")}:00 → تایم‌ها ${tt.join(" ، ")} → ${p.rev?`ورود ${ent} → کندل‌ها ${cc.join(" ، ")}`:`ورود (کندل اول) ${ent} → کندل‌ها ${cc.join(" ، ")}`} → پایان ؛ بعدی از ${String(h24(cur+1)).padStart(2,"0")}:00</div>`;
-      cursor=cur+1;}
+      let ent="";if(p.entry>0){cur=CK.adv(cur,p.entry);ent=`${p.entry}→${hl(cur)} 🎯ورود/ثبت`;}else{ent=`(هم‌ساعتِ آخرین تایم) 🎯ورود/ثبت`;}
+      const cc=p.c.map((v,k)=>{cur=CK.adv(cur,v);return `${v}→${hl(cur)}`+(p.rev&&k===p.c.length-2?(p.neg?" 🔄 🎯 ورود ۲ نزولی ▼":" 🔄 🎯 ورود ۲ صعودی ▲"):(p.rev&&k===p.c.length-1?" 🏁 خروجی":""));});
+      tl=`<div style="margin-top:6px;font-size:12px;color:var(--muted);direction:rtl">🕐 شروع ${hl(cursor)} → تایم‌ها ${tt.join(" ، ")} → ${p.rev?`ورود ${ent} → کندل‌ها ${cc.join(" ، ")}`:`ورود (کندل اول) ${ent} → کندل‌ها ${cc.join(" ، ")}`} → پایان ؛ بعدی از ${hl(CK.adv(cur,1))}</div>`;
+      cursor=CK.adv(cur,1);}
     return `<div class="card" style="border-color:${p.neg?"#3ddc84":"#ff6b6b"}55">
       <div style="display:flex;justify-content:space-between;align-items:center"><b>پوزیشن ${i+1} — ${p.tag}${p.manual?' <span style=\'color:#f7c948\'>✋ دستی</span>':''}</b><span style="color:${p.neg?"#3ddc84":"#ff6b6b"};font-weight:800">${p.rev?(p.neg?"اول صعودی ▲ ، یک کندل مانده به خروجی نزولی ▼ (منفیِ برعکس)":"اول نزولی ▼ ، یک کندل مانده به خروجی صعودی ▲ (مثبتِ برعکس)"):(p.neg?"صعودی ▲ (معادلهٔ منفی)":"نزولی ▼ (معادلهٔ مثبت)")}</span></div>
       <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;direction:rtl">
@@ -1134,11 +1151,11 @@ function posChainHtml(){
       </div>
       <div style="margin-top:8px;direction:rtl">📌 قیمت close کندل ورود${rv?` ۱ (${p.neg?"صعودی":"نزولی"})`:""}: <input type="number" step="any" style="width:130px" value="${POS_PRICES[key]??""}" oninput="POS_PRICES['${key}']=this.value;localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()"></div>${rv?`<div style="margin-top:6px;direction:rtl">📌 قیمت close کندل ورود ۲ (${p.neg?"نزولی":"صعودی"} — یک کندل مانده به خروجی): <input type="number" step="any" style="width:130px" value="${POS_PRICES[key+"b"]??""}" oninput="POS_PRICES['${key}b']=this.value;localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()"></div>`:""}
       ${rv?`<div style="margin-top:6px;color:var(--muted);font-family:monospace;direction:ltr;text-align:left;font-size:13px">${p.neg?"▲":"▼"} ${[p.entry,...p.c.slice(0,-1)].join(" + ")} = ${rv.dn} pip → ${rv.s1>0?"+":"−"}${(rv.dn*rv.u).toFixed(dec)}<br>${p.neg?"▼":"▲"} ${p.out} × 10 = ${rv.up} pip → ${rv.s1>0?"−":"+"}${(rv.up*rv.u).toFixed(dec)}</div>`:""}
-      ${rv?"":`<div style="margin-top:6px;color:var(--muted);font-family:monospace;direction:ltr;text-align:left;font-size:13px">${p.neg?"▲":"▼"} ${(p.entry>0?[p.entry,...p.c]:p.c).join(" + ")} = ${total/10} pip → ${p.neg?"+":"−"}${(total/mul).toFixed(dec)}</div>`}
-      ${tgt!==null?`${rv?`<div style="font-size:18px;margin-top:6px;direction:rtl">🎯 هدف ۱ (${p.neg?"صعودی ▲":"نزولی ▼"} ${rv.dn} پیپ): <b style="color:${p.neg?"#3ddc84":"#ff6b6b"}">${rv.t1.toFixed(dec)}</b></div><div style="font-size:18px;margin-top:4px;direction:rtl">🎯 هدف ۲ (${p.neg?"نزولی ▼":"صعودی ▲"} ${rv.up} پیپ): <b style="color:${p.neg?"#ff6b6b":"#3ddc84"}">${rv.t2!==null?rv.t2.toFixed(dec):"— (قیمت close ورود ۲ رو بزن)"}</b></div>`:`<div style="font-size:20px;margin-top:6px;direction:rtl">🎯 هدف: <b style="color:${p.neg?"#3ddc84":"#ff6b6b"}">${tgt.toFixed(dec)}</b> <button class="ghost" style="font-size:13px;padding:4px 10px" onclick="posLadder(${i})">📋 پله‌های قیمت</button></div>`}
+      ${rv?"":`<div style="margin-top:6px;color:var(--muted);font-family:monospace;direction:ltr;text-align:left;font-size:13px">${p.neg?"▲":"▼"} ارتفاع‌ها: ${(p.hNums||[total]).map(v=>(p.neg?"+":"−")+(v/mul).toFixed(dec)).join(" ، ")}</div>`}
+      ${tgt!==null?`${rv?`<div style="font-size:18px;margin-top:6px;direction:rtl">🎯 هدف ۱ (${p.neg?"صعودی ▲":"نزولی ▼"} ${rv.dn} پیپ): <b style="color:${p.neg?"#3ddc84":"#ff6b6b"}">${rv.t1.toFixed(dec)}</b></div><div style="font-size:18px;margin-top:4px;direction:rtl">🎯 هدف ۲ (${p.neg?"نزولی ▼":"صعودی ▲"} ${rv.up} پیپ): <b style="color:${p.neg?"#ff6b6b":"#3ddc84"}">${rv.t2!==null?rv.t2.toFixed(dec):"— (قیمت close ورود ۲ رو بزن)"}</b></div>`:(p.hNums?`<div style="margin-top:6px;direction:rtl">${p.hNums.map((v,k)=>`<div style="font-size:17px;margin-top:3px">🎯 هدف ${k+1}: <b style="color:${p.neg?"#3ddc84":"#ff6b6b"}">${(p.neg?price+v/mul:price-v/mul).toFixed(dec)}</b> <span style="color:var(--muted);font-size:13px">(${(v/mul).toFixed(dec)} — سود ${(v/10*(+(POS_PRICES.lot||0.01))*10).toFixed(2)} $)</span></div>`).join("")}<button class="ghost" style="font-size:13px;padding:4px 10px;margin-top:4px" onclick="posLadder(${i})">📋 پله‌های قیمت</button></div>`:`<div style="font-size:20px;margin-top:6px;direction:rtl">🎯 هدف: <b style="color:${p.neg?"#3ddc84":"#ff6b6b"}">${tgt.toFixed(dec)}</b> <button class="ghost" style="font-size:13px;padding:4px 10px" onclick="posLadder(${i})">📋 پله‌های قیمت</button></div>`)}
       <div style="margin-top:8px;direction:rtl;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:14px">
         💵 لات <input type="number" step="0.01" min="0.01" style="width:70px" value="${POS_PRICES.lot??0.01}" oninput="POS_PRICES.lot=this.value;localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()">
-        <span>سود در هدف: <b style="color:#3ddc84">${((rv?rv.dn+rv.up:Math.abs(total)/10)*(+(POS_PRICES.lot||0.01))*10).toFixed(2)} $</b> <span style="color:var(--muted)">(${rv?rv.dn+" + "+rv.up+" = "+(rv.dn+rv.up):(Math.abs(total)/10).toFixed(1)} پیپ × ${(+(POS_PRICES.lot||0.01)*10).toFixed(2)}$/پیپ)</span></span>
+        ${(!rv&&p.hNums)?"":`<span>سود در هدف: <b style="color:#3ddc84">${((rv?rv.dn+rv.up:Math.abs(total)/10)*(+(POS_PRICES.lot||0.01))*10).toFixed(2)} $</b> <span style="color:var(--muted)">(${rv?rv.dn+" + "+rv.up+" = "+(rv.dn+rv.up):(Math.abs(total)/10).toFixed(1)} پیپ × ${(+(POS_PRICES.lot||0.01)*10).toFixed(2)}$/پیپ)</span></span>`}
         <span>ثبت: <button class="ghost" style="padding:3px 10px;${POS_PRICES['r'+i]==='win'?'background:#3ddc8433':''}" onclick="POS_PRICES['r${i}']='win';localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()">✔ رسید</button> <button class="ghost" style="padding:3px 10px;${POS_PRICES['r'+i]==='loss'?'background:#ff6b6b33':''}" onclick="POS_PRICES['r${i}']='loss';localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()">✘ نرسید</button></span>
       </div>`:""}
       ${i<ch.length-1?`<div style="margin-top:6px;font-size:12px;color:var(--muted);direction:rtl">↓ کندل آخر که تمام شد، اولین کندل بعدی = شروع تایمِ پوزیشن ${i+2}</div>`:`<div style="margin-top:6px;font-weight:800;color:#f7c948;direction:rtl">🏁 مگا پوزیشن</div>`}
@@ -1153,7 +1170,7 @@ function posChainHtml(){
 }
 /* L84: ژورنال پوزیشن‌ها — لات (پیش‌فرض ۰.۰۱ = ۰.۱$/پیپ در جفت‌ارزهای دلاری) ، سود در هدف ، ثبت رسید/نرسید ، جمع */
 function journalHtml(ch){const lot=+(POS_PRICES.lot||0.01);const perPip=lot*10;let win=0,loss=0,pnl=0,pips=0;
-  ch.forEach((p,i)=>{const total=Math.abs(p.nums.reduce((a,b)=>a+b,0))/10;const r=POS_PRICES["r"+i];if(r==="win"){win++;pnl+=total*perPip;pips+=total;}else if(r==="loss"){loss++;}});
+  ch.forEach((p,i)=>{const total=Math.abs((!p.rev&&p.hNums?[Math.max(...p.hNums)]:p.nums).reduce((a,b)=>a+b,0))/10;   /* v3.83: ژورنال = دورترین هدف */const r=POS_PRICES["r"+i];if(r==="win"){win++;pnl+=total*perPip;pips+=total;}else if(r==="loss"){loss++;}});
   if(!win&&!loss)return "";
   return `<div class="card" style="direction:rtl;border-color:#7db4ff55"><b>📒 ژورنال</b> — لات ${lot} (${perPip.toFixed(2)}$/پیپ) | ✔ ${win} رسید | ✘ ${loss} نرسید | مجموع سود: <b style="color:#3ddc84">${pnl.toFixed(2)} $</b> (${pips.toFixed(1)} پیپ) <button class="ghost" style="padding:2px 8px;font-size:12px" onclick="Object.keys(POS_PRICES).filter(k=>/^r\\d+$/.test(k)).forEach(k=>delete POS_PRICES[k]);localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));posRefresh()">پاک‌کردن ثبت‌ها</button></div>`;}
 /* L72: مگا پامپ/دامپ — اگر در ریل معادلهٔ منفی رنگ شد: اعداد ± همهٔ پوزیشن‌های منفی (پایین→بالا) جمع و به قیمت اضافه ؛ اگر مثبت رنگ شد: پوزیشن‌های مثبت (بالا→پایین) جمع و کم */
@@ -1195,26 +1212,26 @@ function posPine(){
   const mul=+(localStorage.getItem("fl_posMul")||100000);
   const startT=POS_PRICES.start===""||POS_PRICES.start===undefined?null:parseInt(POS_PRICES.start,10);
   const date=POS_PRICES.date||"";if(startT===null||!date)return alert("تاریخ شروع و تایم شروع را وارد کن");
-  const base=new Date(date+"T00:00:00");   // محلی
+  const base=new Date(date+"T00:00:00");const CK=chainClock(date);   /* v3.84: تعطیلی آخر هفته */   // محلی
   // ساعت مطلق هر پوزیشن: شروع → تایم‌ها → کندل‌ها ؛ ورود = عدد راست زیر خط A ؛ ثبت قیمت = یک کندل بعد (close)
-  let cursor=startT;const fmt=h=>{const d=new Date(base.getTime()+h*3600000);const p2=v=>String(v).padStart(2,"0");return{y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate(),h:d.getHours(),txt:`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:00`};};
+  let cursor=CK.fwd(startT);const fmt=h=>{const d=new Date(base.getTime()+h*3600000);const p2=v=>String(v).padStart(2,"0");return{y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate(),h:d.getHours(),txt:`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:00`};};
   // خط زمان هر پوزیشن: شروع → تایم‌ها (جمع) → کندل‌ها (یکی‌یکی) → نقطهٔ ورود = «عدد ورود» ساعت بعد از آخرین کندل → ثبت = ورود+۱ → خروج/شروع بعدی = ثبت+۱
   // L89 (۲۰ سپتامبر ۰۱:۳۰ ، قطعی): خط زمان مثل اندیکاتور دستی —
   //   تایم = ساعتِ روی ساعت: از نقطهٔ جاری، نزدیک‌ترین کندلی که ساعتش h یا h+12 است (۵ → ۰۵ یا ۱۷) ؛ تایم دوم بعد از تایم اول
   //   کندل = شمارش: از آخرین تایم، به تعداد عدد کندل جلو ؛ اولین کندل = نقطهٔ ورود (قیمت close همان کندل ثبت می‌شود)
   //   کندل‌های بعدی به‌ترتیب ؛ آخرین کندل = خروجی ؛ کندل بعد از آن = شروع معادلهٔ بعدی
   // تایم اول می‌تواند خودِ کندل جاری باشد (شروع 09 و تایم 9 → 09:00) ؛ تایم بعدی از کندل بعد (9 دوم → 21:00)
-  const nextClock=(from,h,inc)=>{const a=((h%12)+24)%24;for(let k=inc?0:1;k<=24;k++){const hh=((from+k)%24+24)%24;if(hh===a||hh===(a+12)%24)return from+k;}return from+1;};
-  const plan=ch.map((p,i)=>{const total=p.nums.reduce((a,b)=>a+b,0);
+  const nextClock=CK.next;
+  const plan=ch.map((p,i)=>{const total=(!p.rev&&p.hNums?Math.max(...p.hNums):p.nums.reduce((a,b)=>a+b,0));   /* v3.83: خط اصلی = دورترین هدف ، بقیهٔ هدف‌ها خط جدا */
     /* L105: تایم‌ها به ترتیب شناسایی روی چارت — هر کدام زودتر رسید اول */
-    let cur=cursor;const occT=p.t.map(v=>nextClock(cur,v,true));const ordT=occT.map((h,k)=>k).sort((x,y)=>occT[x]-occT[y]||(x-y));
+    const st=cursor;let cur=cursor;const occT=p.t.map(v=>nextClock(cur,v,true));const ordT=occT.map((h,k)=>k).sort((x,y)=>occT[x]-occT[y]||(x-y));
     const tH=[],tOrd=[];let lastT=cur;ordT.forEach((k,j)=>{const hh=j===0?occT[k]:(occT[k]>lastT?occT[k]:nextClock(lastT,p.t[k],false));lastT=hh;tH.push(hh);tOrd.push(p.t[k]);});cur=lastT;   /* L107: برچسب = عدد فرمول؛ ساعت واقعی فقط در timestamp */
     p={...p,t:tOrd};
-    if(p.entry>0)cur=cur+p.entry;const entryH=cur;const recH=entryH;   /* L103: ورود = اولین کندل بعد از تایم‌ها (ساعت خودش) ، بعد کندل‌ها */
-    const cH=[];p.c.forEach(v=>{cur=cur+v;cH.push(cur);});
-    const lastH=cH.length?cH[cH.length-1]:entryH;cursor=lastH+1;
+    if(p.entry>0)cur=CK.adv(cur,p.entry);const entryH=cur;const recH=entryH;   /* L103: ورود = اولین کندل بعد از تایم‌ها (ساعت خودش) ، بعد کندل‌ها */
+    const cH=[];p.c.forEach(v=>{cur=CK.adv(cur,v);cH.push(cur);});
+    const lastH=cH.length?cH[cH.length-1]:entryH;cursor=CK.adv(lastH,1);
     const e2H=p.rev&&cH.length>=2?cH[cH.length-2]:null;   /* L122: قانون ۲ — ورود ۲ = یک کندل مانده به خروجی */
-    return{...p,total,i,tH,cH,entryH,recH,lastH,e2H,entry:fmt(entryH),rec:fmt(recH),exitH:lastH};});
+    return{...p,total,i,st,tH,cH,entryH,recH,lastH,e2H,entry:fmt(entryH),rec:fmt(recH),exitH:lastH};});
   const timeHour=(p,k)=>p.tH[k];
   const candleHour=(p,k)=>p.cH[k];
   const cursorOf=p=>p.lastH;
@@ -1231,9 +1248,9 @@ f_v(_t, _c, _w, _st) =>
     // زمان خروج = بعد از آخرین کندل (ساعت ثبت + تعداد کندل‌ها)
     const ex=fmt(cursorOf(p));
     const ts=(o)=>`timestamp(tz, ${o.y}, ${o.m}, ${o.d}, ${o.h}, 0)`;
-    pine+=`\n// ---- P${n} ${p.tag} ${p.rev?(p.neg?"اول صعودی بعد نزولی":"اول نزولی بعد صعودی"):(p.neg?"صعودی":"نزولی")} | تایم‌ها ${p.t.join(",")} | کندل‌ها ${p.c.join(",")} | ورود ${e.txt} | ثبت ${r.txt}${p.e2H!=null?` | ورود ۲ ${fmt(p.e2H).txt}`:""} | خروج ${ex.txt} | ${p.rev?(total/10)+" + "+((+p.out||0)*10):total/10} پیپ\n`;
+    pine+=`\n// ---- P${n} ${p.tag} ${p.rev?(p.neg?"اول صعودی بعد نزولی":"اول نزولی بعد صعودی"):(p.neg?"صعودی":"نزولی")} | تایم‌ها ${p.t.join(",")} | کندل‌ها ${p.c.join(",")} | ورود ${e.txt} | ثبت ${r.txt}${p.e2H!=null?` | ورود ۲ ${fmt(p.e2H).txt}`:""} | خروج ${ex.txt} | ${p.rev?(total/10)+" + "+((+p.out||0)*10)+" پیپ":(p.hNums?"هدف‌ها "+p.hNums.join(" , "):"ارتفاع "+total)}\n`;
     // زمان شروع این پوزیشن
-    const stP = fmt(p.tH.length?p.tH[0]:(p.entryH-1));
+    const stP = fmt(p.st);   /* v3.84: پرچم شروع روی شروع واقعی (کندل بعد از پایان پوزیشن قبلی) ، نه روی تایم اول */
     pine+=`var bool drawn${n} = false\nif barstate.islast and not drawn${n}\n    drawn${n} := true\n`;
     // ۱. پرچم شروع پوزیشن
     pine+=`    label.new(${ts(stP)}, high, "🚩 شروع P${n}", xloc=xloc.bar_time, style=label.style_label_down, color=color.blue, textcolor=color.white, size=size.small)\n`;
@@ -1252,6 +1269,8 @@ f_v(_t, _c, _w, _st) =>
     // هدف: بعد از بسته‌شدن کندل ثبت
     pine+=`var bool done${n} = false\nvar float tgt${n} = na\nvar line tl${n} = na\nvar bool hit${n} = false\nt${n} = ${ts(r)}\nif not done${n} and time <= t${n} and time_close > t${n} and barstate.isconfirmed\n    done${n} := true\n    tgt${n} := close ${p.neg?"+":"-"} ${total}/mul\n    tl${n} := line.new(bar_index, tgt${n}, bar_index+1, tgt${n}, color=color.orange, width=2, extend=extend.right)\n    label.new(bar_index, tgt${n}, "P${n} 🎯 " + str.tostring(tgt${n}), style=label.style_label_right, color=color.orange, textcolor=color.black, size=size.small)\n`;
     pine+=`if done${n} and not hit${n} and ${p.neg?"high >= tgt"+n:"low <= tgt"+n}\n    hit${n} := true\n    line.set_x2(tl${n}, bar_index)\n    line.set_extend(tl${n}, extend.none)\n    label.new(bar_index, tgt${n}, "P${n} خروج ✓", style=${p.neg?"label.style_label_down":"label.style_label_up"}, color=color.new(color.orange,0), textcolor=color.black, size=size.small)\n`;
+    if(!p.rev&&p.hNums&&p.hNums.length>1){const mx=p.hNums.indexOf(Math.max(...p.hNums));p.hNums.forEach((hv,k)=>{if(k===mx)return;const s=`${n}x${k+1}`;   /* v3.83: هر عدد B و C یک هدف */
+      pine+=`var bool done${s} = false\nvar float tgt${s} = na\nvar line tl${s} = na\nvar bool hit${s} = false\nif not done${s} and time <= t${n} and time_close > t${n} and barstate.isconfirmed\n    done${s} := true\n    tgt${s} := close ${p.neg?"+":"-"} ${hv}/mul\n    tl${s} := line.new(bar_index, tgt${s}, bar_index+1, tgt${s}, color=color.new(color.orange,40), width=1, extend=extend.right)\n    label.new(bar_index, tgt${s}, "P${n} 🎯${k+1} " + str.tostring(tgt${s}), style=label.style_label_right, color=color.new(color.orange,40), textcolor=color.black, size=size.tiny)\nif done${s} and not hit${s} and ${p.neg?"high >= tgt"+s:"low <= tgt"+s}\n    hit${s} := true\n    line.set_x2(tl${s}, bar_index)\n    line.set_extend(tl${s}, extend.none)\n`;});}
     if(p.e2H!=null){const e2=fmt(p.e2H);const upP=(+p.out||0)*100;   /* L122: هدف ۲ = خروجی × ۱۰ پیپ از close کندل ورود ۲ ؛ اگر هدف ۱ نرسیده بود همان‌جا بسته می‌شود */
       pine+=`var bool doneB${n} = false\nvar float tgtB${n} = na\nvar line tlB${n} = na\nvar bool hitB${n} = false\ntB${n} = ${ts(e2)}\nif not doneB${n} and time <= tB${n} and time_close > tB${n} and barstate.isconfirmed\n    doneB${n} := true\n    if done${n} and not hit${n}\n        hit${n} := true\n        line.set_x2(tl${n}, bar_index)\n        line.set_extend(tl${n}, extend.none)\n    tgtB${n} := close ${p.neg?"-":"+"} ${upP}/mul\n    tlB${n} := line.new(bar_index, tgtB${n}, bar_index+1, tgtB${n}, color=color.aqua, width=2, extend=extend.right)\n    label.new(bar_index, tgtB${n}, "P${n} 🎯۲ " + str.tostring(tgtB${n}), style=label.style_label_right, color=color.aqua, textcolor=color.black, size=size.small)\nif doneB${n} and not hitB${n} and ${p.neg?"low <= tgtB"+n:"high >= tgtB"+n}\n    hitB${n} := true\n    line.set_x2(tlB${n}, bar_index)\n    line.set_extend(tlB${n}, extend.none)\n    label.new(bar_index, tgtB${n}, "P${n} خروج ۲ ✓", style=${p.neg?"label.style_label_up":"label.style_label_down"}, color=color.new(color.aqua,0), textcolor=color.black, size=size.small)\n`;}});
   {const M=megaNums(ch);if(M&&plan.length){const last=plan[plan.length-1];const r=last.rec;const ts=`timestamp(tz, ${r.y}, ${r.m}, ${r.d}, ${r.h}, 0)`;
@@ -1297,10 +1316,10 @@ function a2Rest(A,S,sg,plus,tag,src){
     const lcA=chain(A.L[2]);const rsA=A.R[0]+A.R[1];const rcA=A.mixed?[]:[rsA,...chain(rsA)];
     const LA=[...A.L.map(Math.abs),...lcA.map(Math.abs)].filter(v=>v>0),RA=[...A.R.slice(0,2).map(Math.abs),...rcA.map(Math.abs)].filter(v=>v>0);
     const numsA=(A.L[0]<0)?[...[...LA].reverse(),...[...RA].reverse()]:[...LA,...RA];   // L73: اعداد معادلهٔ زنجیره ۱ (A) برای مگا
-    (window.__POSCHAIN=window.__POSCHAIN||[]).push({tag:tag.trim(),neg:neg_,plus:!neg_,t:TC_.t,c:TC_.c,nums:[CP_.reduce((a,b)=>a+b,0)],posNums:CP_,subNums:[],numsA:[Math.abs(A.L[0]),Math.abs(A.L[1])],entry:TC_.entry,simR:TC_.simR,rev:TC_.rev,out:TC_.out,A:A.L.slice(0,2),AR:A.R.slice(0,2)});}catch(e){}
+    (window.__POSCHAIN=window.__POSCHAIN||[]).push({tag:tag.trim(),neg:neg_,plus:!neg_,t:TC_.t,c:TC_.c,nums:[CP_.reduce((a,b)=>a+b,0)],posNums:CP_,hNums:[...B.L,...C.L].map(Math.abs),subNums:[],numsA:[Math.abs(A.L[0]),Math.abs(A.L[1])],entry:TC_.entry,simR:TC_.simR,rev:TC_.rev,out:TC_.out,A:A.L.slice(0,2),AR:A.R.slice(0,2)});}catch(e){}
   const mini=(ttl,ta,ca)=>{const n=Math.max(ta.length,ca.length,1);const c="padding:2px 7px;border:1px solid #3a3170;font-family:monospace;font-size:14px;text-align:center";
     return `<div style="text-align:center"><div style="font-size:11px;color:#3ddc84;margin-bottom:2px">${ttl}</div><table style="border-collapse:collapse;direction:rtl"><tr><th style="${c};font-size:10px;color:var(--muted);font-family:inherit">تایم</th><th style="${c};font-size:10px;color:var(--muted);font-family:inherit">کندل</th></tr>${Array.from({length:n},(_,k)=>`<tr><td style="${c};color:#7c9cff">${ta[k]??""}</td><td style="${c};color:#ffb74d">${ca[k]??""}</td></tr>`).join("")}</table></div>`;};
-  const tbl=`<div class="card"><h2>${t("a2Tbl")}${tag} — ${T} <small style="font-size:9px;opacity:.4">v3.81</small></h2><div style="display:flex;gap:14px;justify-content:center;align-items:flex-start;direction:rtl;flex-wrap:wrap"><table class="eq" style="direction:ltr">${rows.map(([n,m],i)=>`<tr><td class="r${i}">${sg<0?"−":""}${n}</td><td class="${EN.mark[m]||""}">${m}</td></tr>`).join("")}<tr class="line"><td></td><td><b>${plus?"−":""}${W}</b></td></tr><tr class="line"><td></td><td class="${EN.mark.w||""}"><b>${plus?"−":""}${w}</b></td></tr></table></div></div>`;
+  const tbl=`<div class="card"><h2>${t("a2Tbl")}${tag} — ${T} <small style="font-size:9px;opacity:.4">v3.84</small></h2><div style="display:flex;gap:14px;justify-content:center;align-items:flex-start;direction:rtl;flex-wrap:wrap"><table class="eq" style="direction:ltr">${rows.map(([n,m],i)=>`<tr><td class="r${i}">${sg<0?"−":""}${n}</td><td class="${EN.mark[m]||""}">${m}</td></tr>`).join("")}<tr class="line"><td></td><td><b>${plus?"−":""}${W}</b></td></tr><tr class="line"><td></td><td class="${EN.mark.w||""}"><b>${plus?"−":""}${w}</b></td></tr></table></div></div>`;
   return src+`<div class="card">${eqHtml(A)}</div>`+tbl+`<div class="card">${eqHtml(B)}</div><div class="card">${eqHtml(C)}</div><div class="card">${eqHtmlF(D)}</div>`+entry;
 }
 /* ---- نقطه ورود: تایم‌ها / کندل‌ها / تشابه / معادله‌ی «ب» (L17–L20) ---- */
@@ -1513,7 +1532,7 @@ function railNext(){
   else if(k==="x"){if(isRealAdmin())$("rExt").classList.remove("hidden");}
   else if(k==="h"){const h=document.createElement("div");h.className="sechead";h.textContent=v;$("rEqs").appendChild(h);}
   else if(k==="html"){const h=document.createElement("div");h.innerHTML=v;$("rEqs").appendChild(h);}   // L126
-  else{const d=document.createElement("div");d.className="card";d.innerHTML=eqHtml(v);$("rEqs").appendChild(d);d.scrollIntoView&&d.scrollIntoView({behavior:"smooth",block:"nearest"});}
+  else{const d=document.createElement("div");d.className="card";d.innerHTML=eqHtml(v,true);$("rEqs").appendChild(d);d.scrollIntoView&&d.scrollIntoView({behavior:"smooth",block:"nearest"});}
   if(R_PTR>=R_STEPS.length){$("rNext").classList.add("hidden");applyComboColor($("rEqs"));}
 }
 
@@ -1536,5 +1555,5 @@ render();
           <div id="ladderBody"></div>
         </div>
       </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41cbb0adc93206c',t:'MTc5MDUzNTQxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a425cbd098851c73',t:'MTc5MDYzMDQ2OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
