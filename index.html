@@ -6091,5 +6091,292 @@ function calculateApprovedRail(message){
 })();
 
 </script>
+<script id="pilot-table90-readonly-preview">
+/*
+ * Time matching for the nine-column 90-number table, user-confirmed scope:
+ *   - the source number's own exact hour remains a valid occurrence;
+ *   - equivalent hours come ONLY from rows 1 and 2 of the table;
+ *   - occurrences are selected chronologically, never by a guessed priority.
+ * For example 6 -> 6/15 (not 24); 19 -> 1/10 plus exact 19.
+ *
+ * This file is a pure, local reference. It does not modify existing models,
+ * settings, market data, orders, or any indicator. 1H local-clock ordinals
+ * are supplied by the caller; it does not assume Tehran :30 behavior.
+ */
+(function(root,factory){
+ if(typeof module==='object'&&module.exports)module.exports=factory();
+ else root.PilotTable90TimeReference473=factory();
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const valid=n=>Number.isSafeInteger(n)&&n>=1&&n<=90;
+ function options(value){
+  if(!valid(value))return {status:'outside-confirmed-table',value,rows:[],exact:null,hours:[]};
+  // The 90-table has nine columns: 1/10/19..., 2/11/20..., etc.
+  const column=1+(value-1)%9,rows=[column,column+9];
+  const exact=value<=24?value:null;
+  return {status:'ready',value,column,rows,exact,hours:[...new Set([...rows,...(exact===null?[]:[exact])])]};
+ }
+ function matches(hour,value){
+  if(!Number.isInteger(hour)||hour<0||hour>24)return false;
+  const o=options(value);if(o.status!=='ready')return false;
+  return o.hours.includes(hour===0?24:hour);
+ }
+ // New-reference use only: preserve all other supplied clock methods and
+ // never mutate the legacy clock. Inc/start candle follows existing policy:
+ // the start candle itself is excluded, and open candles are advanced by the
+ // supplied calendar. It does not certify a broker calendar or data feed.
+ function withClock(clock){
+  if(!clock||typeof clock.adv!=='function'||typeof clock.open!=='function')throw new TypeError('open 1H reference clock required');
+  const out=Object.create(clock);
+  Object.defineProperty(out,'next',{enumerable:true,value:function(from,value){
+   if(!Number.isSafeInteger(from)||!valid(value))throw new RangeError('time outside confirmed table');
+   let at=from;for(let i=0;i<800;i++){
+    const previous=at;at=clock.adv(previous,1);
+    if(!Number.isSafeInteger(at)||at<=previous||!clock.open(at))throw new Error('invalid reference clock');
+    if(matches(((at%24)+24)%24,value))return at;
+   }
+   throw new Error('time not found in reference-clock horizon');
+  }});
+  return out;
+ }
+ return Object.freeze({options,matches,withClock});
+});
+
+</script>
+<script id="pilot-time-extension-readonly-preview">
+
+/*
+ * Experimental reference for the user's time-extension correction.
+ * No production/app/account/position changes; no OHLC, market, trade or order.
+ *
+ * The extension itself is NOT restricted to a one-hour difference or to
+ * C1 >= 11. A separate one-hour-difference position model is NOT handled here.
+ * Original equation values never change; a result separately identifies each
+ * occurrence of that value on the selected reference clock.
+ *
+ * Matching is injected from the application (Time473.matches/chainClock).
+ * The selected-v71 equivalence, available open-candle calendar and the prior
+ * 'first valid occurrence after each preliminary time' choice are disclosed
+ * reference assumptions, not verification of a broker or TradingView feed.
+ */
+(function(root,factory){
+ if(typeof module==='object'&&module.exports)module.exports=factory();
+ else root.PilotTimeExtensionReference473=factory();
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const hour=n=>((n%24)+24)%24;
+ const safe=n=>Number.isSafeInteger(n);
+ const err=(code,message)=>{const e=new Error(message);e.code=code;throw e;};
+ function resolve({origin,preliminaryTimes,candle1Count,clock,matches,zone}={}){
+  if(!clock||typeof clock.open!=='function'||typeof clock.adv!=='function'||typeof clock.next!=='function'||typeof matches!=='function')err('CLOCK_REQUIRED','ساعت و تابع تطبیق معتبر لازم است.');
+  if(!safe(origin)||!clock.open(origin)||!safe(candle1Count)||candle1Count<1||candle1Count>5000)err('INPUT_INVALID','مبدأ باز و تعداد معتبر کندل اول لازم است.');
+  if(!Array.isArray(preliminaryTimes)||preliminaryTimes.length!==2||preliminaryTimes.some(x=>!x||!safe(x.index)||x.index<0||x.index>1||!safe(x.value)||x.value<1||x.value>24||!safe(x.at)||x.at<=origin||!clock.open(x.at)||!matches(hour(x.at),x.value))||preliminaryTimes[0].index===preliminaryTimes[1].index||preliminaryTimes[0].at===preliminaryTimes[1].at)err('PRELIMINARY_INVALID','دو تایم اولیهٔ مجزا و مطابق ساعت لازم است.');
+  const original=preliminaryTimes.map(x=>({...x}));
+  const earlier=original.slice().sort((a,b)=>a.at-b.at),last=earlier[1].at;
+  const through=clock.adv(last,candle1Count-1);
+  if(!safe(through)||through<last||!clock.open(through))err('CLOCK_INVALID','پایان پنجرهٔ بررسی معتبر نیست.');
+  let selected;
+  if(original[0].value===original[1].value){
+   if(original.some(x=>x.value===6&&hour(x.at)===0))err('MIDNIGHT_SIX_PENDING','تایم ۶ در ساعت صفر در این مسیر نیاز به بررسی دارد.');
+   const next=clock.next(last,original[0].value,true);
+   if(!safe(next)||next<=last||!clock.open(next)||!matches(hour(next),original[0].value))err('CLOCK_INVALID','نامزد زمانی با ساعت مرجع سازگار نیست.');
+   if(next<=through)err('SAME_CANDLE_PENDING','برای تایم‌های یکسان و تکرار بعدی، دو تایم باید بدون هم‌پوشانی مشخص شوند.');
+   selected=original.map(x=>({...x,preliminaryAt:x.at,replaced:false}));
+  }else selected=original.map(x=>{
+   let at=clock.next(x.at,x.value,true);
+   if(!safe(at)||at<=x.at||!clock.open(at)||!matches(hour(at),x.value))err('CLOCK_INVALID','نامزد زمانی با ساعت مرجع سازگار نیست.');
+   const replaced=at<=through;if(!replaced)at=x.at;
+   return {...x,preliminaryAt:x.at,at,replaced};
+  });
+  // A source-6 occurrence on 00:00 is established only for the FIRST
+  // chronological time, in the NY reference clock. Never silently apply
+  // that exception to the second time, another timezone or a tie.
+  const midnight=selected.filter(x=>x.value===6&&hour(x.at)===0);
+  if(midnight.length){
+   const ordered=selected.slice().sort((a,b)=>a.at-b.at);
+   if(midnight.length!==1||ordered[0]!==midnight[0]||ordered[0].at===ordered[1].at||zone!=='NY')err('MIDNIGHT_SIX_PENDING','تایم ۶ در ساعت صفر در این مسیر به بررسی نیاز دارد.');
+   const x=midnight[0];if(!x.replaced)err('MIDNIGHT_SIX_PENDING','تایم اولیهٔ ۶ در ساعت صفر باید پیش از امتداد بررسی شود.');
+   const next=clock.next(x.at,6,true);
+   if(!safe(next)||next<=x.at||!clock.open(next)||hour(next)!==6)err('MIDNIGHT_SIX_PENDING','تایم ۶ بعد از ساعت صفر تأیید نشد.');
+   if(next<=through){x.at=next;x.replaced=true;}else{x.at=x.preliminaryAt;x.replaced=false;}
+  }
+  const ordered=selected.slice().sort((a,b)=>a.at-b.at||a.index-b.index);
+  if(ordered[0].at===ordered[1].at)err('SAME_CANDLE_PENDING','دو تایم نهایی در یک کندل افتاده‌اند.');
+  if(ordered.some(x=>x.value===6&&hour(x.at)===0))err('MIDNIGHT_SIX_PENDING','تایم ۶ در ساعت صفر نیاز به بررسی دارد.');
+  const finalLast=ordered[1].at,firstCount=clock.adv(finalLast,1),lastCount=clock.adv(finalLast,candle1Count);
+  if(!safe(firstCount)||!safe(lastCount)||firstCount<=finalLast||lastCount<firstCount||!clock.open(firstCount)||!clock.open(lastCount))err('CLOCK_INVALID','شمارش مجدد کندل اول معتبر نیست.');
+  return {status:'reference-resolved',sourceNumbersUnchanged:true,marketObserved:false,positionOrOrder:false,
+   assumptions:{matching:'application Time473.matches',calendar:'application reference, not broker-verified',selection:'first valid extension after each own preliminary occurrence',selectionEvidence:'previous user selection; possible earlier misclick not identified'},
+   search:{after:original.map(x=>({index:x.index,at:x.at})),lastPreliminaryAt:last,through,preliminaryC1CandlesExamined:candle1Count-1},
+   bySource:selected,first:ordered[0],second:ordered[1],
+   recount:{candle1Count,after:finalLast,first:firstCount,last:lastCount},
+   requiresChartConfirmation:true};
+ }
+ return Object.freeze({resolve});
+});
+
+
+</script>
+<script id="pilot-chain-readonly-preview">
+/*
+ * Local mathematical reference, no price feed, market, fill, order or alerts.
+ * It never changes the native first-chain model. Only user-confirmed branches
+ * are projected; unresolved overlaps and simultaneous distinct sources are
+ * reported as pending, not guessed. Calendar offsets are projections only.
+ */
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.PilotFirstAndSecondReference473=factory()})(typeof globalThis!=='undefined'?globalThis:this,function(){'use strict';
+ const I=Number.isSafeInteger;
+ function hitPair({times,start,clock,ext,table,zone,c1}){
+  if(!Array.isArray(times)||times.length!==2||times.some(x=>!I(x)||x<1||x>24)||!I(start)||!clock?.open(start)||!ext?.resolve||!table?.matches)throw Object.assign(Error('اطلاعات تایم کامل نیست.'),{code:'invalid-time-source'});
+  const c=table.withClock(clock),initial=times.map((value,index)=>({value,index,at:c.next(start,value,true)})).sort((a,b)=>a.at-b.at||a.index-b.index);
+  if(initial[0].at===initial[1].at){if(initial[0].value!==initial[1].value)throw Object.assign(Error('دو منبع متفاوت روی یک کندل افتاده‌اند.'),{code:'same-candle-pending'});initial[1].at=c.next(initial[0].at,initial[1].value,true);}
+  const res=ext.resolve({origin:start,preliminaryTimes:initial,candle1Count:c1,clock:c,matches:table.matches,zone});
+  return {initial,first:res.first,second:res.second,extended:res.bySource.some(x=>x.replaced),resolution:res,clock:c};
+ }
+ function first({position,start,clock,laws,additions,ext,table,zone='NY'}={}){
+  const p=position,common={status:'pending',referenceOnly:true,marketObserved:false,orders:false};
+  try{
+   if(!p||!I(start)||!clock||typeof clock.adv!=='function'||typeof clock.fwd!=='function'||!laws?.derive||!laws?.schedule||!additions?.sameLevel)return {...common,reason:'input-pending'};
+   if(zone!=='NY')return {...common,reason:'zone-reference-not-reviewed'};
+   const d=laws.derive(p),origin=clock.fwd(start),times=hitPair({times:p.t.map(Number),start:origin,clock,ext,table,zone,c1:d.first}),C=times.clock,t1=times.first,t2=times.second;
+   const firstEnd=C.adv(t2.at,d.first),secondEnd=C.adv(firstEnd,d.second),differenceOne=Math.abs(d.first-d.second)===1;
+   const timeSame=additions.sameLevel(p.t)||(Math.abs(t1.value-t2.value)%12===0),triad=timeSame&&(d.first===t1.value||d.first===t2.value||Math.abs(d.first-t2.value)%12===0),equal=d.first===d.second||Math.abs(d.first-d.second)%12===0;
+   const bothHigh=[t1.value,t2.value,d.first].every(x=>x>=6),bothLow=[t1.value,t2.value,d.first].every(x=>x<6);
+   let mode,entry,height,lastFirst=firstEnd,lastSecond=secondEnd,extra=0,certainty='calendar-reference';
+   if(p.entryAdditions!==true){
+    if(times.extended)return {...common,reason:'settings-off-extension-conflict',origin,times};
+    const old=laws.schedule(p,origin,C);return {...old,tag:p.tag,...common,status:'projected-existing-model',mode:'native-settings-off',times,first:d.first,second:d.second,height:old.height,entry:old.entry,exit:old.exit,next:old.next};
+   }
+   const separateOneHour=times.initial[1].at===C.adv(times.initial[0].at,1);
+   if(separateOneHour&&!triad)return {...common,reason:'independent-one-hour-model-pending',origin,times};
+   if(times.extended){
+    const confirmedAligned=d.first>d.second&&d.first-d.second===12&&!timeSame;
+    if(differenceOne||timeSame||(equal&&!confirmedAligned))return {...common,reason:'extension-special-overlap-pending',origin,times};
+    mode='extended';extra=d.second<6?d.second:Math.ceil(d.second/2);entry=C.adv(secondEnd,extra);height=d.height;
+   }else if(triad){
+    if(!bothHigh&&!bothLow)return {...common,reason:'three-same-mixed-threshold-pending',origin,times};
+    mode='same-level-c1';extra=bothHigh?Math.ceil(d.first/2):0;lastSecond=null;entry=C.adv(firstEnd,extra+1);height=d.first;
+   }else if(timeSame||equal){
+    const old=laws.schedule(p,origin,C);return {...old,tag:p.tag,...common,status:'projected-existing-model',mode:timeSame?'native-same-level-times':'native-equal-candles',times,first:d.first,second:d.second,height:old.height,entry:old.entry,exit:old.exit,next:old.next};
+   }else if(differenceOne&&d.first<11){
+    mode='difference-one';extra=Math.ceil(d.first/2);lastSecond=null;entry=C.adv(firstEnd,extra);height=d.height;
+   }else if(differenceOne){return {...common,reason:'difference-one-overlap-pending',origin,times};
+   }else if(d.first<6){
+    mode='c1-double';lastSecond=C.adv(firstEnd,d.first);entry=C.adv(lastSecond,1);height=d.first;
+   }else{
+    mode='c1-six';lastSecond=null;lastFirst=null;entry=C.adv(t2.at,1);height=6;certainty='entry-may-precede-extension-observation';
+   }
+   const exit=C.adv(entry,height-1),next=C.adv(exit,1);
+   return {...common,status:'projected',tag:p.tag,origin,times,first:d.first,second:d.second,sourceHeight:d.height,firstEnd:lastFirst,secondEnd:lastSecond,extra,entry,height,exit,next,mode,certainty};
+  }catch(e){return {...common,reason:e?.code||'clock-or-source-pending',detail:String(e?.message||e)};}
+ }
+ function chain({positions,gaps=[],start,clock,laws,additions,ext,table,zone='NY'}={}){
+  const out={status:'pending',referenceOnly:true,marketObserved:false,orders:false,results:[],nonPositionTimes:[]};
+  try{
+   if(!Array.isArray(positions)||!positions.length||!I(start)||!clock?.fwd||!clock?.adv||!table?.withClock)return {...out,reason:'positions-or-clock-pending'};
+   const C=table.withClock(clock);let cursor=C.fwd(start);
+   for(let i=0;i<positions.length;i++){
+    const steps=Array.isArray(gaps[i])?gaps[i]:[],found=[];
+    for(const step of steps)for(const value of step?.hours||[]){if(!I(value)||value<1||value>24)return {...out,reason:'non-position-source-pending',results:out.results};cursor=C.next(cursor,value,true);found.push({symbol:String(step.sym||''),value,at:cursor});}
+    if(found.length)cursor=C.adv(cursor,1);
+    out.nonPositionTimes.push(found);
+    const result=first({position:positions[i],start:cursor,clock:C,laws,additions,ext,table,zone});out.results.push(result);
+    if(!['projected','projected-existing-model'].includes(result.status))return {...out,reason:result.reason||'source-pending'};
+    cursor=result.next;
+   }
+   return {...out,status:'projected',next:cursor};
+  }catch(e){return {...out,reason:e?.code||'clock-or-source-pending',detail:String(e?.message||e)};}
+ }
+ function replay({positions,firstResults,clock,ext,table,zone='NY'}={}){
+  const common={status:'pending',referenceOnly:true,marketObserved:false,orders:false,entries:[]};
+  try{
+   if(zone!=='NY'||!Array.isArray(positions)||!positions.length||!Array.isArray(firstResults)||positions.length!==firstResults.length||positions.at(-1)?.tag!=='②'||positions.filter(p=>p.tag==='②').length!==1||!clock?.adv)return {...common,reason:'source-or-terminal-pending'};
+   if(firstResults.some(r=>!['projected','projected-existing-model'].includes(r?.status)))return {...common,reason:'first-chain-reference-pending'};
+   let cursor=clock.adv(firstResults.at(-1).exit,1);const entries=[];
+   for(let i=0;i<positions.length;i++){
+    const p=positions[i],source=firstResults[i],d={first:source.first,second:source.second},times=hitPair({times:p.t.map(Number),start:cursor,clock,ext,table,zone,c1:d.first}),C=times.clock;
+    const firstEnd=C.adv(times.second.at,d.first),secondEnd=C.adv(firstEnd,d.second);
+    // Replay is independent of the first-chain entry model: without an
+    // extension its anchor is the last C1, not a repeated-C1 or time2 anchor.
+    const anchor=times.extended?secondEnd:firstEnd;
+    const entry=C.adv(anchor,2),height=source.height,exit=C.adv(entry,height-1);
+    entries.push({tag:p.tag,origin:cursor,times,firstEnd,secondEnd:times.extended?secondEnd:null,anchor,entry,height,exit,entryBox:false,halfStage:false});cursor=C.adv(exit,1);
+   }
+   return {...common,status:'projected',entries,replayedTerminal:entries.at(-1).exit,eq3Start:cursor};
+  }catch(e){return {...common,reason:e?.code||'clock-or-source-pending',detail:String(e?.message||e)};}
+ }
+ return Object.freeze({hitPair,first,chain,replay});
+});
+
+</script>
+<script id="pilot-chain-readonly-ui">
+/* Optional, read-only calculator preview; never changes old models or storage. */
+(function(){'use strict';
+ if(window.__pilotReferencePreview473)return;
+ const Plan=window.PilotFirstAndSecondReference473,table=window.PilotTable90TimeReference473,ext=window.PilotTimeExtensionReference473;
+ if(!Plan||!table||!ext)return;
+ const css=document.createElement('style');css.textContent=`
+ #primary473 .pilot-ref-preview{direction:rtl;line-height:1.8;margin:10px 0;padding:12px;border:1px solid #8765ac;border-radius:12px;background:#201630;color:#f4efff;overflow-wrap:anywhere}
+ #primary473 .pilot-ref-preview h3{margin:0 0 8px;color:#ffe092;font-size:14px}
+ #primary473 .pilot-ref-preview p{margin:6px 0;font-size:12px}#primary473 .pilot-ref-preview .hint{color:#f0c99c}
+ #primary473 .pilot-ref-preview button{border:1px solid #a387ca;background:#463169;border-radius:8px;color:#fff;padding:8px 12px;font:inherit;cursor:pointer}
+ #primary473 .pilot-ref-preview .pilot-ref-entry{border:1px solid #645579;background:#151123;border-radius:9px;margin:7px 0;padding:8px;overflow:hidden}
+ #primary473 .pilot-ref-preview time{direction:ltr;unicode-bidi:isolate;display:inline-block;font:600 11px/1.5 monospace;color:#fff}
+ `;document.head.append(css);
+ const mk=(tag,text,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;};
+ const format=(date,h)=>{if(!Number.isSafeInteger(h)||!/^\d{4}-\d{2}-\d{2}$/.test(date))return '—';const d=new Date(Date.parse(date+'T00:00:00Z')+h*3600000);return Number.isNaN(d.valueOf())?'—':d.toISOString().slice(0,16).replace('T',' ');};
+ const row=(label,date,h)=>{const p=mk('p'),b=mk('b',label+' '),v=mk('time',format(date,h));p.append(b,v);return p;};
+ const reason={
+  'positions-or-clock-pending':'ابتدا ریل، تاریخ و ساعت شروع را کامل کن.',
+  'source-or-terminal-pending':'ترمینال ② و پوزیشن‌های مربوط باید در ریل مشخص باشند.',
+  'first-chain-reference-pending':'برای بازپخش ابتدا مسیر مرجع زنجیرهٔ اول باید مشخص باشد.',
+  'zone-reference-not-reviewed':'این پیش‌نمایش فعلاً برای ساعت نیویورک و کندل یک‌ساعته بررسی شده است؛ سایر ساعت‌ها بدون تغییر در مدل اصلی باقی می‌مانند.',
+  'same-candle-pending':'دو منبع زمانی روی یک کندل افتاده‌اند؛ ترتیب آن‌ها هنوز مشخص نیست.',
+  'SAME_CANDLE_PENDING':'تکرار هم‌زمان تایم‌ها نیاز به بررسی دارد.',
+  'independent-one-hour-model-pending':'مسیر مستقل اختلاف یک ساعت جداگانه بررسی می‌شود و اینجا جایگزین مدل اصلی نشده است.',
+  'extension-special-overlap-pending':'هم‌زمانی امتداد با مدل ویژه هنوز تعیین نشده است؛ مدل قبلی حذف نمی‌شود.',
+  'difference-one-overlap-pending':'این حالت اختلاف یک هنوز به بررسی نیاز دارد.',
+  'three-same-mixed-threshold-pending':'ترکیب این مقادیر هم‌سطح به بررسی نیاز دارد.',
+  'settings-off-extension-conflict':'برای تنظیم فعلی، سازگاری امتداد هنوز تأیید نشده است.',
+  'non-position-source-pending':'منبع یکی از تایم‌های بدون پوزیشن کامل نیست.'
+ };
+ function state(){
+  const pos=window.__PRIMARY473_POSITIONS,results=window.__PRIMARY473_RESULTS,date=String(POS_PRICES?.date||''),start=Number(POS_PRICES?.start),raw=POS_PRICES?.start,zone=posTZ();
+  if(!Array.isArray(pos)||!pos.length||!Array.isArray(results)||results.length!==pos.length||!/^\d{4}-\d{2}-\d{2}$/.test(date)||raw===''||raw==null||!Number.isInteger(start)||start<0||start>23)return {status:'pending',reason:'positions-or-clock-pending',date,zone};
+  const clock=chainClock(date);if(!clock.open(start))return {status:'pending',reason:'positions-or-clock-pending',date,zone};
+  const common={positions:pos,gaps:posGaps(pos),start,clock,laws:Laws473,additions:EntryAdditions473,ext,table,zone};
+  const first=Plan.chain(common),second=first.status==='projected'?Plan.replay({...common,firstResults:first.results}):null;
+  return {status:first.status,date,zone,first,second};
+ }
+ function render(out,s){
+  out.replaceChildren();if(!s.first){out.append(mk('p',reason[s.reason]||'اطلاعات زنجیره کامل نیست.','hint'));return;}
+  out.append(mk('p','زنجیرهٔ اول — محاسبهٔ مرجع'));
+  for(const r of s.first.results||[]){if(!['projected','projected-existing-model'].includes(r.status)){out.append(mk('p',reason[r.reason]||'این حالت به بررسی بیشتر نیاز دارد.','hint'));break;}
+   const card=mk('div',undefined,'pilot-ref-entry');card.append(mk('b','معادله '+r.tag));
+   card.append(row('تایم اول:',s.date,r.times?.first?.at),row('تایم دوم:',s.date,r.times?.second?.at));
+   card.append(mk('p',r.mode==='extended'?`امتداد: کندل ۱ کامل ${r.first}، کندل ۲ کامل ${r.second}، مرحلهٔ تکمیلی ${r.extra}.`:`C1=${r.first}، C2=${r.second}، شمارش=${r.height}.`));
+   card.append(row('ورود مرجع:',s.date,r.entry),row('پایان شمارش مرجع:',s.date,r.exit));
+   if(r.certainty==='entry-may-precede-extension-observation')card.append(mk('p','این ورود ممکن است پیش از کامل‌شدن بررسی امتداد باشد.','hint'));out.append(card);
+  }
+  if(s.first.status!=='projected'){out.append(mk('p',reason[s.first.reason]||'ادامهٔ مسیر هنوز به بررسی نیاز دارد.','hint'));return;}
+  out.append(mk('p','زنجیرهٔ دوم — بازپخش پوزیشن‌ها، شامل ②'));
+  if(s.second?.status!=='projected'){out.append(mk('p',reason[s.second?.reason]||'بازپخش هنوز به بررسی نیاز دارد.','hint'));return;}
+  for(const r of s.second.entries){const card=mk('div',undefined,'pilot-ref-entry');card.append(mk('b','بازپخش معادله '+r.tag));card.append(row('تایم اول:',s.date,r.times.first.at),row('تایم دوم:',s.date,r.times.second.at));card.append(mk('p',r.times.extended?'ورود دو کندل پس از آخرین کندل ۲ است.':'ورود دو کندل پس از آخرین کندل ۱ است.'));card.append(row('ورود مرجع:',s.date,r.entry),row('پایان شمارش مرجع:',s.date,r.exit));card.append(mk('p','باکس ورود و مرحلهٔ نصف در بازپخش حذف شده‌اند.'));out.append(card);}
+  out.append(row('شروع مرجع معادلهٔ ۳ پس از بازپخش:',s.date,s.second.eq3Start));out.append(mk('p','نمایش عددی ۳ و ۳(۲) در کارت خودشان است؛ اجرای کامل مسیر زندهٔ آن‌ها و اسکنر هنوز تکمیل نشده است.','hint'));
+ }
+ let stale=false,cardAtEdit=null;
+ function mount(){const root=document.getElementById('primary473');if(!root||root.querySelector(':scope > .pilot-ref-preview'))return;const box=mk('section',undefined,'pilot-ref-preview');box.setAttribute('aria-label','پیش‌نمایش محاسبات زنجیره');box.append(mk('h3','پیش‌نمایش محاسبات زنجیره'));
+  box.append(mk('p','این بخش فقط محاسبهٔ مرجع بر اساس تقویم فرضی است؛ کندل واقعی، معامله، سود، هشدار یا اجرای کامل روی چارت نیست.','hint'));
+  const button=mk('button','محاسبهٔ پیش‌نمایش'),out=mk('div',undefined,'pilot-ref-output');button.type='button';button.addEventListener('click',()=>{if(stale){out.replaceChildren(mk('p','اعداد ریل تغییر کرده‌اند؛ ابتدا Enter ریل را دوباره بزن.','hint'));return;}try{render(out,state())}catch(_){out.replaceChildren(mk('p','این محاسبه به بررسی نیاز دارد.','hint'));}});box.append(button,out);root.append(box);
+ }
+ let pending=false;const schedule=()=>{if(pending)return;pending=true;Promise.resolve().then(()=>{pending=false;mount()})};const a=document.getElementById('a2Eqs');if(a)new MutationObserver(schedule).observe(a,{childList:true,subtree:true});
+ const rail=document.getElementById('rEqs');if(rail)new MutationObserver(()=>{const card=document.querySelector('#rEqs .pilot-eq3-card');if(stale&&card&&card!==cardAtEdit){stale=false;cardAtEdit=null;}schedule()}).observe(rail,{childList:true,subtree:true});
+ const markStale=e=>{if(e.target?.closest?.('#railGrid,#manualBox,#rPos,#rNeg,#rRows,#rPairs,#rSide,#rSrc,#pilotMainClear')){stale=true;cardAtEdit=document.querySelector('#rEqs .pilot-eq3-card');const out=document.querySelector('#primary473 .pilot-ref-output');if(out)out.replaceChildren(mk('p','اعداد ریل تغییر کرده‌اند؛ ابتدا Enter ریل را دوباره بزن.','hint'));}};
+ document.addEventListener('input',markStale);document.addEventListener('change',markStale);document.addEventListener('click',markStale,true);
+ document.addEventListener('DOMContentLoaded',schedule);if(document.readyState!=='loading')schedule();
+ window.__pilotReferencePreview473=Object.freeze({state,mount});
+})();
+
+</script>
 </body>
 </html>
