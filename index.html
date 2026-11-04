@@ -5918,5 +5918,122 @@ function calculateApprovedRail(message){
 
 </script>
 <!-- PILOT_V71_LIVE_CALCULATOR_ONLY_END -->
+<script id="pilot-v71-eq3-companion">
+/* Isolated Eq3 companion, following the user's new request.
+   The original v71 equation 3, rail engine, axis, __THIRD473, __MEGAQ,
+   schedule, Pine and office data are not changed. This adds a displayed
+   companion only. No broker/market/real-site connection is used.
+   Source numbers = actual regular numeric cells in Eq3's visible table;
+   purple cells (including a number rendered inside .mate) and the gap are
+   excluded by position. Equal-valued cells are each counted once.
+   The user example confirms S itself is the first value; then subtract the
+   smallest once. For 15 in the right pre-output cell, user specifies purple
+   3 and the four levels 3,15,3,15. Other purple values retain original v71
+   behavior pending confirmation. No downstream logic or indicator is changed. */
+(function(){'use strict';
+ if(window.__pilotEq3Companion)return;
+ const style=document.createElement('style');style.id='pilot-eq3-companion-style';style.textContent=`
+ #rEqs .pilot-eq3-card{padding:8px 6px;overflow:hidden}
+ #rEqs .pilot-eq3-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;direction:rtl;align-items:start}
+ #rEqs .pilot-eq3-pair>div{min-width:0}
+ #rEqs .pilot-eq3-label{font-weight:700;font-size:11px;color:#ffe39b;line-height:1.5;text-align:center;margin-bottom:3px}
+ #rEqs .pilot-eq3-pair .eq{margin:0;padding:4px 2px;border-radius:8px;overflow-x:auto;min-width:0}
+ #rEqs .pilot-eq3-pair .eq .title{font-size:10px;line-height:1.3;margin:1px 0 3px;overflow-wrap:anywhere}
+ #rEqs .pilot-eq3-pair .eq .flines{font-size:9px!important;line-height:1.3!important;overflow-wrap:anywhere}
+ #rEqs .pilot-eq3-pair .eq .gap{font-size:11px;line-height:1.2;margin-bottom:3px}
+ #rEqs .pilot-eq3-pair .eq table{min-width:0!important;width:100%;table-layout:fixed;font-size:11px;line-height:1.2}
+ #rEqs .pilot-eq3-pair .eq td{padding:2px 0;overflow:visible}
+ #rEqs .pilot-eq3-pair .eq td.m{width:24%;white-space:nowrap}
+ #rEqs .pilot-eq3-pair .eq td.n{width:26%;white-space:nowrap}
+ #rEqs .pilot-eq3-companion .eq table tr td:nth-child(1){width:18%}
+ #rEqs .pilot-eq3-companion .eq table tr td:nth-child(2){width:27%}
+ #rEqs .pilot-eq3-companion .eq table tr td:nth-child(3){width:20%}
+ #rEqs .pilot-eq3-companion .eq table tr td:nth-child(4){width:35%}
+ #rEqs .pilot-eq3-pair .eq .mate{min-width:0!important;font-size:9px!important;padding:1px 2px!important}
+ #rEqs .pilot-eq3-pair .eq .num{padding:1px 0;gap:0}
+ #rEqs .pilot-eq3-pair .eq .axv{font-size:9px!important;line-height:1.3}
+ #rEqs .pilot-eq3-source{font-size:11px;color:#e4d6fa;line-height:1.55;margin:0 0 7px;text-align:right;direction:rtl}
+ #rEqs .pilot-eq3-source .pilot-list{display:block;direction:ltr;unicode-bidi:isolate;text-align:center;font-family:monospace;font-size:11px;color:#fff;overflow-wrap:anywhere;word-break:break-word}
+ #rEqs .pilot-eq3-source small{display:block;color:#bfa9e6;font-size:9.5px}
+ #rEqs .pilot-eq3-level-bundle{display:inline-flex;align-items:center;justify-content:center;gap:1px;vertical-align:middle}
+ #rEqs .pilot-eq3-levels{display:inline-flex;flex-direction:column;gap:0;direction:ltr;text-align:center;vertical-align:middle;color:#f7c948;font:700 10px/1.05 monospace}
+ #rEqs .pilot-eq3-note{margin-top:6px;color:#dfc9ff;font-size:10px;line-height:1.5;direction:rtl;text-align:right}
+ #rEqs .pilot-eq3-failed{padding:8px;color:#ffd6a2;font-size:12px;line-height:1.6;direction:rtl}
+ `;document.head.appendChild(style);
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function numbersInTable(eqNode){
+  const table=eqNode?.querySelector(':scope > table');if(!table)throw Error('جدول معادلهٔ ۳ پیدا نشد.');
+  const cells=[...table.querySelectorAll('td.n .num')].filter(n=>!n.closest('.mate'));
+  if(!cells.length)throw Error('اعداد معادلهٔ ۳ کامل نیستند.');
+  return cells.map((n,index)=>{const text=n.textContent.trim();if(!/^-?\d+$/.test(text))throw Error('عدد صحیحِ قابل اتکا در معادلهٔ ۳ پیدا نشد.');const value=Number(text);if(!Number.isSafeInteger(value))throw Error('عدد معادلهٔ ۳ خارج از بازهٔ امن است.');return{index,value,mag:Math.abs(value)}});
+ }
+ function summarize(source,eqNode){
+  if(!source||!Array.isArray(source.L)||!Number.isSafeInteger(source.L[0]))throw Error('علامت معادلهٔ ۳ مشخص نیست.');
+  const signal=source.L[0];if(signal===0)throw Error('علامت معادلهٔ ۳ صفر است؛ قانون مثبت یا منفی آن نیاز به تأیید دارد.');
+  const sign=signal<0?-1:1,cells=numbersInTable(eqNode).sort((a,b)=>b.mag-a.mag||a.index-b.index);
+  const magnitudes=cells.map(x=>x.mag),sumMag=magnitudes.reduce((a,b)=>a+b,0);if(!Number.isSafeInteger(sumMag))throw Error('جمع اعداد خارج از بازهٔ امن است.');
+  const signed=cells.map(x=>sign*x.mag),sum=sign*sumMag,gap=Math.min(...magnitudes),q=eqFrom('جمع اعداد معادلهٔ ۳',sum,sum-gap,gap);
+  if(!q||[...q.L,...q.R].some(x=>!Number.isSafeInteger(x)))throw Error('نتیجه خارج از بازهٔ امن است.');
+  return{sign,cells,signed,sum,gap,q};
+ }
+ function displayDigitsAsExample(eqNode, q){
+  // The user's sketch keeps the two first left values and their sum negative,
+  // but writes the digit sums and right column as positive magnitudes.
+  if(q.L[0]>=0)return;
+  const rows=[...eqNode.querySelectorAll('table tr')];
+  rows.forEach(row=>[...row.children].forEach((cell,i)=>{
+   if(!cell.classList.contains('n')||!(i===2||row.classList.contains('res')))return;
+   const num=cell.querySelector('.num');if(!num)return;const n=Number(num.textContent.trim());if(Number.isSafeInteger(n))num.textContent=String(Math.abs(n));
+  }));
+ }
+ function adornLevels(eqNode){
+  const row=eqNode.querySelector('table tr.prerow');if(!row||row.children.length<4)return null;
+  const regular=row.children[2],purpleCell=row.children[3],rightNumber=regular.querySelector('.num');
+  const preceding=rightNumber?Math.abs(Number(rightNumber.textContent.trim())):null;
+  let sidePurple=purpleCell.querySelector('.mate'),inlinePurple=regular.querySelector('.mate'),valueEl=sidePurple||inlinePurple,value;
+  if(preceding===15){
+   // Confirmed by the user's actual example: right 15 → purple 3.
+   // A central numeric cell is not rewritten, even if it is purple-styled.
+   if(!sidePurple){sidePurple=document.createElement('span');sidePurple.className='mate';purpleCell.classList.add('m');purpleCell.appendChild(sidePurple)}
+   sidePurple.textContent='3';valueEl=sidePurple;value=3;
+  }else if(valueEl){value=Number(valueEl.textContent.trim());if(!Number.isSafeInteger(value))return null;value=Math.abs(value)}
+  else{if(preceding===null||!Number.isSafeInteger(preceding)||preceding>9)return null;value=preceding;
+   valueEl=document.createElement('span');valueEl.className='mate';valueEl.textContent=String(value);purpleCell.classList.add('m');purpleCell.appendChild(valueEl);
+  }
+  const levels=[value,value+12,value,value+12];if(levels.some(n=>!Number.isSafeInteger(n)))return null;
+  // The purple itself is the first of four, matching 15 → 3,15,3,15.
+  // Show only the other THREE next to it, avoiding an accidental fifth level.
+  const level=document.createElement('span');level.className='pilot-eq3-levels';level.dir='ltr';level.setAttribute('aria-label','سه لول بعد از بنفش راست');levels.slice(1).forEach(n=>{const x=document.createElement('span');x.textContent=String(n);level.appendChild(x)});
+  if(valueEl.parentElement===purpleCell){const wrap=document.createElement('span');wrap.className='pilot-eq3-level-bundle';valueEl.before(wrap);wrap.append(valueEl,level)}else{purpleCell.classList.add('m');purpleCell.appendChild(level)}
+  return{purple:value,levels};
+ }
+ function makePair(card,source){
+  const eq=card.querySelector(':scope > .eq');if(!eq||card.classList.contains('pilot-eq3-card'))return;
+  const sourceData=summarize(source,eq),{sign,signed,sum,q}=sourceData;
+  const visual=document.createElement('div');visual.innerHTML=eqHtml(q,false);const qEq=visual.firstElementChild;if(!qEq)throw Error('نمایش معادلهٔ جمع ساخته نشد.');
+  qEq.querySelectorAll(':scope > .axv,:scope > .mhead').forEach(el=>el.remove());
+  displayDigitsAsExample(qEq,q);const levels=adornLevels(qEq);
+  const fmt=n=>String(Math.abs(n)),formula=signed.map(v=>(sign<0?'−':'+')+fmt(v)).join(' ')+(sum<0?' = −':' = +')+fmt(sum);
+  const summary=document.createElement('div');summary.className='pilot-eq3-source';summary.innerHTML='اعداد خود معادلهٔ ۳، بدون فاصله و بنفش‌ها — از بزرگ به کوچک:<span class="pilot-list">'+esc(formula)+'</span><small>اعداد تکراری در خانه‌های جداگانه، جدا حساب می‌شوند. چهار لول کنار بنفش راستِ معادلهٔ جمع است.</small>';
+  const pair=document.createElement('div');pair.className='pilot-eq3-pair';const sourceWrap=document.createElement('div');sourceWrap.className='pilot-eq3-original';const sumWrap=document.createElement('div');sumWrap.className='pilot-eq3-companion';
+  card.classList.add('pilot-eq3-card');eq.remove();const leftTitle=document.createElement('div');leftTitle.className='pilot-eq3-label';leftTitle.textContent='معادلهٔ ۳';const rightTitle=document.createElement('div');rightTitle.className='pilot-eq3-label';rightTitle.textContent='معادلهٔ ۳(۲)';sourceWrap.append(leftTitle,eq);sumWrap.append(rightTitle,qEq);pair.append(sourceWrap,sumWrap);card.append(summary,pair);
+  const note=document.createElement('div');note.className='pilot-eq3-note';note.textContent='این بخش فعلاً فقط نمایش عددی در ریل است؛ بازپخش زنجیرهٔ دوم، پوزیشن ۳ و انتقال این محاسبه به تحلیل ۲ و کدهای اندیکاتور هنوز تکمیل نشده‌اند. این نمایش به معنی معامله یا هشدار نیست.';card.appendChild(note);
+  card.dataset.eq3Source=JSON.stringify(signed);card.dataset.eq3Sum=String(sum);card.dataset.eq3Gap=String(sourceData.gap);card.dataset.eq3Result=q.L.join(',');if(levels)card.dataset.eq3Levels=levels.levels.join(',');
+ }
+ function failCard(card,error){if(!card)return;const msg=document.createElement('div');msg.className='pilot-eq3-failed';msg.textContent='معادلهٔ جمع اعداد ۳ نمایش داده نشد: '+String(error?.message||error);card.appendChild(msg)}
+ const originalNext=railNext;
+ railNext=function(){
+  const step=Array.isArray(R_STEPS)?R_STEPS[R_PTR]:null;
+  const equations=Array.isArray(R_STEPS)?R_STEPS.filter(x=>Array.isArray(x)&&x[0]==='e'):[];
+  const isThird=!!(step&&step[0]==='e'&&equations[2]&&step[1]===equations[2][1]);
+  const result=originalNext.apply(this,arguments);
+  if(isThird){const card=document.getElementById('rEqs')?.lastElementChild;try{makePair(card,step[1])}catch(e){failCard(card,e)}}
+  return result;
+ };
+ // Read-only synthetic test helper; it does not alter the source equation.
+ window.__pilotEq3Companion=Object.freeze({inspect(source){const el=document.createElement('div');el.innerHTML=eqHtml(source,true);const data=summarize(source,el.firstElementChild);const tmp=document.createElement('div');tmp.innerHTML=eqHtml(data.q,false);displayDigitsAsExample(tmp.firstElementChild,data.q);const levels=adornLevels(tmp.firstElementChild);return{sign:data.sign,signed:data.signed,sum:data.sum,gap:data.gap,L:data.q.L.slice(),R:data.q.R.slice(),levels}}});
+})();
+
+</script>
 </body>
 </html>
