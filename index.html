@@ -395,6 +395,14 @@ table.eq td.m {
       <div class="chatin"><input id="chatIn" maxlength="500" data-i18n-ph="chatPh"><button class="btn sm" onclick="chatSend()" data-i18n="send"></button></div><div class="err" id="chatErr"></div></div>
     <div id="adminOnly" class="hidden">
     <div class="tabs"><button id="eqTabBtn" class="on" onclick="setTab('eq')" data-i18n="tabEq"></button><button id="railTabBtn" onclick="setTab('rail', event)" data-i18n="tabRail"></button><button id="tblTabBtn" class="hidden" onclick="setTab('tbl')" data-i18n="tabTbl"></button><button id="a2TabBtn" class="hidden" onclick="setTab('a2', event)" data-i18n="tabA2"></button><button id="gameTabBtn" onclick="location.href='game'">🎮</button></div>
+<!-- PILOT_V71_CALCULATOR_START -->
+<style id="pilot-v71-calc-style">
+#pilot-v71-calc-action{display:flex;justify-content:flex-end;margin:-4px 0 12px}#pilot-v71-calc-action button{border:1px solid #9876c9;border-radius:9px;background:#3d285c;color:#fff;padding:8px 12px;font:700 13px Tahoma,Arial,sans-serif;cursor:pointer}
+#calcPane[hidden],#calcPane [hidden]{display:none!important}#calcPane{position:fixed;z-index:99999;top:50px;left:8px;width:min(370px,calc(100vw - 16px));max-height:calc(100dvh - 60px);overflow:auto;border:1px solid #ab8fc8;border-radius:14px;background:#221432;color:#fff;box-shadow:0 12px 35px #0009;padding:12px;direction:rtl;text-align:right;font:14px/1.6 Tahoma,Arial,sans-serif}#calcPane .calc-title{display:flex;justify-content:space-between;align-items:center;font-size:14px}#calcPane small{display:block;margin:4px 0 8px;color:#dfd2ed;line-height:1.4}#calcPane input{display:block;width:100%;padding:10px;border:1px solid #c5b8d3;border-radius:8px;background:#fff;color:#151020;font-size:19px;direction:ltr;text-align:left}#calcPane output{display:block;text-align:left;direction:ltr;min-height:32px;padding:5px;color:#d8ccfb;font-size:17px}#calcPane .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;direction:ltr}#calcPane .keys button{min-height:39px;font-size:17px;border-radius:8px;border:1px solid #80659b;background:#47315f;color:white;cursor:pointer}#calcPane .keys button:last-child{background:#8a5bd0}#calcPane .close{border:0;background:none;color:white;font-size:18px;cursor:pointer}
+#calcPane #calcEquation{margin-top:13px;border-top:1px solid #8f72ac;padding-top:5px}#calcPane #calcEquation h3{font-size:15px;margin:8px 0;color:#f6eaff}#calcPane #calcEquationStatus{font-size:11px;line-height:1.5;color:#dfd2ed;margin:5px 0}#calcPane #calcEquation .flines{direction:ltr;text-align:center;color:#cfc6ff;font:13px/1.45 monospace;overflow-wrap:anywhere}
+#calcPane .calc-process{margin-top:13px;border-top:1px solid #8f72ac;padding-top:5px}#calcPane .calc-process h3{font-size:15px;margin:8px 0;color:#f6eaff}#calcPane .calc-expression{margin:4px 0 10px;font-size:13px;overflow-wrap:anywhere;color:#e8dcf9}#calcPane .calc-step{border:1px solid #745894;background:#180e26;border-radius:10px;padding:9px;margin:7px 0}#calcPane .calc-step-title{font-size:13px;color:#d2b8ff;font-weight:bold}#calcPane .calc-operation{margin:5px 0;padding:6px;border-radius:6px;background:#332044;font-family:Consolas,monospace;font-size:16px;overflow-x:auto;text-align:left;white-space:nowrap}#calcPane .calc-note{font-size:12px;line-height:1.7;color:#dfd2ed;margin:6px 0}#calcPane .calc-column{margin:7px 0;padding:8px 10px;background:#100a1a;color:#fff;border-radius:7px;font:16px/1.3 monospace;direction:ltr;text-align:left;overflow-x:auto}#calcPane .calc-digits{font-size:12px;line-height:1.9;margin:6px 0;padding-right:22px}#calcPane .calc-digits li{overflow-wrap:anywhere}#calcPane .calc-math{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:Consolas,monospace}#calcPane output[data-ok="0"]{color:#ffb5ad;text-align:right;direction:rtl;font-size:14px}
+</style><div id="pilot-v71-calc-action"><button type="button" id="calcToggle" aria-controls="calcPane" aria-expanded="false">🧮 ماشین‌حساب</button></div><section class="calc" id="calcPane" hidden aria-label="ماشین حساب کمکی"><div class="calc-title"><b>ماشین‌حساب کمکی</b><button type="button" class="close" onclick="document.getElementById('calcToggle').click()" aria-label="بستن">✕</button></div><small>معادله و مراحل حسابِ عددهای خود ماشین‌حساب را نشان می‌دهد؛ به ریل دست نمی‌زند.</small><input id="calcDisplay" type="text" inputmode="text" autocomplete="off" aria-label="عبارت حساب"><output id="calcAnswer" aria-live="polite"></output><div class="keys" id="calcKeys"><button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button><button type="button" data-key="/">÷</button><button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button><button type="button" data-key="*">×</button><button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button><button type="button" data-key="-">−</button><button type="button" data-key="0">0</button><button type="button" data-key=".">.</button><button type="button" data-key="C">C</button><button type="button" data-key="+">+</button><button type="button" data-key="(">(</button><button type="button" data-key=")">)</button><button type="button" data-key="back">⌫</button><button type="button" data-key="=">=</button></div><section id="calcEquation" hidden aria-live="polite"><h3>معادلهٔ ماشین‌حساب</h3><p id="calcEquationStatus"></p><div id="calcEquationDisplay"></div></section><section class="calc-process" id="calcProcess" hidden><h3>مراحل کامل محاسبه</h3><p id="calcExpression" class="calc-expression"></p><div id="calcSteps"></div></section></section>
+<!-- PILOT_V71_CALCULATOR_END -->
     <div id="tabA2" class="hidden"><div id="a2Eqs"></div></div>
 
     <div id="tabTbl" class="hidden">
@@ -5724,5 +5732,191 @@ function calculateApprovedRail(message){
 })();
 
 </script>
+<!-- PILOT_V71_LIVE_CALCULATOR_ONLY_START -->
+<script id="pilot-v71-scratch-calculator">
+/* Standalone, offline scratch calculator for the isolated v71 calculator.
+   It cannot read from or write to the app's calculations or the real site. */
+(function(){'use strict';
+ const pane=document.getElementById('calcPane'),toggle=document.getElementById('calcToggle'),display=document.getElementById('calcDisplay'),answer=document.getElementById('calcAnswer'),process=document.getElementById('calcProcess'),stepsBox=document.getElementById('calcSteps'),expression=document.getElementById('calcExpression');
+ if(!pane||!toggle||!display||!answer||!process||!stepsBox||!expression)return;
+ const abs=n=>n<0n?-n:n;
+ function gcd(a,b){a=abs(a);b=abs(b);while(b){const r=a%b;a=b;b=r}return a||1n}
+ function rational(n,d=1n){if(d===0n)throw Error('تقسیم بر صفر ممکن نیست.');if(d<0n){n=-n;d=-d}const g=gcd(n,d);n/=g;d/=g;if(String(abs(n)).length>250||String(d).length>250)throw Error('عدد خیلی بزرگ است؛ عبارت را کوتاه‌تر کن.');return{n,d}}
+ const negative=a=>({n:-a.n,d:a.d});
+ function parseNumber(s){const pair=s.split('.'),fraction=pair[1]||'',whole=pair[0]||'0';return rational(BigInt(whole+fraction),10n**BigInt(fraction.length))}
+ function finite(a){let d=a.d,twos=0,fives=0;while(d%2n===0n){d/=2n;twos++}while(d%5n===0n){d/=5n;fives++}if(d!==1n)return null;const scale=Math.max(twos,fives);if(scale>300)throw Error('تعداد رقم‌های اعشار خیلی زیاد است.');return {scale,value:a.n*((10n**BigInt(scale))/a.d)}}
+ function scaled(value,scale,keepZeros=false){const sign=value<0n?'-':'',digits=String(abs(value)).padStart(scale+1,'0');if(!scale)return sign+digits;const raw=digits.slice(0,-scale)+'.'+digits.slice(-scale),clean=keepZeros?raw:raw.replace(/0+$/,'').replace(/\.$/,'');return sign+clean}
+ function approximate(a){const sign=a.n<0n?'-':'',n=abs(a.n),whole=n/a.d;let remainder=n%a.d,digits='';for(let i=0;i<12&&remainder;i++){remainder*=10n;digits+=String(remainder/a.d);remainder%=a.d}return sign+String(whole)+(digits?'.'+digits:'')+(remainder?'…':'')}
+ function show(a){const f=finite(a);return f?scaled(f.value,f.scale):`${a.n}/${a.d} (≈ ${approximate(a)})`}
+ const normalization=s=>String(s).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/٫/g,'.').replace(/×/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/\s/g,'');
+ function calculate(source){
+  const s=normalization(source);if(!s||s.length>300)throw Error('یک عبارت حداکثر ۳۰۰ نویسه‌ای وارد کن.');
+  const ts=s.match(/(?:\d+(?:\.\d*)?|\.\d+)|[()+\-*/]/g)||[];if(ts.join('')!==s)throw Error('عبارت معتبر نیست.');let i=0,steps=[];
+  function apply(a,b,op){let r;if(op==='+')r=rational(a.n*b.d+b.n*a.d,a.d*b.d);else if(op==='-')r=rational(a.n*b.d-b.n*a.d,a.d*b.d);else if(op==='*')r=rational(a.n*b.n,a.d*b.d);else r=rational(a.n*b.d,a.d*b.n);if(steps.length>=100)throw Error('تعداد عملیات زیاد است؛ عبارت را کوتاه‌تر کن.');steps.push({a,b,op,result:r});return r}
+  function factor(){const x=ts[i++];if(x===undefined)throw Error('عبارت کامل نیست.');if(x==='+')return factor();if(x==='-')return negative(factor());if(x==='('){const v=expr();if(ts[i++]!==')')throw Error('پرانتز بسته نشده است.');return v}if(!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(x))throw Error('عبارت معتبر نیست.');return parseNumber(x)}
+  function term(){let v=factor();while(ts[i]==='*'||ts[i]==='/'){const op=ts[i++];v=apply(v,factor(),op)}return v}
+  function expr(){let v=term();while(ts[i]==='+'||ts[i]==='-'){const op=ts[i++];v=apply(v,term(),op)}return v}
+  const result=expr();if(i!==ts.length)throw Error('عبارت معتبر نیست.');return{result,steps};
+ }
+ const colName=(i,scale)=>i<scale?`رقم ${scale-i} بعد از ممیز`:['یکان','دهگان','صدگان','هزارگان','ده‌هزارگان','صد‌هزارگان','میلیونگان'][i-scale]||`ستون ۱۰ به توان ${i-scale}`;
+ function columnPlan(a,b,op,scale){
+  // a and b are signed integers expressed in equal decimal places. Reduce a
+  // subtraction to addition of the opposite, then compute magnitudes exactly.
+  const effective=op==='-'?-b:b,A=abs(a),B=abs(effective),same=(a>=0n)===(effective>=0n)||A===0n||B===0n;
+  const plus=same,upper=plus?A:(A>=B?A:B),lower=plus?B:(A>=B?B:A),mag=plus?upper+lower:upper-lower;
+  const result=a+effective,signNote=(a<0n||b<0n||(!plus&&A<B))?`با در نظر گرفتن علامت‌ها، قدرمطلق‌ها را ${plus?'جمع':'تفریق'} می‌کنیم؛ علامت نتیجه ${result<0n?'منفی':result>0n?'مثبت':'صفر'} است.`:'';
+  const U=scaled(upper,scale,true),L=scaled(lower,scale,true),M=scaled(mag,scale,true),w=Math.max(U.length,L.length,M.length),vertical=`  ${U.padStart(w)}\n${plus?'+':'−'} ${L.padStart(w)}\n  ${'─'.repeat(w)}\n  ${M.padStart(w)}`;
+  const digits=x=>String(x).split('').reverse().map(Number);let x=digits(upper),y=digits(lower),length=Math.max(x.length,y.length,scale+1);while(x.length<length)x.push(0);while(y.length<length)y.push(0);let lines=[];
+  if(plus){let carry=0;for(let k=0;k<length;k++){const old=carry,sum=x[k]+y[k]+old;carry=Math.floor(sum/10);const out=sum%10;lines.push(`${colName(k,scale)}: ${old?'با انتقال قبلی '+old+'؛ ':''}${x[k]} + ${y[k]}${old?' + '+old:''} = ${sum}؛ رقم ${out}${carry?'، انتقال '+carry+' به '+colName(k+1,scale):''}.`)}if(carry)lines.push(`${colName(length,scale)}: انتقال ${carry} نوشته می‌شود.`)}
+  else for(let k=0;k<length;k++){let note='';if(x[k]<y[k]){let j=k+1;while(j<length&&x[j]===0)j++;if(j>=length)throw Error('نمایش قرض‌گرفتن کامل نشد.');x[j]--;for(let h=j-1;h>k;h--)x[h]=9;x[k]+=10;note=`از ${colName(j,scale)} قرض گرفته شد${j>k+1?' و از ستون‌های صفر عبور کرد':''}؛ `}const top=x[k],out=top-y[k];lines.push(`${colName(k,scale)}: ${note}${top} − ${y[k]} = ${out}.`)}
+  return{vertical,lines,signNote};
+ }
+ function breakdown(step){
+  if(step.op!=='+'&&step.op!=='-')return null;
+  const a=finite(step.a),b=finite(step.b);
+  if(a&&b){const s=Math.max(a.scale,b.scale),pow=10n**BigInt(s),A=step.a.n*(pow/step.a.d),B=step.b.n*(pow/step.b.d);return{...columnPlan(A,B,step.op,s),prefix:''}}
+  // A non-terminating decimal remains exact as a fraction. Display the common
+  // denominator before showing the same full integer column arithmetic.
+  const d=step.a.d/gcd(step.a.d,step.b.d)*step.b.d,A=step.a.n*(d/step.a.d),B=step.b.n*(d/step.b.d),sign=step.op==='+'?'+':'−';
+  return{...columnPlan(A,B,step.op,0),prefix:'ابتدا هم‌مخرج می‌کنیم: ',prefixMath:`(${A}/${d}) ${sign} (${B}/${d})`,prefixSuffix:'؛ سپس صورت‌ها را حساب می‌کنیم.'};
+ }
+ function node(tag,klass,text){const el=document.createElement(tag);if(klass)el.className=klass;if(text!==undefined)el.textContent=text;return el}
+ function mathNode(text){const el=node('bdi','calc-math',text);el.dir='ltr';return el}
+ function mixedLine(text){const el=node('li'),pattern=/\d+ \+ \d+(?: \+ \d+)? = \d+|\d+ − \d+ = \d+/g;let start=0,m;while((m=pattern.exec(text))){el.append(document.createTextNode(text.slice(start,m.index)),mathNode(m[0]));start=m.index+m[0].length}el.append(document.createTextNode(text.slice(start)));return el}
+ function reset(){answer.textContent='';answer.dataset.ok='';process.hidden=true;stepsBox.replaceChildren();expression.textContent='';window.__pilotIndependentCalcEquation?.clear()}
+ function render(source,data){
+  answer.textContent=show(data.result);answer.dataset.ok='1';expression.replaceChildren(document.createTextNode('عبارت: '),mathNode(source));stepsBox.replaceChildren();
+  if(!data.steps.length)stepsBox.append(node('p','calc-note','عدد واردشده؛ عملیاتی برای نمایش وجود ندارد.'));
+  data.steps.forEach((s,i)=>{
+   const card=node('article','calc-step'),heading=node('div','calc-step-title',`مرحله ${i+1}`),operation=node('div','calc-operation',`${show(s.a)} ${({'+':'+','-':'−','*':'×','/':'÷'})[s.op]} ${s.b.n<0n?'('+show(s.b)+')':show(s.b)} = ${show(s.result)}`);operation.dir='ltr';card.append(heading,operation);
+   const d=breakdown(s);if(d){if(d.prefix){const p=node('p','calc-note');p.append(document.createTextNode(d.prefix));if(d.prefixMath)p.append(mathNode(d.prefixMath));if(d.prefixSuffix)p.append(document.createTextNode(d.prefixSuffix));card.append(p)}if(d.signNote)card.append(node('p','calc-note',d.signNote));card.append(node('pre','calc-column',d.vertical));const list=node('ol','calc-digits');for(const line of d.lines)list.append(mixedLine(line));card.append(list)}else card.append(node('p','calc-note','نتیجهٔ این ضرب یا تقسیم پیش از مرحلهٔ بعد محاسبه شد.'));
+   stepsBox.append(card);
+  });process.hidden=false;
+ }
+ function solve(){const source=display.value;try{render(source,calculate(source));const equationShown=window.__pilotIndependentCalcEquation?.render(source);(equationShown?document.getElementById('calcEquation'):process)?.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){reset();answer.textContent=e.message||'عبارت معتبر نیست.';answer.dataset.ok='0'}}
+ toggle.addEventListener('click',()=>{const open=pane.hidden;pane.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open)display.focus()});
+ document.getElementById('calcKeys').addEventListener('click',e=>{const b=e.target.closest('button[data-key]');if(!b)return;const key=b.dataset.key;if(key==='='){solve();return}if(key==='C'){display.value='';reset();display.focus();return}const start=display.selectionStart??display.value.length,end=display.selectionEnd??display.value.length;if(key==='back'){const from=start===end?Math.max(0,start-1):start;display.value=display.value.slice(0,from)+display.value.slice(end);display.setSelectionRange(from,from)}else{display.value=display.value.slice(0,start)+key+display.value.slice(end);display.setSelectionRange(start+key.length,start+key.length)}reset();display.focus()});
+ display.addEventListener('input',reset);display.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();solve()}});
+})();
+
+</script>
+<script id="pilot-v71-calculator-equation">
+/* Equation underneath the independent calculator: no rail or position data.
+ * The confirmed positive example uses v71's ordinary plus equation: add the
+ * input magnitudes, use the digit-sum of the smallest as the gap, then add
+ * the two left numbers. All-negative sums use v71's ordinary minus equation.
+ * Uses exact integers; decimals, products, and mixed-sign equations are not
+ * invented here. Arithmetic for them still works in the independent calculator.
+ */
+(function(){'use strict';
+ const holder=document.getElementById('calcEquation'),status=document.getElementById('calcEquationStatus'),target=document.getElementById('calcEquationDisplay');
+ if(!holder||!status||!target)return;
+ const abs=n=>n<0n?-n:n;
+ const digitSum=n=>{const sum=[...String(abs(n))].reduce((a,c)=>a+BigInt(c),0n);return n<0n?-sum:sum;};
+ const chain=n=>{const out=[];while(abs(n)>9n){n=digitSum(n);out.push(n)}return out};
+ const mate=n=>{n=abs(n);const r=n%11n;return n>=11n&&r===0n?11n:r};
+ const fmt=n=>n<0n?'−'+String(-n):String(n);
+ const normalize=s=>String(s).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/[−–]/g,'-').replace(/\s/g,'');
+ // Flatten additive parentheses without interpreting a mixed-sign formula as
+ // a positive/negative equation. The separate calculator validates syntax.
+ function additiveTerms(s){
+  let i=0;
+  function factor(){let sign=1n;while(s[i]==='+'||s[i]==='-'){if(s[i++]==='-')sign=-sign}
+   if(s[i]==='('){i++;const inner=expr();if(s[i++]!==')')throw Error('پرانتز');return inner.map(x=>sign*x)}
+   const m=s.slice(i).match(/^\d+/);if(!m)throw Error('عبارت');i+=m[0].length;return[sign*BigInt(m[0])];
+  }
+  function expr(){let arr=factor();while(s[i]==='+'||s[i]==='-'){const op=s[i++],a=factor();arr.push(...a.map(x=>op==='-'?-x:x))}return arr}
+  const out=expr();if(i!==s.length)throw Error('فقط جمع و تفریق عدد صحیح');return out;
+ }
+ function model(terms){
+  if(terms.length<2)return{status:'more-inputs'};
+  const positive=terms.some(x=>x>0n),negative=terms.some(x=>x<0n);
+  if(positive&&negative)return{status:'mixed-sign-pending'};
+  const sg=negative?-1n:1n,nums=terms.map(abs),S=nums.reduce((a,b)=>a+b,0n),small=nums.reduce((a,b)=>a<b?a:b),ds=abs(digitSum(small)),gap=ds||1n;
+  const L0=sg*S,L1=sg<0n?-S-gap:S-gap,L2=L0+L1,R0=digitSum(L0),R1=digitSum(L1),Rsum=R0+R1;
+  return{status:'ok',negative,nums,gap,L:[L0,L1,L2],R:[R0,R1,Rsum],lc:chain(L2),rc:[Rsum,...chain(Rsum)]};
+ }
+ const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n};
+ function eqCell(value,cls,numberClass='num'){const cell=node('td',cls);if(value!==null&&value!==undefined)cell.append(node('span',numberClass,fmt(value)));return cell}
+ function purple(value){const td=node('td','m');if(value!==null&&value!==undefined)td.append(node('span','mate',fmt(value)));return td}
+ function draw(d){
+  const [a,b,c]=d.L,[r0,r1]=d.R,lc=d.lc,rc=d.rc,k=Math.max(lc.length,rc.length),eq=node('div','eq');eq.dataset.kind=d.negative?'minus':'plus';
+  eq.dataset.calcL=d.L.map(String).join(',');eq.dataset.calcR=d.R.map(String).join(',');eq.dataset.calcGap=String(d.gap);eq.dataset.calcSign=d.negative?'minus':'plus';
+  eq.append(node('div','title',d.negative?'معادلهٔ منفی':'معادلهٔ مثبت'));
+  const lines=node('div','flines');lines.setAttribute('dir','ltr');
+  const first=d.nums.map((v,i)=>(d.negative?'−':i?'+':'')+String(v)).join('')+'='+fmt(a),second=fmt(a)+'−'+String(d.gap)+'='+fmt(b),third=fmt(a)+(b<0n?'−':'+')+String(abs(b))+'='+fmt(c);
+  for(const text of [first,second,third])lines.append(node('div','',text));eq.append(lines,node('div','gap',(d.negative?'−':'')+String(d.gap)));
+  const table=node('table'),body=node('tbody');table.append(body);
+  const lm=[];if(abs(c)>9n)lm.push(mate(c));if(lc.length&&abs(lc[0])>9n)lm.push(mate(lc[0]));const lPurple=lm.length?lm.reduce((x,y)=>x+y,0n):null,lIndex=lc.length&&abs(lc[0])>9n?0:-1;
+  const rightZero=abs(r0)<=9n&&abs(r1)<=9n&&abs(r0+r1)<=9n;
+  function row(ml,l,r,mr,klass='',rightPurpleWrapped=false){const tr=node('tr',klass);tr.append(purple(ml),eqCell(l,'n'));if(rightPurpleWrapped){const td=node('td','n'),span=node('span','mate');span.append(node('span','num',fmt(r)));td.append(span);tr.append(td)}else tr.append(eqCell(r,'n'));tr.append(purple(mr));body.append(tr)}
+  row(null,a,r0,null);row(null,b,r1,null);row(lIndex===-1?lPurple:null,c,rightZero?0n:null,null);
+  function separator(left,right){const tr=node('tr');tr.append(node('td'));for(const shown of [left,right]){const td=node('td','hr');if(shown)td.append(node('div'));tr.append(td)}tr.append(node('td'));body.append(tr)}
+  // Draw each column's line only where that column has a next result. This
+  // reproduces the example: the second line is under 13 on the right only.
+  for(let i=0;i<k;i++){
+   const l=i<lc.length?lc[i]:null,r=i<rc.length?rc[i]:null;separator(l!==null,r!==null);
+   const second=i===1&&rc.length>2;let rp=null;if(r!==null){if(second){if(abs(rc[0])>9n)rp=mate(rc[0])}else if(!(i===0&&rc.length>2)&&i===0&&abs(r)>9n)rp=mate(r)}
+   row(i===lIndex?lPurple:null,l,r,rp,'res'+(i===k-1?' outrow':''),second);
+  }
+  if(k===0)separator(false,false);
+  eq.append(table);return eq;
+ }
+ function clear(){holder.hidden=true;status.textContent='';target.replaceChildren();holder.dataset.status=''}
+ function render(source){
+  target.replaceChildren();holder.hidden=false;let d;
+  try{d=model(additiveTerms(normalize(source)))}catch(_){holder.dataset.status='unsupported';status.textContent='معادلهٔ این نوع عبارت هنوز تأیید نشده است؛ فقط حاصل و مراحل حساب نمایش داده می‌شود.';return false}
+  holder.dataset.status=d.status;
+  if(d.status==='more-inputs'){status.textContent='برای ساخت معادله، دست‌کم دو عدد وارد کن؛ مثلاً ۱۲+۷.';return false}
+  if(d.status!=='ok'){status.textContent='ساخت معادله برای عددهای با علامت‌های متفاوت هنوز تأیید نشده است.';return false}
+  status.textContent='مستقل از ریل؛ از عددهای همین عبارت.';target.append(draw(d));return true;
+ }
+ window.__pilotIndependentCalcEquation=Object.freeze({render,clear});
+})();
+
+</script>
+<script id="pilot-main-toolbar-candidate">
+/* Non-deployed visual candidate: toolbar in standalone app.
+   Clearing is deliberately limited to current page inputs/results. It never
+   touches browser storage, the account, the time-zone, or the database. */
+(function(){'use strict';
+ if(window.__pilotMainToolbar)return;
+ const $=s=>document.querySelector(s),main=$('#mainView>.card'),top=main?.querySelector(':scope>.top'),calc=$('#calcToggle');
+ if(!main||!top||!calc)return;
+ const style=document.createElement('style');style.id='pilot-main-toolbar-style';style.textContent=`
+ #pilotMainToolbar{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:7px;margin:4px 0 14px;direction:rtl}
+ #pilotMainToolbar button{width:auto;min-height:34px;padding:7px 11px;border:1px solid #9876c9;border-radius:9px;background:#3d285c;color:#fff;font:700 12px Tahoma,Arial,sans-serif;cursor:pointer}
+ #pilotMainToolbar button:hover{background:#543874}
+ #pilotMainToolbar #pilotMainClear{background:#30213e}
+ #pilotMainClearInfo{flex-basis:100%;margin:0;color:#f2dda6;font:11px/1.7 Tahoma,Arial,sans-serif}
+ #pilotMainClearInfo:empty{display:none}
+ @media(max-width:350px){#pilotMainToolbar button{font-size:11px;padding:7px 9px}}
+ `;document.head.append(style);
+ const bar=document.createElement('div');bar.id='pilotMainToolbar';bar.setAttribute('aria-label','ابزارها');
+ const clear=document.createElement('button');clear.id='pilotMainClear';clear.type='button';clear.textContent='پاک‌کردن اعداد';clear.title='پاک‌کردن ورودی‌های فعلی ریل و معادله، با تأیید';
+ const info=document.createElement('p');info.id='pilotMainClearInfo';info.setAttribute('role','status');bar.append(calc,clear,info);top.after(bar);
+ let pending=false,timer=null;
+ function resetButton(){pending=false;clear.textContent='پاک‌کردن اعداد';info.textContent='';if(timer)clearTimeout(timer);timer=null;}
+ function empty(selector){document.querySelectorAll(selector).forEach(e=>e.replaceChildren());}
+ function clearInputs(){
+  // The fixed first rail row (24) is a structural rule, not user data.
+  document.querySelectorAll('#railGrid input[data-k]').forEach(e=>{e.value=/_0$/.test(e.dataset.k||'')?'24':'';});
+  document.querySelectorAll('#manualBox input,#rows .eqrow .nums input').forEach(e=>{e.value='';});
+  empty('#rows .eqrow .out,#rows .eqrow .err,#rEqs,#a2Eqs,#rStepsBody,#rExtBody,#rErr,#mOrder,#posOut');
+  ['rSteps','rExt','posCard','rNext'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
+  try{if(typeof R_STEPS!=='undefined')R_STEPS=[];if(typeof R_PTR!=='undefined')R_PTR=0}catch(_){}
+  for(const key of ['__CHAIN_SOURCE473','__SEPARATED473','__MEGAQ','__REV','__AXIS','__RAILZ','__RAILPICK','__A2PICK','__A2COMBO','__A2TAIL','__P3','__THIRD473','__E2NEG','__SIG','__POS','__PRIMARY473_RESULTS','__PRIMARY473_EXPORTED'])try{delete window[key]}catch(_){}
+  try{window.__POSCHAIN=[];window.__pilotRailTimeAssist?.setActive(false);window.__PILOT_OFFICE_READONLY?.clearCurrent()}catch(_){}
+  window.dispatchEvent(new Event('pilot-main-entries-cleared'));
+ }
+ clear.addEventListener('click',()=>{
+  if(!pending){pending=true;clear.textContent='برای تأیید دوباره بزن';info.textContent='فقط ورودی‌ها و نتیجه‌های فعلی ریل و معادله پاک می‌شوند؛ حساب، تنظیمات و داده‌های ذخیره‌شده باقی می‌مانند.';timer=setTimeout(resetButton,7000);return;}
+  resetButton();clearInputs();info.textContent='ورودی‌ها و نتیجه‌های فعلی پاک شدند؛ تنظیمات حفظ شدند.';timer=setTimeout(resetButton,3500);
+ });
+ window.__pilotMainToolbar=Object.freeze({scope:'current-rail-and-equations-only',noStorageWrites:true});
+})();
+
+</script>
+<!-- PILOT_V71_LIVE_CALCULATOR_ONLY_END -->
 </body>
 </html>
