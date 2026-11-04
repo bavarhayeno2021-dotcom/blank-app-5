@@ -6017,7 +6017,7 @@ function calculateApprovedRail(message){
   const summary=document.createElement('div');summary.className='pilot-eq3-source';summary.innerHTML='اعداد خود معادلهٔ ۳، بدون فاصله و بنفش‌ها — از بزرگ به کوچک:<span class="pilot-list">'+esc(formula)+'</span><small>اعداد تکراری در خانه‌های جداگانه، جدا حساب می‌شوند. چهار لول کنار بنفش راستِ معادلهٔ جمع است.</small>';
   const pair=document.createElement('div');pair.className='pilot-eq3-pair';const sourceWrap=document.createElement('div');sourceWrap.className='pilot-eq3-original';const sumWrap=document.createElement('div');sumWrap.className='pilot-eq3-companion';
   card.classList.add('pilot-eq3-card');eq.remove();const leftTitle=document.createElement('div');leftTitle.className='pilot-eq3-label';leftTitle.textContent='معادلهٔ ۳';const rightTitle=document.createElement('div');rightTitle.className='pilot-eq3-label';rightTitle.textContent='معادلهٔ ۳(۲)';sourceWrap.append(leftTitle,eq);sumWrap.append(rightTitle,qEq);pair.append(sourceWrap,sumWrap);card.append(summary,pair);
-  const note=document.createElement('div');note.className='pilot-eq3-note';note.textContent='این بخش فعلاً فقط نمایش عددی در ریل است؛ بازپخش زنجیرهٔ دوم، پوزیشن ۳ و انتقال این محاسبه به تحلیل ۲ و کدهای اندیکاتور هنوز تکمیل نشده‌اند. این نمایش به معنی معامله یا هشدار نیست.';card.appendChild(note);
+  const note=document.createElement('div');note.className='pilot-eq3-note';note.textContent='این بخش فقط نمایش عددی است؛ بازپخش زنجیرهٔ دوم، اجرای پوزیشن ۳ و انتقال آن به کدهای اندیکاتور هنوز تکمیل نشده‌اند. این نمایش به معنی معامله یا هشدار نیست.';card.appendChild(note);
   card.dataset.eq3Source=JSON.stringify(signed);card.dataset.eq3Sum=String(sum);card.dataset.eq3Gap=String(sourceData.gap);card.dataset.eq3Result=q.L.join(',');if(levels)card.dataset.eq3Levels=levels.levels.join(',');
  }
  function failCard(card,error){if(!card)return;const msg=document.createElement('div');msg.className='pilot-eq3-failed';msg.textContent='معادلهٔ جمع اعداد ۳ نمایش داده نشد: '+String(error?.message||error);card.appendChild(msg)}
@@ -6031,7 +6031,63 @@ function calculateApprovedRail(message){
   return result;
  };
  // Read-only synthetic test helper; it does not alter the source equation.
- window.__pilotEq3Companion=Object.freeze({inspect(source){const el=document.createElement('div');el.innerHTML=eqHtml(source,true);const data=summarize(source,el.firstElementChild);const tmp=document.createElement('div');tmp.innerHTML=eqHtml(data.q,false);displayDigitsAsExample(tmp.firstElementChild,data.q);const levels=adornLevels(tmp.firstElementChild);return{sign:data.sign,signed:data.signed,sum:data.sum,gap:data.gap,L:data.q.L.slice(),R:data.q.R.slice(),levels}}});
+ window.__pilotEq3Companion=Object.freeze({inspect(source){const el=document.createElement('div');el.innerHTML=eqHtml(source,true);const data=summarize(source,el.firstElementChild);const tmp=document.createElement('div');tmp.innerHTML=eqHtml(data.q,false);displayDigitsAsExample(tmp.firstElementChild,data.q);const levels=adornLevels(tmp.firstElementChild);return{sign:data.sign,signed:data.signed,sum:data.sum,gap:data.gap,L:data.q.L.slice(),R:data.q.R.slice(),levels}},renderStandalone(source){const card=document.createElement('div');card.innerHTML=eqHtml(source,true);makePair(card,source);return card}});
+})();
+
+</script>
+<script id="pilot-v71-eq3-analysis-mirror">
+/* Numerical display of Eq3 and Eq3(2) in Analysis 2, after the existing
+   position cards. Pure DOM display derived from the latest completed rail;
+   it never alters positions, calculations, Pine, accounts, orders or the
+   company bridge. The current app does not yet contain the new second-chain
+   replay; a visible note makes this limitation explicit. */
+(function(){'use strict';
+ if(window.__pilotEq3AnalysisMirror473)return;
+ const style=document.createElement('style');style.id='pilot-eq3-analysis-mirror-style';
+ const sourceStyle=document.getElementById('pilot-eq3-companion-style');
+ style.textContent=(sourceStyle?.textContent||'').replaceAll('#rEqs','#primary473 .pilot-eq3-analysis-mirror-473')+`
+ #primary473 .pilot-eq3-analysis-mirror-473{direction:rtl;text-align:right;overflow:hidden;border:1px solid #8264ac;background:#201631;color:#f5efff;line-height:1.7}
+ #primary473 .pilot-eq3-analysis-mirror-473 h3{font-size:14px;color:#ffdf86;margin:0 0 6px}
+ #primary473 .pilot-eq3-analysis-mirror-473 .pilot-eq3-note{font-size:11px;line-height:1.6}
+ #primary473 .pilot-eq3-analysis-mirror-473 .pilot-eq3-stale{display:none;color:#ffd6a2;font-size:12px;line-height:1.6}
+ #primary473 .pilot-eq3-analysis-mirror-473[data-stale="1"] .pilot-eq3-analysis-content{display:none}
+ #primary473 .pilot-eq3-analysis-mirror-473[data-stale="1"] .pilot-eq3-stale{display:block}
+ `;document.head.appendChild(style);
+ let savedSignature=null;
+ function signature(){
+  const ids=['rPos','rNeg','rRows','rPairs','m1sum','m1gap','mPos','mNeg'];
+  const inputs=ids.map(id=>[id,document.getElementById(id)?.value??'']);
+  const cells=[...document.querySelectorAll('#railGrid input[data-k]')].map(x=>[x.dataset.k,x.value]);
+  return JSON.stringify({inputs,cells,mode:typeof R_SRC==='undefined'?null:R_SRC,side:typeof R_SIDE==='undefined'?null:R_SIDE});
+ }
+ function sync(){
+  try{
+   const root=document.getElementById('primary473');if(!root)return;
+   const third=Array.isArray(R_STEPS)?R_STEPS.filter(x=>Array.isArray(x)&&x[0]==='e')[2]?.[1]:null;
+   let card=root.querySelector(':scope > .pilot-eq3-analysis-mirror-473');
+   if(!third||savedSignature===null){card?.remove();return;}
+   const current=signature(),stale=current!==savedSignature;
+   const key=JSON.stringify([third.title,third.kind,third.L,third.R,third.gap,third.mixed,third.rev]);
+   if(!card||card.dataset.sourceKey!==key){
+    const visual=window.__pilotEq3Companion?.renderStandalone?.(third);if(!visual)return;
+    const section=document.createElement('section');section.className='card pilot-eq3-analysis-mirror-473';section.setAttribute('aria-label','معادلهٔ ۳ و ۳(۲)، نمایش عددی');section.dataset.sourceKey=key;
+    const heading=document.createElement('h3');heading.textContent='معادلهٔ ۳ و ۳(۲) — نمایش عددی';
+    const content=document.createElement('div');content.className='pilot-eq3-analysis-content';content.appendChild(visual);
+    const staleMessage=document.createElement('p');staleMessage.className='pilot-eq3-stale';staleMessage.textContent='ورودی ریل تغییر کرده است؛ برای دیدن معادلهٔ تازه، ریل را دوباره اجرا کن.';
+    section.append(heading,content,staleMessage);if(card)card.replaceWith(section);else{const articles=root.querySelectorAll(':scope > article[data-primary-position]'),last=articles[articles.length-1];if(last)last.after(section);else root.appendChild(section)}card=section;
+   }
+   card.dataset.stale=stale?'1':'0';
+  }catch(_){/* A visual add-on must never interrupt the original app. */}
+ }
+ const originalBuild=buildFromRes;
+ buildFromRes=function(){const value=originalBuild.apply(this,arguments);try{savedSignature=signature();sync()}catch(_){}return value};
+ const originalRefresh=posRefresh;
+ posRefresh=function(){const value=originalRefresh.apply(this,arguments);try{sync()}catch(_){}return value};
+ let queued=false;function queue(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;sync()})}
+ document.addEventListener('input',e=>{if(e.target?.closest?.('#railGrid,#manualBox,#rPos,#rNeg,#rRows,#rPairs'))queue()},true);
+ document.addEventListener('change',e=>{if(e.target?.closest?.('#railGrid,#manualBox,#rPos,#rNeg,#rRows,#rPairs'))queue()},true);
+ document.addEventListener('click',e=>{if(e.target?.closest?.('#rSide,#rSrc,#rAuto'))queue()},true);
+ window.__pilotEq3AnalysisMirror473=Object.freeze({sync});
 })();
 
 </script>
