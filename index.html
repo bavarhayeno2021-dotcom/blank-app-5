@@ -5222,26 +5222,40 @@ function calculateApprovedRail(message){
     var a=document.createElement('a');
     a.id='studioLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';
     a.title='AFICE STUDIO';a.setAttribute('aria-label','AFICE STUDIO');
-    a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 0 200 46" width="200" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></svg>';
-    a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:200px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
+    a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 0 260 46" direction="ltr" style="direction:ltr" width="260" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></svg>';
+    a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:260px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
     wrap.appendChild(a);
     return wrap;
   }
+  /* Shows AFICE STUDIO for everyone; AFICE company button only for the owner.
+     Re-checks whenever the login changes (no page reload needed). */
   async function swap(){
     var own=await isOwner();
-    if(own){
-      var sw=document.getElementById('studioWrap473');if(sw)sw.remove();
-      return;
-    }
     var company=document.getElementById('aficeLink473');
-    if(company&&company.parentNode)company.parentNode.remove();
+    if(company){
+      /* widen the company mark so the full AFICE word is not clipped */
+      var sv=company.querySelector('svg');
+      if(sv){sv.setAttribute('viewBox','-40 0 150 46');sv.setAttribute('width','150');sv.style.overflow='visible';}
+      company.style.width='150px';
+    }
+    if(company&&company.parentNode)company.parentNode.style.display=own?'':'none';
     if(!document.getElementById('studioWrap473')){
       var chat=document.getElementById('chatCard');
       if(chat&&chat.parentNode)chat.parentNode.insertBefore(studioLink(),chat);
     }
   }
-  window.addEventListener('load',function(){setTimeout(swap,300);});
+  var lastKey=null,busy=false;
+  async function watch(){
+    if(busy)return;
+    var key=localStorage.getItem('fl_cur')||'';
+    if(key===lastKey)return;
+    busy=true;
+    try{lastKey=key;await swap();}finally{busy=false;}
+  }
+  window.addEventListener('load',function(){setTimeout(watch,300);});
+  setInterval(watch,500);
 })();
 </script>
+
 </body>
 </html>
