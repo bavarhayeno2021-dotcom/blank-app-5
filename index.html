@@ -289,7 +289,7 @@ table.users th{color:var(--red)}
       <div class="chatin"><input id="chatIn" maxlength="500" data-i18n-ph="chatPh"><button class="btn sm" onclick="chatSend()" data-i18n="send"></button></div><div class="err" id="chatErr"></div></div>
     <div id="adminOnly" class="hidden">
     <div class="tabs"><button id="eqTabBtn" class="on" onclick="setTab('eq')" data-i18n="tabEq"></button><button id="railTabBtn" onclick="setTab('rail')" data-i18n="tabRail"></button><button id="tblTabBtn" class="hidden" onclick="setTab('tbl')" data-i18n="tabTbl"></button><button id="a2TabBtn" class="hidden" onclick="setTab('a2')" data-i18n="tabA2"></button><button id="gameTabBtn" onclick="location.href='game'">🎮</button></div>
-    <div id="tabA2" class="hidden"><div id="a2Eqs"></div></div>
+    <div id="tabA2" class="hidden"><div id="a2Eqs"></div><div id="a2Table"></div></div>
 
     <div id="tabTbl" class="hidden">
       <div class="card">
@@ -5258,4 +5258,74 @@ function calculateApprovedRail(message){
 </script>
 
 </body>
+  <script>
+(function(){
+  var EQ_AUTH='https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/eq-auth';
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function arr(a){return Array.isArray(a)?a.join(' ، '):'—';}
+  function collect(){
+    var rows=[],P=window.__POSCHAIN||[],R=window.__REV||[],T=window.__A2TAIL||null;
+    P.forEach(function(p,i){
+      rows.push({kind:'position',seq:i+1,type:'پوزیشن',name:'پوزیشن '+(i+1)+' ('+(p.tag||'')+')',
+        sign:p.neg?'−':'+',times:p.t||[],nums:p.c||[],size:'—',
+        payload:{tag:p.tag||null,neg:!!p.neg,t:p.t||[],c:p.c||[],entry:p.entry==null?null:p.entry}});
+    });
+    var names=['🔄 معکوس (+)','🔄 معکوس (−)','🔄 معکوس ±'],sizes=['کوچک','کوچک','بزرگ'],tails=T?[T.r1,T.r2,T.r3]:[];
+    R.forEach(function(e,i){
+      if(!e)return;
+      rows.push({kind:'no_position',seq:P.length+i+1,type:'بدون پوزیشن',name:names[i]||('معکوس '+(i+1)),
+        sign:e.kind,times:tails[i]||[],nums:e.L||[],size:sizes[i]||'—',
+        payload:{name:names[i],kind:e.kind,L:e.L,R:e.R,gap:e.gap,times:tails[i]||[],size:sizes[i]||null}});
+    });
+    if(T&&Array.isArray(T.g3)&&T.g3.length){
+      rows.push({kind:'no_position',seq:P.length+R.length+1,type:'بدون پوزیشن',name:'③ دنباله (تایم روی چارت)',
+        sign:'—',times:T.g3,nums:[],size:'—',payload:{name:'tail_g3',times:T.g3}});
+    }
+    return rows;
+  }
+  function render(){
+    var host=document.getElementById('a2Table');if(!host)return;
+    var rows=collect();
+    var h='<div style="margin-top:12px;padding:10px;border:1px solid #bd9561;border-radius:10px;direction:rtl">'+
+      '<b>جدول پوزیشن‌ها و بدون پوزیشن (برای استودیو)</b>';
+    if(!rows.length){
+      h+='<div style="opacity:.7;margin-top:6px">هنوز ردیفی ساخته نشده است. اول محاسبه را اجرا کنید.</div>';
+    }else{
+      h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px">'+
+         '<tr><th>#</th><th>نوع</th><th>نام</th><th>علامت</th><th>تایم‌ها</th><th>عددها</th><th>اندازهٔ تایم</th></tr>';
+      rows.forEach(function(r){
+        h+='<tr><td>'+r.seq+'</td><td>'+esc(r.type)+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.sign)+'</td>'+
+           '<td dir="ltr">'+esc(arr(r.times))+'</td><td dir="ltr">'+esc(arr(r.nums))+'</td><td>'+esc(r.size)+'</td></tr>';
+      });
+      h+='</table></div>'+
+         '<button id="a2SendBtn" type="button" style="margin-top:10px;padding:8px 12px;border-radius:8px;border:1px solid #bd9561;background:transparent;color:inherit;cursor:pointer">ارسال به استودیو (با رمز مالک)</button>'+
+         '<div id="a2SendState" style="margin-top:6px;font-size:12px;opacity:.85"></div>';
+    }
+    h+='</div>';
+    host.innerHTML=h;
+    var btn=document.getElementById('a2SendBtn');
+    if(btn)btn.onclick=send;
+  }
+  function send(){
+    var rows=collect(),st=document.getElementById('a2SendState');
+    var chain=prompt('شماره زنجیره (1 یا 2)؟');
+    if(chain!=='1'&&chain!=='2'){if(st)st.textContent='شماره زنجیره معتبر نیست.';return;}
+    var user=prompt('نام کاربری مالک؟');if(!user){if(st)st.textContent='لغو شد.';return;}
+    var pass=prompt('رمز مالک؟');if(!pass){if(st)st.textContent='لغو شد.';return;}
+    var out=rows.map(function(r){return {chain:Number(chain),seq:r.seq,kind:r.kind,payload:r.payload};});
+    if(st)st.textContent='در حال ارسال...';
+    fetch(EQ_AUTH,{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:'saveDrafts',user:user,pass:pass,rows:out})})
+    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(x){
+      if(st)st.textContent=x.j&&x.j.ok?('ارسال شد: '+x.j.count+' ردیف (پیش‌نویس).'):('خطا: '+((x.j&&x.j.error)||'ناشناخته'));
+    })
+    .catch(function(e){if(st)st.textContent='خطا در ارسال: '+e.message;});
+  }
+  window.renderA2Table=render;
+  var target=document.getElementById('a2Eqs');
+  if(target&&window.MutationObserver){new MutationObserver(function(){render();}).observe(target,{childList:true,subtree:true});}
+  render();
+})();
+</script>
 </html>
