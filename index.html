@@ -4424,7 +4424,7 @@ function buildA2(res,E2,E4,E5,E6,O,E1,E3,X){
   const b5=()=>add("⑤ "+t("a2Tbl")+" (−)",a2Block(res,E5||E4,false,0," (−)"));
   first?(b4(),b5()):(b5(),b4());
   // ۶ میکس
-  if(E4&&E5&&E6){const list=orderExtracted([...(P[0]||[]).map(Math.abs),...eq4Nums(E4),...(N[0]||[]).map(x=>-Math.abs(x)),...eq5Nums(E5),...eq4Nums(E6)]);add("⑥ ±",a2From(list," (±)"));}
+  if(E4&&E5&&E6){const list=orderExtracted([...(P[0]||[]).map(Math.abs),...eq4Nums(E4),...(N[0]||[]).map(x=>-Math.abs(x)),...eq5Nums(E5),...eq4Nums(E6)]);add("⑥ ±",a2From(list," (±)"));{const l7=eq78Lists(list);if(l7){blocks.push(`<div class="card">${a2From(l7," (۷)")}</div>`);const l8=eq78Lists(l7);if(l8)blocks.push(`<div class="card">${a2From(l8," (۸)")}</div>`);}}}
   // ردیف دوم به ترتیب ⑨ → ⑧ → ⑦
   if(O&&O[2]&&E6){const list=orderExtracted([...eq4Nums(O[2]),...eq4Nums(E6)].map(x=>O[2].L[0]<0?-x:x));add("⑨ + ⑥",a2From(list," ⑨"));}
   if(O&&O[1])add("⑧ "+t("a2Tbl")+" (−)",a2Block(res,O[1],false,1," ⑧"));
@@ -4680,7 +4680,8 @@ function posPineChain(kind){return Primary473.exportModal(kind==='one'?'one':'ch
 /* L66: خروجی Pine Script (TradingView) برای کل زنجیرهٔ پوزیشن‌ها — یک اندیکاتور، همهٔ پله‌ها و هدف‌ها */
 function posPine(){return Primary473.exportModal('chain');}
 function posRefresh(){if(posRefresh.busy473){posRefresh.pending473=true;return;}posRefresh.busy473=true;try{do{posRefresh.pending473=false;const content=posChainHtml(),root=document.getElementById('primary473');if(root)root.outerHTML=content;else{const box=document.getElementById('a2Eqs');if(box)box.innerHTML=content;}}while(posRefresh.pending473);}finally{posRefresh.busy473=false;}}
-function a2From(list,tag){
+function eq78Lists(list){const S=list.reduce((a,b)=>a+b,0);if(!S||!list.length)return null;const sg=S<0?-1:1;const g=Math.min(...list.map(Math.abs));return [S,S-sg*g,g];}
+  function a2From(list,tag){
   const S=list.reduce((a,b)=>a+b,0);if(!S||!list.length)return "";
   const sg=S<0?-1:1,plus=sg>0;
   const g=list.length?Math.min(...list.map(Math.abs)):1;   // L74: ۰ مجاز
