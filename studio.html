@@ -55,6 +55,7 @@ h1,h2,h3{color:var(--deep)}
 <section class="c2-box" id="chain2Box" aria-label="زنجیرهٔ ۲">
   <h3>زنجیرهٔ ۲ — معادلات معکوس و پوزیشن ۳(۲)</h3>
   <div id="chain2Table"><div class="c2-empty">هنوز داده‌ای از اپ معادلات برای زنجیرهٔ ۲ دریافت نشده است.</div></div>
+  <div style="margin-top:10px"><button id="c2LoadBtn" type="button" style="padding:8px 12px;border-radius:8px;border:1px solid #bd9561;background:transparent;color:inherit;cursor:pointer">دریافت پیش‌نویس‌ها (با رمز مالک)</button> <span id="c2LoadState" style="font-size:12px;opacity:.85"></span></div>
 </section>
 <script>
 /* زنجیرهٔ ۲: هر ردیف = {no, type, numbers:[...], times:[...], size:'small'|'big', note}
@@ -635,4 +636,38 @@ function xlsx(){let headers=['پوزیشن','نماد','تایم‌فریم / م
   show(1);
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a56e19865cb612c6',t:'MTc5NDA3Mjk4MQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a56e19865cb612c6',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
+<script>
+/* دریافت پیش‌نویس‌های هر دو زنجیره (۱ و ۲) از eq-auth با رمز مالک؛ رمز هر بار پرسیده می‌شود */
+(function(){
+  var EQ_AUTH='https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/eq-auth';
+  var btn=document.getElementById('c2LoadBtn'),st=document.getElementById('c2LoadState');
+  if(!btn)return;
+  btn.onclick=function(){
+    var user=prompt('نام کاربری مالک؟');if(!user){if(st)st.textContent='لغو شد.';return;}
+    var pass=prompt('رمز مالک؟');if(!pass){if(st)st.textContent='لغو شد.';return;}
+    if(st)st.textContent='در حال دریافت...';
+    fetch(EQ_AUTH,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'listDrafts',user:user,pass:pass})})
+    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(x){
+      if(!x.j||!x.j.ok){if(st)st.textContent='خطا: '+((x.j&&x.j.error)||'ناشناخته');return;}
+      var rows=(x.j.rows||[]).filter(function(r){return r.chain===1||r.chain===2;})
+        .sort(function(a,b){return a.chain-b.chain||a.seq-b.seq;})
+        .map(function(r){
+          var p=r.payload||{},isPos=r.kind==='position';
+          return {
+            no:r.seq,
+            type:'زنجیرهٔ '+(r.chain===1?'۱':'۲')+' · '+(isPos?'پوزیشن':'بدون پوزیشن'),
+            numbers:isPos?(p.c||[]):(p.L||[]),
+            times:isPos?(p.t||[]):(p.times||[]),
+            size:isPos?'':(p.size||''),
+            note:isPos?(p.tag||''):(p.name||'')
+          };
+        });
+      window.renderChain2Table(rows);
+      if(st)st.textContent=rows.length?('دریافت شد: '+rows.length+' ردیف (پیش‌نویس).'):'هیچ ردیفی پیدا نشد.';
+    })
+    .catch(function(e){if(st)st.textContent='خطا در دریافت: '+e.message;});
+  };
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a56e923949b8e5e5',t:'MTc5NDA3NzkyNQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a56e923949b8e5e5',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
