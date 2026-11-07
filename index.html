@@ -5111,5 +5111,92 @@ function calculateApprovedRail(message){
 })();
 
 </script>
+<script>
+/* eq-auth v1: ورود، ثبت‌نام، بازیابی و مدیریت کاربران از طریق Edge Function (جدول users دیگر برای همه باز نیست) */
+(function(){
+  var EA="https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/eq-auth";
+  var EK="sb_publishable_Ji8dEtvZ7LWz7zKNzI0fgA_hjnAjgNz";
+  var callAuth=async function(body){
+    var r=await fetch(EA,{method:"POST",headers:{"Content-Type":"application/json",apikey:EK},body:JSON.stringify(body)});
+    return r.json();
+  };
+  var errKey={"user exists":"errUser","email exists":"errEmail","bad ref":"errRef","login":"errLogin","not found":"errNoMatch","fill":"errFill"};
+  var msgOf=function(j){return t(errKey[j.error]||"errNet");};
+  var origApi=window.api;
+
+  window.recover=async function(){
+    var e=$("rcErr"),ok=$("rcOk");e.textContent="";ok.textContent="";
+    var user=$("rcUser").value.trim(),email=$("rcEmail").value.trim().toLowerCase(),p1=$("rcPass").value,p2=$("rcPass2").value;
+    if(!user||!email)return e.textContent=t("errFill");
+    if(p1.length<4)return e.textContent=t("errPass");
+    if(p1!==p2)return e.textContent=t("errMatch");
+    try{
+      var j=await callAuth({action:"recover",user:user,email:email,pass:p1});
+      if(!j.ok)return e.textContent=msgOf(j);
+      ok.textContent=t("recoverOk");setTimeout(function(){show("signin");},1200);
+    }catch(err){e.textContent=t("errNet");}
+  };
+
+  window.recoverUser=async function(){
+    var e=$("rcErr"),ok=$("rcOk");e.textContent="";ok.textContent="";
+    var email=$("rcEmail").value.trim().toLowerCase();
+    if(!email)return e.textContent=t("errFill");
+    try{
+      var j=await callAuth({action:"recoverUser",email:email});
+      if(!j.ok)return e.textContent=msgOf(j);
+      ok.textContent=t("yourUser")+": "+j.username;$("rcUser").value=j.username;
+    }catch(err){e.textContent=t("errNet");}
+  };
+
+  window.signup=async function(){
+    var name=$("suName").value.trim(),user=$("suUser").value.trim().toLowerCase(),email=$("suEmail").value.trim().toLowerCase(),p1=$("suPass").value,p2=$("suPass2").value,ref=$("suRef").value.trim().toUpperCase();
+    var e=$("suErr");e.textContent="";
+    if(!name||!user||!email||!p1||!p2)return e.textContent=t("errFill");
+    if(p1!==p2)return e.textContent=t("errPass");
+    try{
+      var j=await callAuth({action:"signup",name:name,user:user,email:email,pass:p1,ref:ref});
+      if(!j.ok)return e.textContent=msgOf(j);
+      window._newSignup=true;login(j.user);
+    }catch(err){e.textContent="Server error: "+err.message;}
+  };
+
+  window.signin=async function(){
+    var user=$("siUser").value.trim().toLowerCase(),p=$("siPass").value;$("siErr").textContent="";
+    try{
+      var j=await callAuth({action:"signin",user:user,pass:p});
+      if(!j.ok)return $("siErr").textContent=t("errLogin");
+      login(j.user);
+    }catch(err){$("siErr").textContent="Server error: "+err.message;}
+  };
+
+  /* مدیریت کاربران: فقط با نام و رمز مدیر (در حافظهٔ همین صفحه نگه داشته می‌شود، ذخیره نمی‌شود) */
+  var getOwner=function(){
+    if(!window.__ownerCreds){
+      window.__ownerCreds={user:prompt("نام کاربری مدیر:")||"",pass:prompt("رمز مدیر:")||""};
+    }
+    return window.__ownerCreds;
+  };
+  window.api=async function(path,opt){
+    opt=opt||{};
+    if(String(path).indexOf("users")===0){
+      var method=opt.method||"GET";
+      if(method==="GET"){
+        var o=getOwner();
+        var g=await callAuth({action:"listUsers",user:o.user,pass:o.pass});
+        if(!g.ok){window.__ownerCreds=null;throw new Error("forbidden");}
+        return g.users;
+      }
+      if(method==="DELETE"){
+        var m=/username=eq\.([^&]+)/.exec(path);
+        var o2=getOwner();
+        var d=await callAuth({action:"deleteUser",user:o2.user,pass:o2.pass,target:decodeURIComponent(m?m[1]:"")});
+        if(!d.ok){window.__ownerCreds=null;throw new Error("forbidden");}
+        return [];
+      }
+    }
+    return origApi(path,opt);
+  };
+})();
+</script>
 </body>
 </html>
