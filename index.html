@@ -4566,7 +4566,26 @@ function buildA2(res,E2,E4,E5,E6,O,E1,E3,X){
    S.push({mark:"🏁 مگا پامپ (③)"});
    const R=window.__REV;if(R){push("🔄","معکوس (+)",R[0],false,false);push("🔄","معکوس (−)",R[1],false,false);push("🔄","معکوس ±",R[2],false,true);}
    S.push({mark:"↻ بعد: همین ترتیب یک بار دیگر ، تا معکوس نهایی"});
-   blocks.push(pathHtml("🧭 مسیر تحلیل ۲ (برای چک)",S,false,"✓ = پوزیشن ؛ بقیه فقط با همین ۳ عدد مسیر را طی می‌کنند ؛ هر عدد = ساعت بعدی روی ساعت ؛ ± = تایم بزرگ (+۱۲). تایم پوزیشن‌ها هنوز از خود زنجیرهٔ پوزیشن می‌آید؛ این فهرست فقط ترتیب و ساعت‌ها را نشان می‌دهد."));}catch(e){console.warn("a2path",e);}
+   blocks.push(pathHtml("🧭 مسیر تحلیل ۲ (برای چک)",S,false,"✓ = پوزیشن ؛ بقیه فقط با همین ۳ عدد مسیر را طی می‌کنند ؛ هر عدد = ساعت بعدی روی ساعت ؛ ± = تایم بزرگ (+۱۲). تایم پوزیشن‌ها هنوز از خود زنجیرهٔ پوزیشن می‌آید؛ این فهرست فقط ترتیب و ساعت‌ها را نشان می‌دهد."));}catch(e){console.warn("a2path",e);} 
+  function a2EqTableHTML(E4,E5,E6){
+  const cell=(label,name,e)=>{
+    if(!e||!e.L||!e.R) return '';
+    const neg=e.L[0]<0;
+    return `<tr><td style="padding:8px 10px;color:#c4b5fd;font-weight:700;white-space:nowrap;vertical-align:top;border-bottom:1px solid rgba(167,139,250,.18)">${label}. ${name}</td><td style="padding:8px 10px;border-bottom:1px solid rgba(167,139,250,.18)">${annotateEqHtml473(eqHtmlF(e),neg,false,e)}</td></tr>`;
+  };
+  let rows=cell('A','معادلهٔ ۴',E4)+cell('B','معادلهٔ ۵',E5)+cell('C','معادلهٔ ۶',E6);
+  if(E6&&E6.L&&E6.R){
+    const l=[E6.L[0],E6.L[1],E6.L[2]];
+    const S=l[0]+l[1]+l[2];
+    const m=Math.min(...l.map(Math.abs));
+    let d=m; while(d>9){d=String(d).split('').reduce((a,b)=>a+ +b,0);}
+    const o7=eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',S,S-d,-d);
+    rows+=cell('D','معادلهٔ ۷',o7);
+  }
+  if(!rows) return '';
+  return `<div style="margin-top:10px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(15,23,42,.6));border:1px solid rgba(167,139,250,.35)"><table dir="rtl" style="width:100%;border-collapse:collapse;font-size:13px;text-align:right"><tbody>${rows}</tbody></table></div>`;
+}
+try{blocks.push(a2EqTableHTML(E4,E5,E6));}catch(e){console.warn("a2eq",e);}
   /* L111 (۲۵ سپتامبر): پوزیشن‌ها — ④ و ⑤ همیشه ؛ ⑦ ، ⑧ ، ⑨ هر کدام در ریل رنگ شد ؛ اگر ± (⑨) در ریل رنگ شد → ⑥ و ⑨ فعال ؛ در آخر ② (معادلهٔ اصلی) */
   {const pick=a2Pick(),pm=a2Combo(O);
    const keep=tg=>["(+)","(-)","(−)","②"].includes(tg)||(tg==="⑦"&&pick==="plus")||(tg==="⑧"&&pick==="minus")||(["⑨","⑥","(±)"].includes(tg)&&pm); // v4.18: ⑤ (−) درست شد + 7→4 | 8→4 | 7و9→6 | 8و9→6 | فقط9→5
