@@ -3690,7 +3690,34 @@ const Primary473=(()=>{
  if(data?.axisMarket){const a=data.axisMarket;html+=`<section class="card" aria-label="ردگیری واقعی محور"><b>محور ${esc(a.symbol||'—')} — فقط High/Low کندل‌های مشخص‌شده</b>${a.box?`<p><bdi dir="ltr">LOW ${a.box.low} / HIGH ${a.box.high}</bdi></p>`:''}<p>وضعیت: ${esc(a.state)}؛ برخورد: ${a.hitAt===null?'تأیید نشده':`<bdi dir="ltr">${stamp(data.date,a.hitAt)}</bdi>`}</p><p>مسیر حاصل از زمان برخورد: <bdi dir="ltr">${esc(a.route.mode)}</bdi></p></section>`;}
  if(data?.returnLeg){const v=data.returnLeg;html+=`<section class="card" aria-label="پوزیشن باکس برگشت"><b>باکس برگشت — مرجع اطمینان، نه شرط ورود</b>${v.rule?`<p>${v.rule.direction==='long'?'صعودی':'نزولی'}: کندل بعد از برخورد ${esc(v.rule.entrySource)} ${v.rule.entryNumber} → 🎯؛ شمارهٔ خروج ${v.rule.output}؛ ارتفاع ${v.rule.height} از شش عدد اصلی.</p>`:''}<p>${esc(v.error||({'pending-axis-route':'مسیر محور معمولی/جداشده در کارت مخصوص خودش بررسی می‌شود؛ باکس برگشت ویژهٔ محور ± غیرجداشده است.','waiting-terminal-price-hit':'محور ±؛ منتظر برخورد واقعی هدف ترمینال.','waiting-height':'منتظر تکمیل خروجِ شماره‌ای و ارتفاع قیمتی.','waiting-entry':'کندل ورود هنوز در دادهٔ قیمت مشاهده نشده است.','waiting-output-and-height':'منتظر تکمیل خروج شماره‌ای و برخورد ارتفاع قیمتی.','complete':'ارتفاع و باقی‌مانده و سه معکوس طی شده‌اند؛ فقط از کندل بعد اجازهٔ الگوی بعدی هست.'})[v.state]||v.state)}</p>${v.price?`<p>هدف قیمتی برگشت: <bdi dir="ltr">${v.price.target===null?'—':Number(v.price.target.toPrecision(15))}</bdi>؛ ${v.price.hitAt===null?'برخورد ارتفاع تأیید نشده':`برخورد ارتفاع: <bdi dir="ltr">${stamp(data.date,v.price.hitAt)}</bdi>`}</p>`:''}${v.box?`<p>باکسِ همان کندل: <bdi dir="ltr">LOW ${v.box.low} / HIGH ${v.box.high}</bdi></p>`:''}${v.plan?`<div>زمان‌های محاسبه‌شده — کندل باکس: <bdi dir="ltr">${stamp(data.date,v.plan.boxAt)}</bdi>؛ ورود: <bdi dir="ltr">${stamp(data.date,v.plan.entry)}</bdi>؛ خروج شماره‌ای: <bdi dir="ltr">${stamp(data.date,v.plan.exit)}</bdi></div>`:''}</section>`;}
  if(data?.continuation){const c=data.continuation;html+=`<section class="card" aria-label="ادامهٔ معادلهٔ بزرگ"><b>ارتفاع معادلهٔ بزرگ: فقط شش عدد اصلی</b>${c.height?`<p><bdi dir="ltr">${c.height.numbers.join(' + ')} = ${c.height.sum}</bdi></p>`:'<p>معادلهٔ بزرگ موجود نیست؛ ارتفاع حدس زده نمی‌شود.</p>'}<p>پس از گرفتن این ارتفاع: باقی‌ماندهٔ معادلهٔ بزرگ → معکوس + → معکوس − → معکوس ± → اجازهٔ الگوی بعدی.</p>${c.groups.map(g=>`<div>${esc(g.label)}: <bdi dir="ltr">${g.numbers.join(' ، ')||'—'}</bdi></div>`).join('')}<p>${c.ready?'مسیر اعداد از استخراج بومی آماده است؛ قفل الگوی بعدی فقط پس از خروج شماره‌ای، برخورد واقعی ارتفاع و تکمیل این مسیر باز می‌شود.':esc(c.missing.join(' '))}</p></section>`;}
- if(data?.third){const z=data.third;html+=`<div class="card"><b>③ — علامت از معادلهٔ ± واقعی ریل</b><pre dir="ltr">${z.numbers.join(' ')} = ${z.sum}\nL = [${z.equation.L.join(', ')}]\nR = [${z.equation.R.join(', ')}]</pre><div>جهت پایه: ${z.direction==='long'?'صعودی':'نزولی'}؛ محور: ${({pm:'±',ordinary:'معمولی',separated:'جداشده',unknown:'نامشخص'})[z.axisKind]}</div><b>${z.thirdPositionForbidden?'محور روی ± است: پوزیشن ③ در هر دو جهت ممنوع است.':'پوزیشن‌های محور معمولی و جداشده طبق شاخهٔ مربوط به خودشان اجرا می‌شوند.'}</b></div>`;}
+ if(data?.third){const z=data.third;html+=`<div class="card"><b>③ — علامت از معادلهٔ ± واقعی ریل</b><pre dir="ltr">${z.numbers.join(' ')} = ${z.sum}\nL = [${z.equation.L.join(', ')}]\nR = [${z.equation.R.join(', ')}]</pre><div>جهت پایه: ${z.direction==='long'?'صعودی':'نزولی'}؛ محور: ${({pm:'±',ordinary:'معمولی',separated:'جداشده',unknown:'نامشخص'})[z.axisKind]}</div><b>${z.thirdPositionForbidden?'محور روی ± است: پوزیشن ③ در هر دو جهت ممنوع است.':'پوزیشن‌های محور معمولی و جداشده طبق شاخهٔ مربوط به خودشان اجرا می‌شوند.'}</b></div>`;} 
+                   // ===== کارت معادلهٔ ۷ (صعودی = منفی، نزولی = مثبت) =====
+function eq7Dsum(v){const s=v<0?-1:1;return s*String(Math.abs(v)).split('').reduce((a,b)=>a+ +b,0);}
+function eq7Chain(v){const out=[v];let last=v;while(Math.abs(last)>9){last=eq7Dsum(last);out.push(last);}if(out.length===1)out.push(v);return out;}
+function eq7Card(x,y,z){
+  const S=x+y+z;
+  let d=Math.min(Math.abs(x),Math.abs(y),Math.abs(z));
+  while(d>9) d=eq7Dsum(d);
+  const L0=S, L1=S-d, L2=L0+L1;
+  const R0=eq7Dsum(L0), R1=eq7Dsum(L1), R2=R0+R1;
+  return {S, gap:(S<0?-d:d), top:[[L0,R0],[L1,R1]], cl:eq7Chain(L2), cr:eq7Chain(R2)};
+}
+function eq7CardText(x,y,z){
+  const c=eq7Card(x,y,z);
+  const sg=v=>(v>0?'+':'')+v;
+  const W=10, pad=(s,w)=>String(s).padStart(w), sep=' '.repeat(12)+'─'.repeat(W*2);
+  const out=[];
+  out.push(' '.repeat(12)+'فاصله = '+c.gap);
+  out.push(' '.repeat(3)+x+' '+sg(y)+' '+sg(z)+' = '+c.S);
+  out.push('');
+  c.top.forEach(([l,r])=>out.push(pad(l,W)+pad(r,W)));
+  const n=Math.max(c.cl.length,c.cr.length);
+  for(let i=0;i<n;i++){
+    out.push(sep);
+    out.push(pad(c.cl[i]??'',W)+pad(c.cr[i]??'',W));
+  }
+  return out.join('\n');
+}
   function eq78Lists(n){const S=n[0]+n[1]+n[2];const m=Math.min(...n.map(Math.abs));let d=m;while(d>9){d=String(d).split('').reduce((a,b)=>a+ +b,0);}return [S,S-d,-d];}
  positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۵:</b> <bdi dir="ltr">${(p.t||[]).join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;
  if(eq5&&typeof eqHtmlF==='function')html+=`<div class="pos-eq5-473">${annotateEqHtml473(eqHtmlF(eq5),p.neg,false,eq5)}${buildEq5RulesHtml(p,r,data?.date,eq5)}</div>`;
