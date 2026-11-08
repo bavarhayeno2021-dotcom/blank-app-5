@@ -1,4 +1,4 @@
-ج<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta name="equations-revision" content="4.73-confirmed-stages-height71-wip"/>
@@ -289,7 +289,7 @@ table.users th{color:var(--red)}
       <div class="chatin"><input id="chatIn" maxlength="500" data-i18n-ph="chatPh"><button class="btn sm" onclick="chatSend()" data-i18n="send"></button></div><div class="err" id="chatErr"></div></div>
     <div id="adminOnly" class="hidden">
     <div class="tabs"><button id="eqTabBtn" class="on" onclick="setTab('eq')" data-i18n="tabEq"></button><button id="railTabBtn" onclick="setTab('rail')" data-i18n="tabRail"></button><button id="tblTabBtn" class="hidden" onclick="setTab('tbl')" data-i18n="tabTbl"></button><button id="a2TabBtn" class="hidden" onclick="setTab('a2')" data-i18n="tabA2"></button><button id="gameTabBtn" onclick="location.href='game'">🎮</button></div>
-    <div id="tabA2" class="hidden"><div id="a2Eqs"></div><div id="a2Table"></div></div>
+    <div id="tabA2" class="hidden"><div id="a2Eqs"></div></div>
 
     <div id="tabTbl" class="hidden">
       <div class="card">
@@ -3691,10 +3691,9 @@ const Primary473=(()=>{
  if(data?.returnLeg){const v=data.returnLeg;html+=`<section class="card" aria-label="پوزیشن باکس برگشت"><b>باکس برگشت — مرجع اطمینان، نه شرط ورود</b>${v.rule?`<p>${v.rule.direction==='long'?'صعودی':'نزولی'}: کندل بعد از برخورد ${esc(v.rule.entrySource)} ${v.rule.entryNumber} → 🎯؛ شمارهٔ خروج ${v.rule.output}؛ ارتفاع ${v.rule.height} از شش عدد اصلی.</p>`:''}<p>${esc(v.error||({'pending-axis-route':'مسیر محور معمولی/جداشده در کارت مخصوص خودش بررسی می‌شود؛ باکس برگشت ویژهٔ محور ± غیرجداشده است.','waiting-terminal-price-hit':'محور ±؛ منتظر برخورد واقعی هدف ترمینال.','waiting-height':'منتظر تکمیل خروجِ شماره‌ای و ارتفاع قیمتی.','waiting-entry':'کندل ورود هنوز در دادهٔ قیمت مشاهده نشده است.','waiting-output-and-height':'منتظر تکمیل خروج شماره‌ای و برخورد ارتفاع قیمتی.','complete':'ارتفاع و باقی‌مانده و سه معکوس طی شده‌اند؛ فقط از کندل بعد اجازهٔ الگوی بعدی هست.'})[v.state]||v.state)}</p>${v.price?`<p>هدف قیمتی برگشت: <bdi dir="ltr">${v.price.target===null?'—':Number(v.price.target.toPrecision(15))}</bdi>؛ ${v.price.hitAt===null?'برخورد ارتفاع تأیید نشده':`برخورد ارتفاع: <bdi dir="ltr">${stamp(data.date,v.price.hitAt)}</bdi>`}</p>`:''}${v.box?`<p>باکسِ همان کندل: <bdi dir="ltr">LOW ${v.box.low} / HIGH ${v.box.high}</bdi></p>`:''}${v.plan?`<div>زمان‌های محاسبه‌شده — کندل باکس: <bdi dir="ltr">${stamp(data.date,v.plan.boxAt)}</bdi>؛ ورود: <bdi dir="ltr">${stamp(data.date,v.plan.entry)}</bdi>؛ خروج شماره‌ای: <bdi dir="ltr">${stamp(data.date,v.plan.exit)}</bdi></div>`:''}</section>`;}
  if(data?.continuation){const c=data.continuation;html+=`<section class="card" aria-label="ادامهٔ معادلهٔ بزرگ"><b>ارتفاع معادلهٔ بزرگ: فقط شش عدد اصلی</b>${c.height?`<p><bdi dir="ltr">${c.height.numbers.join(' + ')} = ${c.height.sum}</bdi></p>`:'<p>معادلهٔ بزرگ موجود نیست؛ ارتفاع حدس زده نمی‌شود.</p>'}<p>پس از گرفتن این ارتفاع: باقی‌ماندهٔ معادلهٔ بزرگ → معکوس + → معکوس − → معکوس ± → اجازهٔ الگوی بعدی.</p>${c.groups.map(g=>`<div>${esc(g.label)}: <bdi dir="ltr">${g.numbers.join(' ، ')||'—'}</bdi></div>`).join('')}<p>${c.ready?'مسیر اعداد از استخراج بومی آماده است؛ قفل الگوی بعدی فقط پس از خروج شماره‌ای، برخورد واقعی ارتفاع و تکمیل این مسیر باز می‌شود.':esc(c.missing.join(' '))}</p></section>`;}
  if(data?.third){const z=data.third;html+=`<div class="card"><b>③ — علامت از معادلهٔ ± واقعی ریل</b><pre dir="ltr">${z.numbers.join(' ')} = ${z.sum}\nL = [${z.equation.L.join(', ')}]\nR = [${z.equation.R.join(', ')}]</pre><div>جهت پایه: ${z.direction==='long'?'صعودی':'نزولی'}؛ محور: ${({pm:'±',ordinary:'معمولی',separated:'جداشده',unknown:'نامشخص'})[z.axisKind]}</div><b>${z.thirdPositionForbidden?'محور روی ± است: پوزیشن ③ در هر دو جهت ممنوع است.':'پوزیشن‌های محور معمولی و جداشده طبق شاخهٔ مربوط به خودشان اجرا می‌شوند.'}</b></div>`;}
-
-positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۵:</b> <bdi dir="ltr">${(p.t||[]).join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;
-if(eq5&&typeof eqHtmlF==='function')html+=`<div class="pos-eq5-473">${annotateEqHtml473(eqHtmlF(eq5),p.neg,false,eq5)}
-if(eq5&&sumEq&&typeof eqFrom==='function'&&typeof eqHtmlF==='function'){const l=p.neg?[-Math.abs(p.purpleLeft),-Math.abs(p.output),-Math.abs(p.purpleRight||p.output)]:[Math.abs(p.purpleLeft),Math.abs(p.gap),Math.abs(p.height??r?.height??0)];const e7=eq78Lists(l);if(e7){const S=l.reduce((a,b)=>a+b,0);html+=`<div class="pos-eq7-473"><div dir="ltr" style="font-family:monospace;text-align:center">${l.map((v,i)=>(v<0?'−':(i?'+':''))+Math.abs(v)).join(' ')} = ${S}</div>${eqHtmlF(eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',e7[0],e7[1],e7[2]))}</div>`;}} ==='function')html+=`<div class="pos-sumeq-473">${annotateEqHtml473(eqHtmlF(sumEq),p.neg,true,sumEq)}${buildSumEqRulesHtml(p,r,data?.date,sumEq)}</div>`;
+ positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۵:</b> <bdi dir="ltr">${(p.t||[]).join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;
+ if(eq5&&typeof eqHtmlF==='function')html+=`<div class="pos-eq5-473">${annotateEqHtml473(eqHtmlF(eq5),p.neg,false,eq5)}${buildEq5RulesHtml(p,r,data?.date,eq5)}</div>`;
+ if(sumEq&&typeof eqHtmlF==='function')html+=`<div class="pos-sumeq-473">${annotateEqHtml473(eqHtmlF(sumEq),p.neg,true,sumEq)}${buildSumEqRulesHtml(p,r,data?.date,sumEq)}</div>`;
  html+=`</div><details><summary>ورودی دستی این معادله — خالی یعنی اتومات</summary>تایم‌ها ${field('t'+i,POS_PRICES['t'+i]??'')} کندل‌ها ${field('c'+i,POS_PRICES['c'+i]??'')}</details></article>`});const remainingNonPositions=(window.__A2SEQ||[]).filter(g=>!g.pos&&!shownNonPositions.has(g.sym+'|'+(g.hours||[]).join(',')));if(remainingNonPositions.length)html+=nonPositionHtml473(remainingNonPositions);return html+'</section>'}
  function iso(date,h,tz){const [y,m,d]=date.split('-').map(Number);const pad=x=>String(x).padStart(2,'0');if(tz==='TH')return `${date}T${pad(h)}:30:00+03:30`;const sun1=month=>1+(7-new Date(Date.UTC(y,month-1,1)).getUTCDay())%7;const wall=Date.UTC(y,m-1,d,h),begin=Date.UTC(y,2,sun1(3)+7,2),end=Date.UTC(y,10,sun1(11),2);return `${date}T${pad(h)}:00:00${wall>=begin&&wall<end?'-04:00':'-05:00'}`}
  function exportCode(kind='one'){const q=calculate(),tpl=document.getElementById(kind==='one'?'pineOneTpl':'pineChainTpl').textContent;if(!tpl.includes('// __DATA473__'))throw Error('قالب اجرای جدید Pine موجود نیست؛ خروجی قبلی صادر نمی‌شود.');
@@ -4681,8 +4680,7 @@ function posPineChain(kind){return Primary473.exportModal(kind==='one'?'one':'ch
 /* L66: خروجی Pine Script (TradingView) برای کل زنجیرهٔ پوزیشن‌ها — یک اندیکاتور، همهٔ پله‌ها و هدف‌ها */
 function posPine(){return Primary473.exportModal('chain');}
 function posRefresh(){if(posRefresh.busy473){posRefresh.pending473=true;return;}posRefresh.busy473=true;try{do{posRefresh.pending473=false;const content=posChainHtml(),root=document.getElementById('primary473');if(root)root.outerHTML=content;else{const box=document.getElementById('a2Eqs');if(box)box.innerHTML=content;}}while(posRefresh.pending473);}finally{posRefresh.busy473=false;}}
-function eq78Lists(list){const S=list.reduce((a,b)=>a+b,0);if(!S||!list.length)return null;const sg=S<0?-1:1;const g=Math.min(...list.map(Math.abs));return [S,S-sg*g,g];}
-  function a2From(list,tag){
+function a2From(list,tag){
   const S=list.reduce((a,b)=>a+b,0);if(!S||!list.length)return "";
   const sg=S<0?-1:1,plus=sg>0;
   const g=list.length?Math.min(...list.map(Math.abs)):1;   // L74: ۰ مجاز
@@ -5113,221 +5111,5 @@ function calculateApprovedRail(message){
 })();
 
 </script>
-<script>
-/* eq-auth v1: ورود، ثبت‌نام، بازیابی و مدیریت کاربران از طریق Edge Function (جدول users دیگر برای همه باز نیست) */
-(function(){
-  var EA="https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/eq-auth";
-  var EK="sb_publishable_Ji8dEtvZ7LWz7zKNzI0fgA_hjnAjgNz";
-  var callAuth=async function(body){
-    var r=await fetch(EA,{method:"POST",headers:{"Content-Type":"application/json",apikey:EK},body:JSON.stringify(body)});
-    return r.json();
-  };
-  var errKey={"user exists":"errUser","email exists":"errEmail","bad ref":"errRef","login":"errLogin","not found":"errNoMatch","fill":"errFill"};
-  var msgOf=function(j){return t(errKey[j.error]||"errNet");};
-  var origApi=window.api;
-
-  window.recover=async function(){
-    var e=$("rcErr"),ok=$("rcOk");e.textContent="";ok.textContent="";
-    var user=$("rcUser").value.trim(),email=$("rcEmail").value.trim().toLowerCase(),p1=$("rcPass").value,p2=$("rcPass2").value;
-    if(!user||!email)return e.textContent=t("errFill");
-    if(p1.length<4)return e.textContent=t("errPass");
-    if(p1!==p2)return e.textContent=t("errMatch");
-    try{
-      var j=await callAuth({action:"recover",user:user,email:email,pass:p1});
-      if(!j.ok)return e.textContent=msgOf(j);
-      ok.textContent=t("recoverOk");setTimeout(function(){show("signin");},1200);
-    }catch(err){e.textContent=t("errNet");}
-  };
-
-  window.recoverUser=async function(){
-    var e=$("rcErr"),ok=$("rcOk");e.textContent="";ok.textContent="";
-    var email=$("rcEmail").value.trim().toLowerCase();
-    if(!email)return e.textContent=t("errFill");
-    try{
-      var j=await callAuth({action:"recoverUser",email:email});
-      if(!j.ok)return e.textContent=msgOf(j);
-      ok.textContent=t("yourUser")+": "+j.username;$("rcUser").value=j.username;
-    }catch(err){e.textContent=t("errNet");}
-  };
-
-  window.signup=async function(){
-    var name=$("suName").value.trim(),user=$("suUser").value.trim().toLowerCase(),email=$("suEmail").value.trim().toLowerCase(),p1=$("suPass").value,p2=$("suPass2").value,ref=$("suRef").value.trim().toUpperCase();
-    var e=$("suErr");e.textContent="";
-    if(!name||!user||!email||!p1||!p2)return e.textContent=t("errFill");
-    if(p1!==p2)return e.textContent=t("errPass");
-    try{
-      var j=await callAuth({action:"signup",name:name,user:user,email:email,pass:p1,ref:ref});
-      if(!j.ok)return e.textContent=msgOf(j);
-      window._newSignup=true;login(j.user);
-    }catch(err){e.textContent="Server error: "+err.message;}
-  };
-
-  window.signin=async function(){
-    var user=$("siUser").value.trim().toLowerCase(),p=$("siPass").value;$("siErr").textContent="";
-    try{
-      var j=await callAuth({action:"signin",user:user,pass:p});
-      if(!j.ok)return $("siErr").textContent=t("errLogin");
-      login(j.user);
-    }catch(err){$("siErr").textContent="Server error: "+err.message;}
-  };
-
-  /* مدیریت کاربران: فقط با نام و رمز مدیر (در حافظهٔ همین صفحه نگه داشته می‌شود، ذخیره نمی‌شود) */
-  var getOwner=function(){
-    if(!window.__ownerCreds){
-      window.__ownerCreds={user:prompt("نام کاربری مدیر:")||"",pass:prompt("رمز مدیر:")||""};
-    }
-    return window.__ownerCreds;
-  };
-  window.api=async function(path,opt){
-    opt=opt||{};
-    if(String(path).indexOf("users")===0){
-      var method=opt.method||"GET";
-      if(method==="GET"){
-        var o=getOwner();
-        var g=await callAuth({action:"listUsers",user:o.user,pass:o.pass});
-        if(!g.ok){window.__ownerCreds=null;throw new Error("forbidden");}
-        return g.users;
-      }
-      if(method==="DELETE"){
-        var m=/username=eq\.([^&]+)/.exec(path);
-        var o2=getOwner();
-        var d=await callAuth({action:"deleteUser",user:o2.user,pass:o2.pass,target:decodeURIComponent(m?m[1]:"")});
-        if(!d.ok){window.__ownerCreds=null;throw new Error("forbidden");}
-        return [];
-      }
-    }
-    return origApi(path,opt);
-  };
-})();
-</script>
-<script id="studioLink473">
-(function(){
-  'use strict';
-  var OWNER_H='2a8888c50f73a801bc009fd0767b21116c53267a639bab618457fcc6a3bddcd0';
-  var HREF='https://thepilottmnl001-2eg.pages.dev/studio.html';
-  async function sha(s){
-    var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
-  }
-  async function isOwner(){
-    try{
-      var c=JSON.parse(localStorage.getItem('fl_cur')||'null');
-      if(!c||typeof c.user!=='string')return false;
-      if(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))return false;
-      return (await sha(c.user.trim().toLowerCase()))===OWNER_H;
-    }catch(e){return false;}
-  }
-  function studioLink(){
-    var wrap=document.createElement('div');
-    wrap.id='studioWrap473';
-    wrap.style.cssText='display:flex;justify-content:center;margin:6px 0 2px';
-    var a=document.createElement('a');
-    a.id='studioLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';
-    a.title='AFICE STUDIO';a.setAttribute('aria-label','AFICE STUDIO');
-    a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 0 260 46" direction="ltr" style="direction:ltr" width="260" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></svg>';
-    a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:260px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
-    wrap.appendChild(a);
-    return wrap;
-  }
-  /* Shows AFICE STUDIO for everyone; AFICE company button only for the owner.
-     Re-checks whenever the login changes (no page reload needed). */
-  async function swap(){
-    var own=await isOwner();
-    var company=document.getElementById('aficeLink473');
-    if(company){
-      /* widen the company mark so the full AFICE word is not clipped */
-      var sv=company.querySelector('svg');
-      if(sv){sv.setAttribute('viewBox','-40 0 150 46');sv.setAttribute('width','150');sv.style.overflow='visible';}
-      company.style.width='150px';
-    }
-    if(company&&company.parentNode)company.parentNode.style.display=own?'':'none';
-    if(!document.getElementById('studioWrap473')){
-      var chat=document.getElementById('chatCard');
-      if(chat&&chat.parentNode)chat.parentNode.insertBefore(studioLink(),chat);
-    }
-  }
-  var lastKey=null,busy=false;
-  async function watch(){
-    if(busy)return;
-    var key=localStorage.getItem('fl_cur')||'';
-    if(key===lastKey)return;
-    busy=true;
-    try{lastKey=key;await swap();}finally{busy=false;}
-  }
-  window.addEventListener('load',function(){setTimeout(watch,300);});
-  setInterval(watch,500);
-})();
-</script>
-
 </body>
-  <script>
-(function(){
-  var EQ_AUTH='https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/eq-auth';
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function arr(a){return Array.isArray(a)?a.join(' ، '):'—';}
-  function collect(){
-    var rows=[],P=window.__POSCHAIN||[],R=window.__REV||[],T=window.__A2TAIL||null;
-    P.forEach(function(p,i){
-      rows.push({kind:'position',seq:i+1,type:'پوزیشن',name:'پوزیشن '+(i+1)+' ('+(p.tag||'')+')',
-        sign:p.neg?'−':'+',times:p.t||[],nums:p.c||[],size:'—',
-        payload:{tag:p.tag||null,neg:!!p.neg,t:p.t||[],c:p.c||[],entry:p.entry==null?null:p.entry}});
-    });
-    var names=['🔄 معکوس (+)','🔄 معکوس (−)','🔄 معکوس ±'],sizes=['کوچک','کوچک','بزرگ'],tails=T?[T.r1,T.r2,T.r3]:[];
-    R.forEach(function(e,i){
-      if(!e)return;
-      rows.push({kind:'no_position',seq:P.length+i+1,type:'بدون پوزیشن',name:names[i]||('معکوس '+(i+1)),
-        sign:e.kind,times:tails[i]||[],nums:e.L||[],size:sizes[i]||'—',
-        payload:{name:names[i],kind:e.kind,L:e.L,R:e.R,gap:e.gap,times:tails[i]||[],size:sizes[i]||null}});
-    });
-    if(T&&Array.isArray(T.g3)&&T.g3.length){
-      rows.push({kind:'no_position',seq:P.length+R.length+1,type:'بدون پوزیشن',name:'③ دنباله (تایم روی چارت)',
-        sign:'—',times:T.g3,nums:[],size:'—',payload:{name:'tail_g3',times:T.g3}});
-    }
-    return rows;
-  }
-  function render(){
-    var host=document.getElementById('a2Table');if(!host)return;
-    var rows=collect();
-    var h='<div style="margin-top:12px;padding:10px;border:1px solid #bd9561;border-radius:10px;direction:rtl">'+
-      '<b>جدول پوزیشن‌ها و بدون پوزیشن (برای استودیو)</b>';
-    if(!rows.length){
-      h+='<div style="opacity:.7;margin-top:6px">هنوز ردیفی ساخته نشده است. اول محاسبه را اجرا کنید.</div>';
-    }else{
-      h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px">'+
-         '<tr><th>#</th><th>نوع</th><th>نام</th><th>علامت</th><th>تایم‌ها</th><th>عددها</th><th>اندازهٔ تایم</th></tr>';
-      rows.forEach(function(r){
-        h+='<tr><td>'+r.seq+'</td><td>'+esc(r.type)+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.sign)+'</td>'+
-           '<td dir="ltr">'+esc(arr(r.times))+'</td><td dir="ltr">'+esc(arr(r.nums))+'</td><td>'+esc(r.size)+'</td></tr>';
-      });
-      h+='</table></div>'+
-         '<button id="a2SendBtn" type="button" style="margin-top:10px;padding:8px 12px;border-radius:8px;border:1px solid #bd9561;background:transparent;color:inherit;cursor:pointer">ارسال به استودیو (با رمز مالک)</button>'+
-         '<div id="a2SendState" style="margin-top:6px;font-size:12px;opacity:.85"></div>';
-    }
-    h+='</div>';
-    host.innerHTML=h;
-    var btn=document.getElementById('a2SendBtn');
-    if(btn)btn.onclick=send;
-  }
-  function send(){
-    var rows=collect(),st=document.getElementById('a2SendState');
-    var chain=prompt('شماره زنجیره (1 یا 2)؟');
-    if(chain!=='1'&&chain!=='2'){if(st)st.textContent='شماره زنجیره معتبر نیست.';return;}
-    var user=prompt('نام کاربری مالک؟');if(!user){if(st)st.textContent='لغو شد.';return;}
-    var pass=prompt('رمز مالک؟');if(!pass){if(st)st.textContent='لغو شد.';return;}
-    var out=rows.map(function(r){return {chain:Number(chain),seq:r.seq,kind:r.kind,payload:r.payload};});
-    if(st)st.textContent='در حال ارسال...';
-    fetch(EQ_AUTH,{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({action:'saveDrafts',user:user,pass:pass,rows:out})})
-    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
-    .then(function(x){
-      if(st)st.textContent=x.j&&x.j.ok?('ارسال شد: '+x.j.count+' ردیف (پیش‌نویس).'):('خطا: '+((x.j&&x.j.error)||'ناشناخته'));
-    })
-    .catch(function(e){if(st)st.textContent='خطا در ارسال: '+e.message;});
-  }
-  window.renderA2Table=render;
-  var target=document.getElementById('a2Eqs');
-  if(target&&window.MutationObserver){new MutationObserver(function(){render();}).observe(target,{childList:true,subtree:true});}
-  render();
-})();
-</script>
 </html>
