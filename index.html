@@ -4567,6 +4567,49 @@ function buildA2(res,E2,E4,E5,E6,O,E1,E3,X){
    const R=window.__REV;if(R){push("🔄","معکوس (+)",R[0],false,false);push("🔄","معکوس (−)",R[1],false,false);push("🔄","معکوس ±",R[2],false,true);}
    S.push({mark:"↻ بعد: همین ترتیب یک بار دیگر ، تا معکوس نهایی"});
    blocks.push(pathHtml("🧭 مسیر تحلیل ۲ (برای چک)",S,false,"✓ = پوزیشن ؛ بقیه فقط با همین ۳ عدد مسیر را طی می‌کنند ؛ هر عدد = ساعت بعدی روی ساعت ؛ ± = تایم بزرگ (+۱۲). تایم پوزیشن‌ها هنوز از خود زنجیرهٔ پوزیشن می‌آید؛ این فهرست فقط ترتیب و ساعت‌ها را نشان می‌دهد."));}catch(e){console.warn("a2path",e);} 
+  function a2Content7A(o){
+  if(!o||!Array.isArray(o.L)||!Array.isArray(o.R)) return null;
+  const abs=Math.abs;
+  const mFn=n=>{const a=abs(n);if(a===12)return 12;const rem=a%11;return a>=11&&rem===0?11:rem;};
+  const chainX=n=>{const out=[];let x=abs(n);while(x>9){x=String(x).split('').reduce((s,c)=>s+ +c,0);out.push(x);}return out;};
+  const lc=chainX(o.L[2]);
+  const m0=abs(o.L[2])>9?mFn(o.L[2]):0;
+  const m1=(lc.length&&abs(lc[0])>9)?mFn(lc[0]):0;
+  const pl=m0+m1;
+  const pr=abs(o.R[2]);
+  const rt=abs(o.R[0]), rm=abs(o.R[1]);
+  const gap=abs(o.gap);
+  const neg=o.kind==='minus';
+      rows+=cell('D','معادلهٔ ۷',o7)+`<tr><td colspan="2" style="padding:0 10px 10px">${a2Eq7ContentHTML(a2Content7A(o7))}</td></tr>`;
+  if(neg){
+    timers=['بنفش چپ '+pl,'خروجی '+rm];
+    candles=[pr,rm,rt,gap];
+  }else{
+    timers=['بنفش چپ '+pl,'فاصله '+gap];
+    candles=[rt,rm,pr,pr];
+  }
+  return {timers,candles,count:candles[2]+candles[3],start:!neg};
+}
+function a2Eq7ContentHTML(info){
+  if(!info) return '';
+  const c=info.candles, t=info.timers||[];
+  const cnt=c[2]+c[3];
+  const rows=[
+    ['⏱ تایم اول', t[0]||''],
+    ['⏱ تایم دوم', t[1]||''],
+    ['🕯 کندل ۱', `${c[0]}`],
+    ['🕯 کندل ۲', `${c[1]}`],
+    ['🎯 نقطهٔ ورود', 'یک کندل بعد از کندل ۲'],
+    ['🕯 کندل ۳', `${c[2]}`],
+    ['🕯 کندل ۴', `${c[3]}`],
+    ['کندل‌های پوزیشن', `${c[2]} + ${c[3]} = ${cnt}`],
+    ['🏁 نقطهٔ پایان', `کندل ${cnt}`]
+  ];
+  if(info.start) rows.push(['🚩 یک کندل بعد پایان', 'نقطهٔ شروع پوزیشن بعد']);
+  const td1='padding:6px 12px;color:#c4b5fd;white-space:nowrap;border-bottom:1px solid rgba(167,139,250,.18);font-weight:600';
+  const td2='padding:6px 12px;color:#f1f5f9;border-bottom:1px solid rgba(167,139,250,.18)';
+  return `<table dir="rtl" style="width:100%;border-collapse:collapse;font-size:13px;text-align:right"><tbody>${rows.map(r=>`<tr><td style="${td1}">${r[0]}</td><td style="${td2}">${r[1]}</td></tr>`).join('')}</tbody></table>`;
+}
   function a2EqTableHTML(E4,E5,E6){
   const cell=(label,name,e)=>{
     if(!e||!e.L||!e.R) return '';
