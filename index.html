@@ -3764,7 +3764,7 @@ function eq7ContentHTML(info){
     ['تعداد کندل پوزیشن', `${c[2]} + ${c[3]} = ${cnt}`],
     ['🏁 نقطهٔ پایان', `کندل ${cnt}`]
   ];
-  if(info.start) rows.push(['🚩 یک کندل بعد', 'شروع پوزیشن بعدی']);
+    if(info.start) rows.push(['🚩 یک کندل بعد پایان', 'نقطهٔ شروع پوزیشن بعد']);
   const td1='padding:7px 12px;color:#c4b5fd;white-space:nowrap;border-bottom:1px solid rgba(167,139,250,.18);font-weight:600';
   const td2='padding:7px 12px;color:#f1f5f9;border-bottom:1px solid rgba(167,139,250,.18)';
   const body=rows.map(r=>`<tr><td style="${td1}">${r[0]}</td><td style="${td2}">${r[1]}</td></tr>`).join('');
