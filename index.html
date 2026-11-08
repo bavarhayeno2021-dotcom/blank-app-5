@@ -3752,11 +3752,31 @@ function eq7ContentHTML(info){
   if(info.start) h+=li(`🚩 یک کندل بعد: شروع پوزیشن بعدی`);
   return h+`</div>`;
 } 
+   // الگوی کندل‌ها بر اساس علامت معادلهٔ ۷
+function eq7AutoCandles(l){
+  const c=eq7Card(l[0],l[1],l[2]);
+  const R0=c.top[0][1], R1=c.top[1][1], R2=c.cr[0], Rroot=c.cr[c.cr.length-1];
+       if(c.S<0) return [abs(Rroot), abs(l[1]), abs(R0), abs(l[2])];
+  return [abs(R0), abs(R1), abs(R2), abs(Rroot)];
+}
+
+// اطلاعات زیر کارت معادلهٔ ۷ — همه از خود معادلهٔ ۷
+// تایم بنفش چپ: مثبت = l0 + l1، منفی = l0 − l1
+function eq7InfoFrom(l){
+  const pos = (l[0]+l[1]+l[2]) >= 0;
+  const abs=Math.abs;
+  const t1 = pos ? l[0]+l[1] : l[0]-l[1];
+  return {
+    timers: ['بنفش چپ '+abs(t1), (pos?'فاصله ':'خروجی ')+abs(l[1])],
+    candles: eq7AutoCandles(l),
+    start: pos
+  };
+}                
   function eq78Lists(n){const S=n[0]+n[1]+n[2];const m=Math.min(...n.map(Math.abs));let d=m;while(d>9){d=String(d).split('').reduce((a,b)=>a+ +b,0);}return [S,S-d,-d];}
  positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۵:</b> <bdi dir="ltr">${(p.t||[]).join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;
  if(eq5&&typeof eqHtmlF==='function')html+=`<div class="pos-eq5-473">${annotateEqHtml473(eqHtmlF(eq5),p.neg,false,eq5)}${buildEq5RulesHtml(p,r,data?.date,eq5)}</div>`;
         if(sumEq&&typeof eqHtmlF==='function')html+=`<div class="pos-sumeq-473">${annotateEqHtml473(eqHtmlF(sumEq),p.neg,true,sumEq)}${buildSumEqRulesHtml(p,r,data?.date,sumEq)}</div>`;        
-         if(typeof eqFrom==='function'&&typeof eqHtmlF==='function'&&r){const l=p.neg?[-Math.abs(r.purpleLeft),-Math.abs(r.output),-Math.abs(r.purpleRight||r.output)]:[Math.abs(r.purpleLeft),Math.abs(r.gap),Math.abs(r.height??0)];const e7=eq78Lists(l);const o7=eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',e7[0],e7[1],e7[2]);html+=`<div class="pos-eq7-473"><div dir="ltr" style="font-family:monospace;text-align:center">${l.map((v,i)=>(v<0?'−':(i?'+':''))+Math.abs(v)).join(' ')} = ${e7[0]<0?'−'+Math.abs(e7[0]):e7[0]}</div>${annotateEqHtml473(eqHtmlF(o7),p.neg,false,o7)}${eq7ContentHTML(r.eq7Info)}</div>`;}  
+          if(typeof eqFrom==='function'&&typeof eqHtmlF==='function'&&r){const l=p.neg?[-Math.abs(r.purpleLeft),-Math.abs(r.output),-Math.abs(r.purpleRight||r.output)]:[Math.abs(r.purpleLeft),Math.abs(r.gap),Math.abs(r.height??0)];const e7=eq78Lists(l);const o7=eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',e7[0],e7[1],e7[2]);html+=`<div class="pos-eq7-473"><div dir="ltr" style="font-family:monospace;text-align:center">${l.map((v,i)=>(v<0?'−':(i?'+':''))+Math.abs(v)).join(' ')} = ${e7[0]<0?'−'+Math.abs(e7[0]):e7[0]}</div>${annotateEqHtml473(eqHtmlF(o7),p.neg,false,o7)}${eq7ContentHTML(eq7InfoFrom(l))}</div>`;}
  html+=`</div><details><summary>ورودی دستی این معادله — خالی یعنی اتومات</summary>تایم‌ها ${field('t'+i,POS_PRICES['t'+i]??'')} کندل‌ها ${field('c'+i,POS_PRICES['c'+i]??'')}</details></article>`});const remainingNonPositions=(window.__A2SEQ||[]).filter(g=>!g.pos&&!shownNonPositions.has(g.sym+'|'+(g.hours||[]).join(',')));if(remainingNonPositions.length)html+=nonPositionHtml473(remainingNonPositions);return html+'</section>'}
  function iso(date,h,tz){const [y,m,d]=date.split('-').map(Number);const pad=x=>String(x).padStart(2,'0');if(tz==='TH')return `${date}T${pad(h)}:30:00+03:30`;const sun1=month=>1+(7-new Date(Date.UTC(y,month-1,1)).getUTCDay())%7;const wall=Date.UTC(y,m-1,d,h),begin=Date.UTC(y,2,sun1(3)+7,2),end=Date.UTC(y,10,sun1(11),2);return `${date}T${pad(h)}:00:00${wall>=begin&&wall<end?'-04:00':'-05:00'}`}
  function exportCode(kind='one'){const q=calculate(),tpl=document.getElementById(kind==='one'?'pineOneTpl':'pineChainTpl').textContent;if(!tpl.includes('// __DATA473__'))throw Error('قالب اجرای جدید Pine موجود نیست؛ خروجی قبلی صادر نمی‌شود.');
