@@ -3782,7 +3782,7 @@ function eq7ContentHTML(info){
   const pr=abs(o.R[2]);
   const rt=abs(o.R[0]), rm=abs(o.R[1]);
   const gap=abs(o.gap);
-      const lOut=String(abs(o.L[2])).split('').reduce((s,c)=>s+ +c,0);
+            const lOut=(n=>{let x=abs(n);while(x>9){x=String(x).split('').reduce((s,c)=>s+ +c,0);}return x;})(o.L[2]);
   const neg=o.kind==='minus';
   let timers, candles;
   if(neg){
