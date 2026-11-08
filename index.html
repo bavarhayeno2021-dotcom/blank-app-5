@@ -3611,8 +3611,8 @@ const Primary473=(()=>{
      if(idx===2){
       tr=tr.replace(/^(\s*<tr[^>]*>\s*)<td><\/td>/,`$1<td class="m"><span class="mate" style="font-weight:800">${lp.m0}</span></td>`);
      }else if(idx===4){
-      tr=tr.replace(/^(\s*<tr[^>]*>\s*)<td class="m"><span class="mate"[^>]*>[^<]+<\/span><\/td>/,`$1<td class="m"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;line-height:1.1"><span class="mate" style="font-weight:800">${lp.m1}</span><div>${badge(1,'left',leftExtra)}<span class="mate" style="font-weight:800;background:#7c4dff;color:#fff">${lp.m0}+${lp.m1}=${lp.sum}</span></div></div></td>`);
-     
+         
+          }
     }else if(lp.m0!==null&&idx===2){
      tr=tr.replace(/^(\s*<tr[^>]*>\s*)<td class="m"><span class="mate"[^>]*>[^<]+<\/span><\/td>/,`$1<td class="m">${badge(1,'left',leftExtra)}<span class="mate" style="font-weight:800">${lp.m0}</span></td>`);
     }else{
