@@ -3799,20 +3799,39 @@ function a2Eq7ContentHTML(info){
   if(!info) return '';
   const c=info.candles, t=info.timers||[];
   const cnt=c[2]+c[3];
+  const ctx=window.__EQ7CUR||null;
+  const td1='padding:6px 12px;color:#c4b5fd;white-space:nowrap;border-bottom:1px solid rgba(167,139,250,.18);font-weight:600';
+  const td2='padding:6px 12px;color:#f1f5f9;border-bottom:1px solid rgba(167,139,250,.18)';
+  let tm1=t[0]||'', tm2=t[1]||'', entryTxt='یک کندل بعد از کندل ۲', exitTxt=`کندل ${cnt}`;
+  if(ctx&&ctx.date&&Number.isFinite(Number(ctx.S))&&t.length>=2){
+    const S=Number(ctx.S);
+    const red=n=>{let x=Math.abs(n);while(x>9){x=String(x).split('').reduce((s,ch)=>s+ +ch,0);}return x;};
+    const dist=h=>((h-S)%24+24)%24||24;
+    const hourOf=v=>{let best=null,bd=99;for(let h=1;h<=23;h++){if(red(h)!==v)continue;const d=dist(h);if(d<bd){bd=d;best=h;}}return best;};
+    const num=s=>{const m=String(s).match(/(\d+)\s*$/);return m?Number(m[1]):NaN;};
+    const hrs=[num(t[0]),num(t[1])].map(v=>Number.isFinite(v)?hourOf(red(v)):null);
+    if(hrs[0]!==null&&hrs[1]!==null){
+      const A=[0,1].map(i=>({i,a:S+dist(hrs[i])})).sort((x,y)=>x.a-y.a);
+      const T1=A[0].a, T2=A[1].a;
+      const c1End=T2+c[0], c2End=c1End+c[1], entry=c2End+1, exit=entry+cnt-1;
+      tm1=`${t[A[0].i]}<br>${stamp(ctx.date,T1)}`;
+      tm2=`${t[A[1].i]}<br>${stamp(ctx.date,T2)}`;
+      entryTxt=`یک کندل بعد از کندل ۲<br>${stamp(ctx.date,entry)}`;
+      exitTxt=`کندل ${cnt}<br>${stamp(ctx.date,exit)}`;
+    }
+  }
   const rows=[
-    ['⏱ تایم اول', t[0]||''],
-    ['⏱ تایم دوم', t[1]||''],
+    ['⏱ تایم اول', tm1],
+    ['⏱ تایم دوم', tm2],
     ['🕯 کندل ۱', `${c[0]}`],
     ['🕯 کندل ۲', `${c[1]}`],
-    ['🎯 نقطهٔ ورود', 'یک کندل بعد از کندل ۲'],
+    ['🎯 نقطهٔ ورود', entryTxt],
     ['🕯 کندل ۳', `${c[2]}`],
     ['🕯 کندل ۴', `${c[3]}`],
     ['کندل‌های پوزیشن', `${c[2]} + ${c[3]} = ${cnt}`],
-    ['🏁 نقطهٔ پایان', `کندل ${cnt}`]
+    ['🏁 نقطهٔ پایان', exitTxt]
   ];
   if(info.start) rows.push(['🚩 یک کندل بعد پایان', 'نقطهٔ شروع پوزیشن بعد']);
-  const td1='padding:6px 12px;color:#c4b5fd;white-space:nowrap;border-bottom:1px solid rgba(167,139,250,.18);font-weight:600';
-  const td2='padding:6px 12px;color:#f1f5f9;border-bottom:1px solid rgba(167,139,250,.18)';
   return `<table dir="rtl" style="width:100%;border-collapse:collapse;font-size:13px;text-align:right"><tbody>${rows.map(r=>`<tr><td style="${td1}">${r[0]}</td><td style="${td2}">${r[1]}</td></tr>`).join('')}</tbody></table>`;
 }
    // الگوی کندل‌ها بر اساس علامت معادلهٔ ۷
@@ -3836,9 +3855,8 @@ function eq7InfoFrom(l){
     start: pos
   };
 }                
-  function eq78Lists(n){const S=n[0]+n[1]+n[2];const m=Math.min(...n.map(Math.abs));let d=m;while(d>9){d=String(d).split('').reduce((a,b)=>a+ +b,0);}return [S,S-d,-d];}
- positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۵:</b> <bdi dir="ltr">${(p.t||[]).join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;
-                           if(r&&r.entry!=null&&r.exit!=null&&data?.date){html+=`<div style="font-size:12px;padding:4px 8px;display:flex;justify-content:space-between;gap:8px"><span>🏁 ورود ${stamp(data.date,r.entry)}</span><span>🏁 پایان ${stamp(data.date,r.exit)}</span></div>`;}
+  function eq78Lists(n){const S=n[0]+n[1]+n[2];const m=Math.min(...n.map(Math.abs));let d=m;while(d>9){d=String(d).split('').reduce((a,b)=>a+ +b,0);}return [S,S-d,-d];}="${i}"><h3>پوزیشن P${,r
+       positions.forEach((p,i)=>{const r=data?.results[i];if(displayGaps[i]?.length){html+=nonPositionHtml473(displayGaps[i]);displayGaps[i].forEach(g=>shownNonPositions.add(g.sym+'|'+(g.hours||[]).join(',')));}window.__EQ7CUR={S:r?.origin,date:data?.date};const eq5=buildEq5(p),sumEq=buildSumEq(p,r);const e7T=(()=>{try{const l=p.neg?[-Math.abs(r.purpleLeft),-Math.abs(r.output),-Math.abs(r.purpleRight||r.output)]:[Math.abs(r.purpleLeft),Math.abs(r.gap),Math.abs(r.height??0)];const e7=eq78Lists(l);const o7=eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',e7[0],e7[1],e7[2]);return a2Content7A(o7).timers.map(s=>s.replace(/^\D+/,''));}catch(e){return [];}})();const orderBar=`<div style="font-size:11px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.45);border-radius:6px;padding:3px 6px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span>⏱ <b>تایم‌های معادلهٔ ۷:</b> <bdi dir="ltr">${e7T.join(' , ')}</bdi></span></div>`;html+=`<article class="card" data-primary-position="${i}"><h3>پوزیشن P${i+1} / معادلهٔ ${ChainTrace473.equation(p.tag)} ${esc(p.tag)} — ${p.neg?'صعودی':'نزولی'}</h3>${orderBar}${r?.timeLeg?`<div class="eq-rules-473" data-entry-addition="same-level-times"><b>پوزیشن افزودهٔ تایم‌های هم‌سطح</b><div>🎯 ورود روی خودِ برخورد تایم دوم: ${stamp(data.date,r.timeLeg.entry)}<br>🏁 خروج روی پایان قبلی 🏁: ${stamp(data.date,r.timeLeg.exit)}؛ ارتفاع کندلی از تایم دوم: ${r.timeLeg.height}</div></div>`:''}<div class="pos-eqs-grid-473">`;                     
                    if(typeof eqFrom==='function'&&typeof eqHtmlF==='function'&&r){try{const l=p.neg?[-Math.abs(r.purpleLeft),-Math.abs(r.output),-Math.abs(r.purpleRight||r.output)]:[Math.abs(r.purpleLeft),Math.abs(r.gap),Math.abs(r.height??0)];const e7=eq78Lists(l);const o7=eqFrom('معادلهٔ ۷ (از معادلهٔ ۶)',e7[0],e7[1],e7[2]);const top=`<div dir="ltr" style="font-family:monospace;text-align:center">${l.map((v,i)=>(v<0?'−':(i?'+':''))+Math.abs(v)).join(' ')} = ${e7[0]<0?'−'+Math.abs(e7[0]):e7[0]}</div>`;html+=`<div class="pos-eq7-473">${top}${annotateEqHtml473(eqHtmlF(o7),p.neg,false,o7)}${a2Eq7ContentHTML(a2Content7A(o7))}</div>`;}catch(e){html+=`<div class="pos-eq7-473">خطای کارت معادلهٔ ۷: ${e&&e.message}</div>`;}} 
                      if(typeof eqFrom==='function'&&typeof eqHtmlF==='function'&&r){try{const l6=p.neg?[-Math.abs(r.purpleLeft),-Math.abs(r.output),-Math.abs(r.purpleRight||r.output)]:[Math.abs(r.purpleLeft),Math.abs(r.gap),Math.abs(r.height??0)];const o6=eqFrom('معادلهٔ ۶',l6[0],l6[1],l6[2]);html+=`<div class="pos-eq6-473">${annotateEqHtml473(eqHtmlF(o6),p.neg,false,o6)}</div>`;}catch(e){}}
         if(sumEq&&typeof eqHtmlF==='function')html+=`<div class="pos-sumeq-473">${annotateEqHtml473(eqHtmlF(sumEq),p.neg,true,sumEq)}${buildSumEqRulesHtml(p,r,data?.date,sumEq)}</div>`;        
