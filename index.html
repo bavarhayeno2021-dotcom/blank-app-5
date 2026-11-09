@@ -3567,7 +3567,7 @@ const Primary473=(()=>{
  }
  function buildSumEq(p,r){
   if(!r||typeof eqFrom!=='function')return null;
-  const e=eqFrom('معادلهٔ جمع اعداد معادلهٔ ۵ '+p.tag,r.L[0],r.L[1],r.gap);
+    const e=eqFrom('معادلهٔ جمع اعداد معادلهٔ ۶ '+p.tag,r.L[0],r.L[1],r.gap);
   e.f='<span style="direction:ltr;unicode-bidi:isolate;display:inline-block">'+r.sorted.map((v,idx)=>p.neg?'−'+v:(idx?'+':'')+v).join(' ')+' = '+(p.neg?'−':'')+r.sum+'</span>';
   return e;
  }
