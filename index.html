@@ -3503,7 +3503,7 @@ const Laws473=(()=>{
   return additions.apply(base,p,CK);
  }
  function gapAdvance(start,steps,CK){let cursor=start;const hits=[];for(const step of steps||[])for(const hour of step.hours||[]){let found=false;for(let k=1;k<=400;k++){const x=cursor+k;if(((x%24)+24)%24===((hour%24)+24)%24&&CK.open(x)){cursor=x;found=true;break}}if(!found)throw Error('ساعت مسیر بدون پوزیشن پیدا نشد.');hits.push({symbol:step.sym,hour,at:cursor})}return {start:hits.length?CK.adv(cursor,1):cursor,hits}}
- function all(positions,start,CK,gaps=[]){let cursor=CK.fwd(start);return positions.map((p,i)=>{const gap=gapAdvance(cursor,gaps[i],CK),r=schedule(p,gap.start,CK);cursor=r.next;return {...r,index:i,tag:p.tag,t:[...p.t],c:[...p.c],equationEntry:p.entry,gapHits:gap.hits}})}
+ function all(positions,start,CK,gaps=[]){let cursor=CK.fwd(start);return positions.map((p,i)=>{const gap=gapAdvance(cursor,gaps[i],CK),r=schedule(p,i>0?CK.adv(gap.start,1):gap.start,CK);cursor=r.next;return {...r,index:i,tag:p.tag,t:[...p.t],c:[...p.c],equationEntry:p.entry,gapHits:gap.hits}})}
  function fromPattern(positions,patternEnd,CK,gaps=[]){if(!Number.isInteger(patternEnd)||!CK.open(patternEnd))throw Error('کندل پایان الگو باید ساعت معتبرِ بازار باز باشد.');const start=CK.adv(patternEnd,1);return all(positions,start,CK,gaps).map(r=>({...r,patternEnd,patternStart:start}));}
  return Object.freeze({inputLedger,derive,schedule,all,fromPattern});
 })();
