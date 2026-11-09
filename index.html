@@ -4196,7 +4196,7 @@ function eqHtml(e,rail){   /* v3.84: rail=true → معادلات ریل */
   const hr=`<tr><td></td><td class="hr"><div></div></td><td class="hr"><div></div></td><td></td></tr>`;
   const rz=!e.mixed&&Math.abs(e.R[0])<=9&&Math.abs(e.R[1])<=9&&Math.abs(rightSum)<=9;   // L78/L99: صفرِ راست فقط وقتی جمع بالای خط تک‌رقمی است
   const lm=[];if(Math.abs(e.L[2])>9)lm.push(mate(e.L[2]));if(leftChain.length&&Math.abs(leftChain[0])>9)lm.push(mate(leftChain[0]));
-  const lSum=lm.length?lm.reduce((a,b)=>a+b,0):null;      // جمع دو هم‌ستون چپ (۵+۱۱=۱۶) در یک خانه
+    const lSum=lm.length?((e.title||'').includes('جمع اعداد')?lm[lm.length-1]:lm.reduce((a,b)=>a+b,0)):null;      // جمع دو هم‌ستون چپ (۵+۱۱=۱۶) در یک خانه
   const lSumCell=`<td class="m"><span class="mate" style="font-weight:800">${lSum}</span></td>`;
   const lRowIdx=(leftChain.length&&Math.abs(leftChain[0])>9)?0:-1;   // روی خط اول زنجیره، وگرنه روی ۲۱۲
   let rows=e.L.map((l,i)=>line((i===2&&lRowIdx===-1&&lSum!==null)?lSumCell:"<td></td>",numHtml(l),i<2?numHtml(e.R[i]):(rz?numHtml(0):(e.mixed?numHtml(e.L[2]):"")),mateCell(0,false))).join("");
