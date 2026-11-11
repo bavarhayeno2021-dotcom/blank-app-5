@@ -4326,6 +4326,7 @@ function autoRail(src){
   T.forEach((el,j)=>{const x=parseInt(el.value,10);if(D[j]&&!isNaN(x))D[j].value=String(3*x);});
   D.forEach((el,j)=>{const x=parseInt(el.value,10);const h=parseInt(H[j]&&H[j].value,10);if(E[j]&&!isNaN(x))E[j].value=String(x+(isNaN(h)?24:h));});
 }
+  const ads=n=>String(Math.abs(n)).split("").reduce((a,b)=>a+ +b,0);
 function orderExtracted(arr){
   // گروه‌بندی بر اساس قدر مطلق (بزرگ→کوچک). در هر گروه با علامتی شروع می‌کنیم که
   // آخرین عدد قبلی داشت (ادامه‌ی همان ستون)، بعد علامت مخالف. شروع کل: علامت بزرگ‌ترین عدد.
