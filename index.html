@@ -373,7 +373,17 @@ table.users th{color:var(--red)}
   <a href="dash.html" style="display:block;margin:8px 0 12px;padding:12px;border-radius:12px;background:linear-gradient(90deg,#7c5cff,#f7c948);color:#111;font-weight:800;text-align:center;text-decoration:none">📊 داشبورد قیف مشتری (زنده)</a>
     <div class="card">
       <div class="top"><h2 data-i18n="adminPanel" style="margin:0"></h2><button class="btn sm sec" onclick="closeAdmin()" data-i18n="back"></button></div>
-      <p><span data-i18n="totalUsers"></span>: <b id="userCount"></b></p>
+            <style>
+            <div class="stwrap"><table class="users" id="userTable"></table></div>
+      #adminView .stc small{display:block;color:#cbb8ff;font-size:13px;margin-bottom:6px}
+      #adminView .stc b{font-size:34px;background:linear-gradient(90deg,#f7c948,#a58bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+      #adminView .stwrap{border-radius:14px;overflow:auto;border:1px solid #7c4dff44}
+      #adminView table.users{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+      #adminView table.users th{position:sticky;top:0;background:#120c2b;color:#cbb8ff;font-weight:600;padding:9px;text-align:right;white-space:nowrap}
+      #adminView table.users td{padding:9px;border-top:1px solid #7c4dff22;white-space:nowrap}
+      #adminView table.users tr:hover td{background:#7c4dff1a}
+      </style>
+      <div class="stc"><small>📊 کل کاربران ثبت‌نام‌شده</small><b id="userCount">0</b></div>
       <div style="overflow-x:auto"><table class="users" id="userTable"></table></div>
     </div>
     <div class="card">
@@ -3954,7 +3964,7 @@ async function signin(){
   const user=$("siUser").value.trim().toLowerCase(),p=$("siPass").value;$("siErr").textContent="";
   try{
     if(REMOTE){
-      const nu=user.replace(/\s+/g,"").replace(/ي/g,"ی").replace(/ك/g,"ک");const h=await sha(p);const r=await api(`users?or=(username.eq.${encodeURIComponent(nu)},email.eq.${encodeURIComponent(nu)})&pass_hash=eq.${h}&select=name,username,email,code,ref,created_at`);
+      function logout(){sessionStorage.removeItem("fl_admin");try{localStorage.removeItem("gate473_open")}catch(e){}$("tblTabBtn").classList.add("hidden");setTab("tbl");CUR=null;localStorage.removeItem("fl_cur");render();}
       if(!r.length)return $("siErr").textContent=t("errLogin");
       const u=r[0];return login({name:u.name,user:u.username,email:u.email,code:u.code,ref:u.ref,date:u.created_at?.slice(0,10)});
     }
@@ -3972,8 +3982,10 @@ function shareLink(){if(navigator.share)navigator.share({title:"thepilottmnl001"
 /* حذف کاربر از پنل مدیریت (Supabase یا حافظهٔ محلی) */
 async function delUser(user){
   if(!confirm("کاربر «"+user+"» حذف شود؟"))return;
-  try{
-    if(REMOTE){await api("users?username=eq."+encodeURIComponent(user),{method:"DELETE"});}
+    const ownerNow=!!(window.gate473IsOwner&&window.gate473IsOwner());
+  if(OPEN_ALL&&!ownerNow){render();setTab("rail");return;}
+  if(!OPEN_ALL&&!isRealAdmin())return;
+    
     else{DB.users=DB.users.filter(x=>x.user!==user);}
     if(CUR&&CUR.user===user)logout();
     ADMIN_REOPEN=true;await openAdmin();
@@ -5250,7 +5262,7 @@ function calculateApprovedRail(message){
  const isOpen=()=>{try{return owner()&&sessionStorage.getItem(KEY)===cur().user.trim().toLowerCase()}catch(e){return false}};
  function deny(){
   let box=document.getElementById('gate473Box');if(box)box.remove();
-  box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
+    const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{localStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
   box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
   box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center"><div style="font-size:28px">🔒</div><b style="display:block;margin:6px 0 10px">ریل و تحلیل ۲ فقط برای حساب مدیر باز است</b><div style="color:#cbb8ff;font-size:14px;margin-bottom:14px">برای ورود باید با حساب مدیر وارد شده باشید.</div><button id="gate473No" style="width:100%;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">باشه</button></div>';
   document.body.appendChild(box);box.querySelector('#gate473No').onclick=()=>box.remove();
