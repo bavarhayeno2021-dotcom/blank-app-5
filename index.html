@@ -3964,7 +3964,7 @@ async function signin(){
   const user=$("siUser").value.trim().toLowerCase(),p=$("siPass").value;$("siErr").textContent="";
   try{
     if(REMOTE){
-      function logout(){sessionStorage.removeItem("fl_admin");try{localStorage.removeItem("gate473_open")}catch(e){}$("tblTabBtn").classList.add("hidden");setTab("tbl");CUR=null;localStorage.removeItem("fl_cur");render();}
+            const nu=user.replace(/\s+/g,"").replace(/ي/g,"ی").replace(/ك/g,"ک");const h=await sha(p);const r=await api(`users?or=(username.eq.${encodeURIComponent(nu)},email.eq.${encodeURIComponent(nu)})&pass_hash=eq.${h}&select=name,username,email,code,ref,created_at`);
       if(!r.length)return $("siErr").textContent=t("errLogin");
       const u=r[0];return login({name:u.name,user:u.username,email:u.email,code:u.code,ref:u.ref,date:u.created_at?.slice(0,10)});
     }
@@ -3982,9 +3982,10 @@ function shareLink(){if(navigator.share)navigator.share({title:"thepilottmnl001"
 /* حذف کاربر از پنل مدیریت (Supabase یا حافظهٔ محلی) */
 async function delUser(user){
   if(!confirm("کاربر «"+user+"» حذف شود؟"))return;
-    const ownerNow=!!(window.gate473IsOwner&&window.gate473IsOwner());
-  if(OPEN_ALL&&!ownerNow){render();setTab("rail");return;}
-  if(!OPEN_ALL&&!isRealAdmin())return;
+      try{
+    if(REMOTE){await api("users?username=eq."+encodeURIComponent(user),{method:"DELETE"});}
+  
+  
     
     else{DB.users=DB.users.filter(x=>x.user!==user);}
     if(CUR&&CUR.user===user)logout();
@@ -5261,7 +5262,7 @@ function calculateApprovedRail(message){
  const owner=()=>{const c=cur();return !!(c&&typeof c.user==='string'&&!(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))&&sha256(c.user.trim().toLowerCase())===OWNER_H);};
  const isOpen=()=>{try{return owner()&&sessionStorage.getItem(KEY)===cur().user.trim().toLowerCase()}catch(e){return false}};
  function deny(){
-  let box=document.getElementById('gate473Box');if(box)box.remove();
+    box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
     const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{localStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
   box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
   box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center"><div style="font-size:28px">🔒</div><b style="display:block;margin:6px 0 10px">ریل و تحلیل ۲ فقط برای حساب مدیر باز است</b><div style="color:#cbb8ff;font-size:14px;margin-bottom:14px">برای ورود باید با حساب مدیر وارد شده باشید.</div><button id="gate473No" style="width:100%;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">باشه</button></div>';
