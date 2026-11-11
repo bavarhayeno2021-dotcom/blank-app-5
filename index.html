@@ -4310,9 +4310,22 @@ function buildRail(){
   let h="<table class='rg'><tr>"+cols.map(([k,i],idx)=>(idx===(R_SIDE==="right"?P:N)?"<th class='sep'></th>":"")+`<th class="${k}">${k==="p"?"+":"−"}</th>`).join("")+"</tr>";
   for(let r=0;r<R;r++)h+="<tr>"+cols.map(([k,i],idx)=>(idx===(R_SIDE==="right"?P:N)?"<td class='sep'>/</td>":"")+`<td><input type="number" inputmode="numeric" data-k="${k}${i}_${r}" value="${r===0?24:(old[k+i+"_"+r]||"")}"></td>`).join("")+"</tr>";
   $("railGrid").innerHTML=h+"</table>";
-  $("railGrid").querySelectorAll("input").forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")runRail();}));
+    $("railGrid").querySelectorAll("input").forEach(i=>{i.addEventListener("keydown",e=>{if(e.key==="Enter")runRail();});i.addEventListener("input",()=>autoRail(i));});
 }
-const ads=n=>String(Math.abs(n)).split("").reduce((a,b)=>a+ +b,0);
+function autoRail(src){
+  const tbl=src.closest("table");if(!tbl)return;
+  const rows=[...tbl.rows],tr=src.closest("tr");
+  if(rows.indexOf(tr)!==3)return;
+  const T=[...rows[3].querySelectorAll("input")];
+  const D=rows[4]?[...rows[4].querySelectorAll("input")]:[];
+  const E=rows[5]?[...rows[5].querySelectorAll("input")]:[];
+  const H=[...rows[1].querySelectorAll("input")];
+  const idx=T.indexOf(src),v=parseInt(src.value,10);
+  if(isNaN(v)||idx<0)return;
+  T.forEach((el,j)=>{if(j>=idx)el.value=String(v+(j-idx));});
+  T.forEach((el,j)=>{const x=parseInt(el.value,10);if(D[j]&&!isNaN(x))D[j].value=String(3*x);});
+  D.forEach((el,j)=>{const x=parseInt(el.value,10);const h=parseInt(H[j]&&H[j].value,10);if(E[j]&&!isNaN(x))E[j].value=String(x+(isNaN(h)?24:h));});
+}
 function orderExtracted(arr){
   // گروه‌بندی بر اساس قدر مطلق (بزرگ→کوچک). در هر گروه با علامتی شروع می‌کنیم که
   // آخرین عدد قبلی داشت (ادامه‌ی همان ستون)، بعد علامت مخالف. شروع کل: علامت بزرگ‌ترین عدد.
