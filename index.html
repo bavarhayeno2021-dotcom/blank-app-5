@@ -3757,12 +3757,12 @@ function eq3Pair2Html473(){
   let rows='';
   for(let i=0;i<k;i++){
     const l=i<L.length?sv(L[i]):'';const r=i<R.length?sv(R[i]):'';
-    const line=i===2?'border-top:1px solid #7c6fb0;':'';
+    const line=i===3?'border-top:1px solid #7c6fb0;':'';
     rows+=`<tr style="${line}"><td style="padding:3px 6px;text-align:center;direction:ltr">${l}</td><td style="padding:3px 6px;text-align:center;direction:ltr">${r}</td></tr>`;
   }
   const card=`<div style="overflow-x:auto;border:1px solid #3a2f63;border-radius:12px;padding:8px 4px">`+
   `<div style="text-align:center;font-weight:700;color:#b39ddb;margin-bottom:4px">معادلهٔ ۳(۲)</div>`+
-  `<table style="margin:0 auto;border-collapse:collapse;font-size:13px">${rows}</table>`+
+ <table style="margin:0 auto;border-collapse:collapse;font-size:13px;direction:ltr">
   `<div style="text-align:center;margin-top:8px;font-size:13px">بنفش راست: <b style="background:#7c4dff;color:#fff;border-radius:6px;padding:1px 6px">${pur}</b></div>`+
   `<div style="text-align:center;font-size:13px">${pur+12} ، ${pur} ، ${pur+12}</div>`+
   `<div style="text-align:center;margin-top:6px;font-size:13px">بنفش چپ: ${pur} + ${pl} = <b>${pur+pl}</b></div></div>`;
