@@ -4442,7 +4442,7 @@ function buildFromRes(res){
   // معادله ۳: بزرگ۱ + بزرگ۲ ؛ فاصله = خروجی معادله ۲ ؛ علامت: منفی اگر هر دو منفی
   const bothPlus=sg1>0&&sg2>0;
   {const A=Math.abs(E1.L[2]),B=Math.abs(E2.L[2]);const g3=ads(Math.min(A,B))||1;const sg=bothPlus?1:-1;   /* فاصله۳ = جمع‌ارقام عدد کوچک‌تر */
-   var E3=eqFrom(t("eqCombo"),sg*(A+B),sg*(A+B)-sg*g3,g3);E3.kind="combo";E3.parts=[sg*A,sg*B];var E3g=g3;}
+   var E3=eqFrom(t("eqCombo"),sg*(A+B),sg*(A+B)-g3,g3);E3.kind="combo";E3.parts=[sg*A,sg*B];var E3g=g3;}
   const gapOf=e=>Math.abs(Math.abs(e.L[1])-Math.abs(e.L[0]));
   const gaps=[gap1,g2,E3g];
   const triple=(arr,name)=>{const Pq=calcPlus(arr),Mq=calcMinus(arr),C=calcCombo(Math.abs(Pq.L[2]),Math.abs(Mq.L[2]));Pq.title=`${name} (+)`;Mq.title=`${name} (−)`;C.title=`${name} ±`;return[Pq,Mq,C];};
