@@ -5246,7 +5246,7 @@ function calculateApprovedRail(message){
   let box=document.getElementById('gate473Box');if(box)box.remove();
   box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
   box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
-  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)"><div style="font-size:28px">🔒</div><b style="display:block;margin:6px 0 12px">کد ورود به ریل و تحلیل ۲</b><input id="gate473In" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #7c4dff;background:#120c2b;color:#fff;font-size:16px;text-align:center" placeholder="کد"><div id="gate473Err" style="color:#ff6b6b;min-height:22px;margin-top:6px;font-size:14px"></div><div style="display:flex;gap:10px;margin-top:6px"><button id="gate473Ok" style="flex:1;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">ورود</button><button id="gate473No" style="flex:1;padding:11px;border:1px solid #7c4dff;border-radius:10px;background:transparent;color:#cbb8ff;font-size:15px">انصراف</button></div></div>';
+  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)"><b style="display:block;margin:6px 0 12px">کد ورود به ریل و تحلیل ۲</b><input id="gate473In" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #7c4dff;background:#120c2b;color:#fff;font-size:16px;text-align:center" placeholder="کد"><div id="gate473Err" style="color:#ff6b6b;min-height:22px;margin-top:6px;font-size:14px"></div><div style="display:flex;gap:10px;margin-top:6px"><button id="gate473Ok" style="flex:1;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">ورود</button><button id="gate473No" style="flex:1;padding:11px;border:1px solid #7c4dff;border-radius:10px;background:transparent;color:#cbb8ff;font-size:15px">انصراف</button></div></div>';
   document.body.appendChild(box);const inp=box.querySelector('#gate473In');setTimeout(()=>inp.focus(),30);
   const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{sessionStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
   box.querySelector('#gate473Ok').onclick=ok;box.querySelector('#gate473No').onclick=()=>box.remove();inp.onkeydown=e=>{if(e.key==='Enter')ok();};
@@ -5266,7 +5266,7 @@ function calculateApprovedRail(message){
   gated.__gate473=true;window.setTab=gated;
   try{setTab=gated}catch(e){}
  }
- const st=document.createElement('style');st.textContent='body:not(.gate473-open) #railTabBtn::after,body:not(.gate473-open) #a2TabBtn::after{content:" 🔒";font-size:.85em}';
+ const st=document.createElement('style');st.textContent='body:not(.gate473-open) #railTabBtn::after,body:not(.gate473-open) #a2TabBtn::after{content:\"\";font-size:.85em}';
  (document.head||document.documentElement).appendChild(st);
  install();
  const boot=()=>{install();mark();
