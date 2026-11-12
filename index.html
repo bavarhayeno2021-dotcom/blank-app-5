@@ -3905,7 +3905,7 @@ function a2Eq7ContentHTML(info){
       const m1=ctx.model===1;const c1End=T2+c[0], c2End=c1End+c[1], entry=m1?T2+1:c2End+1, exit=m1?entry+c[0]+c[1]-1:entry+cnt-1;
       tm1=`${t[A[0].i]}<br>${stamp(ctx.date,T1)}`;
       tm2=`${t[A[1].i]}<br>${stamp(ctx.date,T2)}`;
-      entryTxt=`یک کندل بعد از کندل ۲<br>${stamp(ctx.date,entry)}`;
+      entryTxt=`${m1?'یک کندل بعد از تایم دوم':'یک کندل بعد از کندل ۲'}<br>${stamp(ctx.date,entry)}`;
       exitTxt=`کندل ${cnt}<br>${stamp(ctx.date,exit)}`;
     }
   }
