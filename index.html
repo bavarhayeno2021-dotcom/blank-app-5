@@ -4936,6 +4936,9 @@ function megaNums(ch){const Mq=window.__MEGAQ;if(!Mq)return null;const Q=Mq.Q,ne
 function digitRoot473(n){n=Math.abs(n);while(n>9){n=String(n).split('').reduce((a,b)=>a+ +b,0);}return n;}
 function megaTimerHour473(startMs,value){const h=new Date(startMs);const start=new Date(h.getFullYear(),h.getMonth(),h.getDate(),h.getHours()+1,0,0,0);for(let i=0;i<48;i++){const c=new Date(start.getTime()+i*3600000);if(digitRoot473(c.getHours())===digitRoot473(value))return c;}return null;}
 function megaTimeAddCandles473(ms,n){return ms+n*3600000;}
+function megaSchedInit473(clock,t2,t18){const entry=clock.adv(t18,1);const end29=clock.adv(entry,28);return {t2,t18,entry,end29};}
+function megaSchedSkipped473(clock,end29){const start=clock.adv(end29,1);const end=clock.adv(start,32);return {start,end};}
+function megaSchedMain473(clock,afterMs){const t18=megaTimerHour473(afterMs,18);const t20=t18?megaTimerHour473(t18.getTime(),20):null;return {t18,t20};}
 function megaHtml(ch,mul,dec){const M=megaNums(ch);
   if(!M)return `<div class="card" style="border-color:#f7c94855;direction:rtl"><b>🏁 مگا پامپ</b><div style="color:var(--muted);font-size:13px">معادلهٔ ③ هنوز ساخته نشده</div></div>`;
   const price=parseFloat(POS_PRICES.mega);const tgt=isNaN(price)?null:(M.neg?price+M.total*3/mul:price-M.total*3/mul);   /* v5.09: مگا هم ×۳ */
