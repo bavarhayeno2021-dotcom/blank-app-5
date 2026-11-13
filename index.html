@@ -4933,6 +4933,9 @@ function journalHtml(ch){const lot=+(POS_PRICES.lot||0.01);const perPip=lot*10;l
    (مثل پوزیشن‌ها: همهٔ اعداد معادله منهای فاصله و بنفش‌ها ، به‌اضافهٔ ۴ عدد) — جای L73 */
 function megaNums(ch){const Mq=window.__MEGAQ;if(!Mq)return null;const Q=Mq.Q,neg=Q.L[0]<0,h=eqHeightDetails(Q,neg);
   const nums=[...h.posNums,...Mq.four],sub=h.subNums;return{neg,nums,sub,pre:Mq.pre,four:Mq.four,count:ch.length,total:nums.reduce((a,b)=>a+b,0)-sub.reduce((a,b)=>a+b,0)};}   // L73: مگا = اعداد ± + اعداد زنجیره ۱ (A) هر پوزیشن هم‌جهت
+function digitRoot473(n){n=Math.abs(n);while(n>9){n=String(n).split('').reduce((a,b)=>a+ +b,0);}return n;}
+function megaTimerHour473(startMs,value){const h=new Date(startMs);const start=new Date(h.getFullYear(),h.getMonth(),h.getDate(),h.getHours()+1,0,0,0);for(let i=0;i<48;i++){const c=new Date(start.getTime()+i*3600000);if(digitRoot473(c.getHours())===digitRoot473(value))return c;}return null;}
+function megaTimeAddCandles473(ms,n){return ms+n*3600000;}
 function megaHtml(ch,mul,dec){const M=megaNums(ch);
   if(!M)return `<div class="card" style="border-color:#f7c94855;direction:rtl"><b>🏁 مگا پامپ</b><div style="color:var(--muted);font-size:13px">معادلهٔ ③ هنوز ساخته نشده</div></div>`;
   const price=parseFloat(POS_PRICES.mega);const tgt=isNaN(price)?null:(M.neg?price+M.total*3/mul:price-M.total*3/mul);   /* v5.09: مگا هم ×۳ */
