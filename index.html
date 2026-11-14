@@ -3912,8 +3912,8 @@ function a2Eq7ContentHTML(info){
     }
   }
     const sumEq473=c[1]+c[2]===c[0], ext473=c[0]===18, m12473=!!(ctx&&(ctx.model===1||ctx.model===2));
-  const eP473=sumEq473?'c1':ext473?'c2':m12473?'t2':'sep';
-  const xP473=sumEq473?'c3':ext473?'c4':m12473?'c1':'sep';
+    const eP473=ext473?'c2':sumEq473?'c1':m12473?'t2':'sep';
+    const xP473=ext473?'c4':sumEq473?'c3':m12473?'c1':'sep';
   const eT473=(typeof entryTxt==='string'&&entryTxt.includes('<br>'))?entryTxt.split('<br>')[1]:'';
   const xT473=(typeof exitTxt==='string'&&exitTxt.includes('<br>'))?exitTxt.split('<br>')[1]:'';
   const lb473=(k,base)=>base+(eP473===k?' 🎯':'')+(xP473===k?' 🏁':'');
