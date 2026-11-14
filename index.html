@@ -3912,8 +3912,8 @@ function a2Eq7ContentHTML(info){
     }
   }
                        const close473=Math.abs(c[0]+c[1]-c[2]-c[3])<=1&&!(ctx&&ctx.model===1), ext473=c[0]===18, m12473=!!(ctx&&(ctx.model===1||ctx.model===2));
-        const eP473=(ext473||close473)?'c2':'t2';
-        const xP473=ext473?'c4':m12473?'c1':'c4';
+        const eP473=ext473?'c2':(ctx&&ctx.model===1&&c[1]+c[2]===c[0])?'c1':(close473?'c2':'t2');
+        const xP473=ext473?'c4':(ctx&&ctx.model===1&&c[1]+c[2]===c[0])?'c3':m12473?'c1':'c4';
   const eT473=(typeof entryTxt==='string'&&entryTxt.includes('<br>'))?entryTxt.split('<br>')[1]:'';
   const xT473=(typeof exitTxt==='string'&&exitTxt.includes('<br>'))?exitTxt.split('<br>')[1]:'';
   const lb473=(k,base)=>base+(eP473===k?' 🎯':'')+(xP473===k?' 🏁':'');
