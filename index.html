@@ -3911,7 +3911,7 @@ function a2Eq7ContentHTML(info){
                                   exitTxt=`${m2?'یک کندل بعد از نقطه ورود':'کندل '+(m1?c[0]+c[1]:cnt)}<br>${stamp(ctx.date,exit)}`;
     }
   }
-            const close473=Math.abs(c[2]+c[3]-c[1])<=1&&!(ctx&&ctx.model===1), ext473=c[0]===18, m12473=!!(ctx&&(ctx.model===1||ctx.model===2));
+           Math.abs(c[0]+c[1]-c[2]-c[3])<=1&&!(ctx&&ctx.model===1) 
         const eP473=(ext473||close473)?'c2':'t2';
         const xP473=ext473?'c4':m12473?'c1':'c4';
   const eT473=(typeof entryTxt==='string'&&entryTxt.includes('<br>'))?entryTxt.split('<br>')[1]:'';
