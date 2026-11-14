@@ -3918,21 +3918,20 @@ function a2Eq7ContentHTML(info){
   const xT473=(typeof exitTxt==='string'&&exitTxt.includes('<br>'))?exitTxt.split('<br>')[1]:'';
   const lb473=(k,base)=>base+(eP473===k?' 🎯':'')+(xP473===k?' 🏁':'');
   const vb473=(k,v)=>v+(eP473===k&&eT473?'<br>🎯 '+eT473:'')+(xP473===k&&xT473?'<br>🏁 '+xT473:'');
-  const rows=[
-    ['⏱ تایم اول', tm1],
-    [lb473('t2','⏱ تایم دوم'), tm2],
-    const xT473=(typeof exitTxt==='string'&&exitTxt.includes('<br>'))?exitTxt.split('<br>')[1]:'';
   const ix473=s=>s==='c1'?0:s==='c2'?1:s==='c3'?2:3;
   const useG473=eP473.charAt(0)==='c', sI473=useG473?ix473(eP473):-1, eI473=ix473(xP473);
   const posG473=c.slice(sI473+1,eI473+1).reduce((a,b)=>a+b,0), skipG473=c.slice(eI473+1).reduce((a,b)=>a+b,0);
+  const rows=[
+    ['⏱ تایم اول', tm1],
+    [lb473('t2','⏱ تایم دوم'), tm2],
     [lb473('c1','🕯 کندل ۱'), vb473('c1',`${c[0]}`)],
-    ['کندل‌های پوزیشن', useG473?`${posG473}`:(ctx&&ctx.model===1)
-    ...(xP473==='sep'?[['🏁 نقطهٔ پایان', exitTxt]]:[]),
-    ...(useG473?[['کندل‌های جاافتاده', `${skipG473}`]]:[])
+    [lb473('c2','🕯 کندل ۲'), vb473('c2',`${c[1]}`)],
+    ...(eP473==='sep'?[['🎯 نقطهٔ ورود', entryTxt]]:[]),
     [lb473('c3','🕯 کندل ۳'), vb473('c3',`${c[2]}`)],
     [lb473('c4','🕯 کندل ۴'), vb473('c4',`${c[3]}`)],
-    ['کندل‌های پوزیشن', (ctx&&ctx.model===1)?`${c[0]} + ${c[1]} = ${c[0]+c[1]}`:(ctx&&ctx.model===2)?'1 + 1 = 2':`${c[2]} + ${c[3]} = ${cnt}`],
-    ...(xP473==='sep'?[['🏁 نقطهٔ پایان', exitTxt]]:[])
+    ['کندل‌های پوزیشن', useG473?`${posG473}`:(ctx&&ctx.model===1)?`${c[0]} + ${c[1]} = ${c[0]+c[1]}`:(ctx&&ctx.model===2)?'1 + 1 = 2':`${c[2]} + ${c[3]} = ${cnt}`],
+    ...(xP473==='sep'?[['🏁 نقطهٔ پایان', exitTxt]]:[]),
+    ...(useG473?[['کندل‌های جاافتاده', `${skipG473}`]]:[])
   ];
   if(info.start) rows.push(['🚩 یک کندل بعد پایان', 'نقطهٔ شروع پوزیشن بعد']);
   return `<table dir="rtl" style="width:100%;border-collapse:collapse;font-size:13px;text-align:right"><tbody>${rows.map(r=>`<tr><td style="${td1}">${r[0]}</td><td style="${td2}">${r[1]}</td></tr>`).join('')}</tbody></table>`;
