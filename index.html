@@ -3913,7 +3913,7 @@ function a2Eq7ContentHTML(info){
   }
   const rows=[
     ['⏱ تایم اول', tm1],
-    ['⏱ تایم دوم', tm2],
+        ['⏱ تایم دوم' + ((ctx&&(ctx.model===1||ctx.model===2))?' 🎯':''), tm2],
         ['🕯 کندل ۱' + ((ctx&&(ctx.model===1||ctx.model===2))?' 🏁':''), `${c[0]}`],
     ['🕯 کندل ۲', `${c[1]}`],
     ['🎯 نقطهٔ ورود', entryTxt],
