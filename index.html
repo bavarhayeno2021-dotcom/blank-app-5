@@ -3954,7 +3954,7 @@ function eq7InfoFrom(l){
   const abs=Math.abs;
   const t1 = abs(l[0]);
   return {
-    timers: ['بنفش چپ '+abs(t1), (pos?'فاصله ':'خروجی ')+abs(l[1])],
+        timers: ['بنفش چپ '+abs(t1), (pos?'فاصله ':'خروجی ')+(pos?abs(l[0]-l[1]):abs(l[1]))],
     candles: eq7AutoCandles(l),
     start: pos
   };
