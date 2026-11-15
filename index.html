@@ -4255,7 +4255,7 @@ function render(){
   $("authView").classList.toggle("hidden",!!CUR);$("mainView").classList.toggle("hidden",!CUR);$("adminView").classList.add("hidden");
   if(CUR){$("myCode").textContent=CUR.code;$("myLink").textContent=refShort();}
     $("tblTabBtn").classList.toggle("hidden",!CUR);$("eqTabBtn").classList.toggle("hidden",!CUR);if(CUR&&!isAdmin()&&!$("tabEq").classList.contains("hidden"))setTab("tbl");$("railTabBtn").classList.toggle("hidden",!CUR);$("a2TabBtn").classList.toggle("hidden",!CUR);
-  $("adminOnly").classList.toggle("hidden",!(CUR&&isAdmin()));$("userOnly").classList.toggle("hidden",!!(CUR&&isAdmin()));
+    $("adminOnly").classList.toggle("hidden",!CUR);$("userOnly").classList.toggle("hidden",!!(CUR&&isAdmin()));
   applyI18n();renderMedia();renderLanding();chatStart();if(_rm===null&&REMOTE){_rm=[];loadRemoteMedia();}
 }
 
