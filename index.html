@@ -3877,7 +3877,7 @@ function eq7ContentHTML(info){
   let timers, candles;
   if(neg){
         timers=['بنفش چپ '+pl,'خروجی '+lOut];
-    candles=[pr,rm,rt,gap];
+        candles=[(abs(o.R[2])%11||11),rm,rt,gap];
   }else{
     timers=['بنفش چپ '+pl,'فاصله '+gap];
     const rd=n=>{let x=abs(n);while(x>9){x=String(x).split('').reduce((q,c)=>q+ +c,0);}return x;};
