@@ -3881,7 +3881,7 @@ function eq7ContentHTML(info){
   }else{
     timers=['بنفش چپ '+pl,'فاصله '+gap];
     const rd=n=>{let x=abs(n);while(x>9){x=String(x).split('').reduce((q,c)=>q+ +c,0);}return x;};
-    candles=[rt,rm,pr,rd(pr)];
+        candles=[rt,rm,pr,abs(o.R[2])<=9?0:rd(o.R[2])];
   }
   return {timers,candles,count:candles[2]+candles[3],start:!neg};
 }
