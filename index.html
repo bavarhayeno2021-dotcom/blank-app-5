@@ -3924,7 +3924,7 @@ function a2Eq7ContentHTML(info){
     const lvl473=!!(c[0]+c[1]===c[2]&&c[3]===c[2]);
     const posG473=lvl473?c[2]:c.slice(sI473+1,eI473+1).reduce((a,b)=>a+b,0), skipG473=c.slice(eI473+1).reduce((a,b)=>a+b,0);
   const rows=[
-    ['⏱ تایم اول', tm1],
+    ['⏱ تایم اول', tm1, (window.__POSROWS473=window.__POSROWS473||[]).push({tm1:tm1,tm2:tm2,eT:eT473,xT:xT473,cnt:posG473})],
     [lb473('t2','⏱ تایم دوم'), tm2],
     [lb473('c1','🕯 کندل ۱'), vb473('c1',`${c[0]}`)],
     [lb473('c2','🕯 کندل ۲'), vb473('c2',`${c[1]}`)],
@@ -4372,6 +4372,8 @@ function applyComboColor(container){
 
 /* ================= table tab ================= */
 const OFFS=[0,12,24,48],NB=46;
+  function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML="";return;}const R=window.__POSROWS473||[];const cards=[...document.querySelectorAll("#primary473 article.card[data-primary-position]")];if(!R.length){box.innerHTML='<p style="color:#ffd76a">پوزیشنی برای نمایش نیست. اول position door را باز کنید.</p>';return;}const body=R.map((r,i)=>{const title=cards[i]?cards[i].textContent:"";const dir=title.includes("صعودی")?"BUY":title.includes("نزولی")?"SELL":"—";const cls=dir==="BUY"?"#2ecc71":"#ff5c7a";return `<tbody><tr><td rowspan="3" style="font-weight:bold">P${i+1}</td><td>${r.tm1}<br>${r.tm2}</td><td>🎯 ${r.eT||"—"}</td><td rowspan="3" style="color:${cls};font-weight:bold">${dir}</td><td rowspan="3"><label><input type="checkbox" disabled> منتشر</label></td></tr><tr><td colspan="2">🕯 کندل‌های پوزیشن: ${r.cnt}</td></tr><tr><td></td><td>🏁 ${r.xT||"—"}</td></tr></tbody>`;}).join("");box.innerHTML=`<h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>⏱ تایمرها</th><th>تاریخ</th><th>جهت</th><th>انتشار</th></tr></thead>${body}</table></div>`;}
+function setTab(t){if(t==="a2")
 function setTab(t){if(t==="a2")setTimeout(fillPosTable,0);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",(b.getAttribute("onclick")||"").includes("'"+t+"'")));$("tabEq").classList.toggle("hidden",t!=="eq");$("tabRail").classList.toggle("hidden",t!=="rail");$("tabTbl").classList.toggle("hidden",t!=="tbl");$("tabA2").classList.toggle("hidden",t!=="a2");
   const ord=["eq","rail","tbl","a2"];[...document.querySelectorAll(".tabs button")].forEach((b,i)=>b.classList.toggle("on",ord[i]===t));if(t==="tbl")renderBlocks();if(t==="rail"&&R_SRC==="grid"&&!$("railGrid").innerHTML)buildRail();}
 let TSIGN=1;
@@ -4939,7 +4941,7 @@ function p3Html(){return "";}   /* v5.20: قانون ۷۷ کنار گذاشته 
 function p3HtmlOld(){try{const P3=window.__P3;if(!P3)return "";const nm=i=>i?AXIS_NAMES[i-1].slice(0,1):"—";
   if(P3.on)return `<div style="font-size:12px;color:#ff9800;direction:rtl;margin-top:3px">🔗 قانون ۷۷: محور تعادل ${nm(P3.axisN)} پشت ورود اصلی ${nm(P3.mainE)} ← این پوزیشن بسته نمی‌شود ، دنبالهٔ ③ تا ۴ لول ؛ هدف دوم = هدف ② + ارتفاع ③ <b>${P3.h}</b> (از اعداد ③ منفی‌شده ، نه ۴ لول بنفش) ؛ جهت ②</div>`;
   return `<div style="font-size:11px;color:var(--muted);direction:rtl;margin-top:3px">③ دنباله ندارد (قانون ۷۷: ${P3.mainE?`محور ${nm(P3.axisN)} پشت ورود ${nm(P3.mainE)} نیست`:"هیچ‌کدام از ۷/۸/۹ رنگ نشده"}) ← فقط ② ترمینال</div>`;}catch(x){return "";}}
-function posChainHtml(){return Primary473.render();}
+function posChainHtml(){window.__POSROWS473=[];return Primary473.render();}
 /* L84: ژورنال پوزیشن‌ها — لات (پیش‌فرض ۰.۰۱ = ۰.۱$/پیپ در جفت‌ارزهای دلاری) ، سود در هدف ، ثبت رسید/نرسید ، جمع */
 function journalHtml(ch){const lot=+(POS_PRICES.lot||0.01);const perPip=lot*10;let win=0,loss=0,pnl=0,pips=0;
   ch.forEach((p,i)=>{const total=Math.abs((!p.rev&&p.hNums?[Math.max(...p.hNums)]:p.nums).reduce((a,b)=>a+b,0))/10;   /* v3.83: ژورنال = دورترین هدف */const r=POS_PRICES["r"+i];if(r==="win"){win++;pnl+=total*perPip;pips+=total;}else if(r==="loss"){loss++;}});
