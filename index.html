@@ -4371,7 +4371,7 @@ function applyComboColor(container){
 
 /* ================= table tab ================= */
 const OFFS=[0,12,24,48],NB=46;
-function setTab(t){if(t==="rail")setTimeout(fillPosTable,0);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",(b.getAttribute("onclick")||"").includes("'"+t+"'")));$("tabEq").classList.toggle("hidden",t!=="eq");$("tabRail").classList.toggle("hidden",t!=="rail");$("tabTbl").classList.toggle("hidden",t!=="tbl");$("tabA2").classList.toggle("hidden",t!=="a2");
+function setTab(t){if(t==="a2")setTimeout(fillPosTable,0);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",(b.getAttribute("onclick")||"").includes("'"+t+"'")));$("tabEq").classList.toggle("hidden",t!=="eq");$("tabRail").classList.toggle("hidden",t!=="rail");$("tabTbl").classList.toggle("hidden",t!=="tbl");$("tabA2").classList.toggle("hidden",t!=="a2");
   const ord=["eq","rail","tbl","a2"];[...document.querySelectorAll(".tabs button")].forEach((b,i)=>b.classList.toggle("on",ord[i]===t));if(t==="tbl")renderBlocks();if(t==="rail"&&R_SRC==="grid"&&!$("railGrid").innerHTML)buildRail();}
 let TSIGN=1;
 function tSign(b,v){TSIGN=v;[...b.parentElement.children].forEach(x=>x.classList.toggle("on",x===b));if($("tq").value)tblSearch();}
