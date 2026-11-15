@@ -5254,7 +5254,7 @@ function railNext(){
 }
 
 /* ================= matrix rain ================= */
-  $("tblTabBtn").classList.toggle("hidden",!CUR);$("eqTabBtn").classList.toggle("hidden",!CUR);if(CUR&&!isAdmin()&&!$("tabEq").classList.contains("hidden"))setTab("tbl");$("railTabBtn").classList.toggle("hidden",!CUR);$("a2TabBtn").classList.toggle("hidden",!CUR);
+  (function(){const c=$("matrix"),x=c.getContext("2d");let w,h,cols,drops;const fs=14;
  function rs(){w=c.width=innerWidth;h=c.height=innerHeight;cols=Math.floor(w/fs);drops=Array(cols).fill(0).map(()=>Math.random()*-50);}
  rs();addEventListener("resize",rs);
   setInterval(()=>{if(document.hidden)return;x.fillStyle="rgba(26,16,48,0.1)";x.fillRect(0,0,w,h);x.font=fs+"px monospace";
