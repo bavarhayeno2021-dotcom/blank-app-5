@@ -5257,7 +5257,7 @@ function railNext(){
 (function(){const c=$("matrix"),x=c.getContext("2d");let w,h,cols,drops;const fs=14;
  function rs(){w=c.width=innerWidth;h=c.height=innerHeight;cols=Math.floor(w/fs);drops=Array(cols).fill(0).map(()=>Math.random()*-50);}
  rs();addEventListener("resize",rs);
- setInterval(()=>{x.fillStyle="rgba(26,16,48,0.1)";x.fillRect(0,0,w,h);x.font=fs+"px monospace";
+  setInterval(()=>{if(document.hidden)return;x.fillStyle="rgba(26,16,48,0.1)";x.fillRect(0,0,w,h);x.font=fs+"px monospace";
   for(let i=0;i<cols;i++){x.fillStyle=Math.random()<.1?"#d9c4ff":"#8a63d2";x.fillText(Math.random()<.5?"0":"1",i*fs,drops[i]*fs);if(drops[i]*fs>h&&Math.random()>.975)drops[i]=0;drops[i]++;}},45);})();
 
 /* ================= init ================= */
