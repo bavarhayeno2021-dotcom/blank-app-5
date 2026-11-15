@@ -4400,7 +4400,7 @@ function renderBlocks(hit,places){
 $("tq").addEventListener("keydown",e=>{if(e.key==="Enter")tblSearch();});
 
 /* ================= rail ================= */
-const OPEN_ALL=true; // فعلاً همه‌ی تب‌ها برای همه‌ی کاربران باز است
+const OPEN_ALL=false;
 const isAdmin=()=>OPEN_ALL||sessionStorage.getItem("fl_admin")==="1";
 const isRealAdmin=()=>sessionStorage.getItem("fl_admin")==="1";
 let R_SIDE="right",R_AUTO=true,R_STEPS=[],R_PTR=0,R_SRC="grid";
