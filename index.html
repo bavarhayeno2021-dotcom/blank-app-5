@@ -3952,7 +3952,7 @@ function eq7AutoCandles(l){
 function eq7InfoFrom(l){
   const pos = (l[0]+l[1]+l[2]) >= 0;
   const abs=Math.abs;
-  const t1 = pos ? l[0]+l[1] : l[0]-l[1];
+  const t1 = abs(l[0]);
   return {
     timers: ['بنفش چپ '+abs(t1), (pos?'فاصله ':'خروجی ')+abs(l[1])],
     candles: eq7AutoCandles(l),
