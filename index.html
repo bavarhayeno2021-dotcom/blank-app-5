@@ -3868,7 +3868,7 @@ function eq7ContentHTML(info){
   const lc=chainX(o.L[2]);
   const m0=abs(o.L[2])>9?mFn(o.L[2]):0;
   const m1=(lc.length&&abs(lc[0])>9)?mFn(lc[0]):0;
-  const pl=m0+m1;
+    const pl=m0+(m1===12?1:m1);
   const pr=abs(o.R[2]);
   const rt=abs(o.R[0]), rm=abs(o.R[1]);
   const gap=abs(o.gap);
