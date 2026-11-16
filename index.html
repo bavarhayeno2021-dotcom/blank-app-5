@@ -3922,7 +3922,7 @@ function a2Eq7ContentHTML(info){
     const useG473=eP473.charAt(0)==='c', sI473=useG473?ix473(eP473):-1, eI473=ix473(xP473);
   
     const lvl473=!!(c[0]+c[1]===c[2]&&c[3]===c[2]);
-    const posG473=lvl473?c[2]:c.slice(sI473+1,eI473+1).reduce((a,b)=>a+b,0), skipG473=c.slice(eI473+1).reduce((a,b)=>a+b,0);
+    const posG473=(ctx&&ctx.model===2&&c[0]>=10)?1:lvl473?c[2]:c.slice(sI473+1,eI473+1).reduce((a,b)=>a+b,0), skipG473=c.slice(eI473+1).reduce((a,b)=>a+b,0);
   const rows=[
     ['⏱ تایم اول', tm1, (window.__POSROWS473=window.__POSROWS473||[]).push({tm1:tm1,tm2:tm2,eT:eT473,xT:xT473,cnt:posG473})],
     [lb473('t2','⏱ تایم دوم'), tm2],
