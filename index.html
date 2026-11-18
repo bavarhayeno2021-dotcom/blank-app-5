@@ -3555,7 +3555,7 @@ const Primary473=(()=>{
       document.getElementById('rPos').value='3';document.getElementById('rNeg').value='2';document.getElementById('rRows').value='5';document.getElementById('rPairs').value='auto';
       buildRail();
       const p=[[24,2,18,54,78],[24,5,19,57,81],[24,3,20,60,84]],n=[[24,2,16,48,72],[24,8,17,51,75]];
-                  for(const [side,cols]of [['p',p],['n',n]])cols.forEach((c,i)=>c.forEach((v,j)=>{const el=document.querySelector('[data-k="'+side+i+'_'+j+'"]');if(el)el.value=String(v);}));
+                  
       runRail();
       if(typeof setTab==='function')setTab('a2');
       const p0=document.querySelector('#primary473 article.card[data-primary-position="0"]');
