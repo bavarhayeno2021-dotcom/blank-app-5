@@ -4427,19 +4427,26 @@ function buildRail(){
   $("railGrid").innerHTML=h+"</table>";
     $("railGrid").querySelectorAll("input").forEach(i=>{i.addEventListener("keydown",e=>{if(e.key==="Enter")runRail();});i.addEventListener("input",()=>autoRail(i));});
 }
+  var R_GEAR=1;
+function gearRecalc(){
+  const tbl=$("railGrid").querySelector("table");if(!tbl)return;
+  const rows=[...tbl.rows];if(rows.length<4)return;
+  const T=[...rows[3].querySelectorAll("input")];
+  const D=rows[4]?[...rows[4].querySelectorAll("input")]:[];
+  const E=rows[5]?[...rows[5].querySelectorAll("input")]:[];
+  const H=rows[1]?[...rows[1].querySelectorAll("input")]:[];
+  T.forEach((el,j)=>{const x=parseInt(el.value,10);if(isNaN(x)||!D[j])return;D[j].value=String(x*R_GEAR);const d=parseInt(D[j].value,10);const h=parseInt(H[j]&&H[j].value,10);if(E[j])E[j].value=String(d+(isNaN(h)?24:h));});
+}
+function setGear(k){R_GEAR=k;gearRecalc();}
 function autoRail(src){
   const tbl=src.closest("table");if(!tbl)return;
   const rows=[...tbl.rows],tr=src.closest("tr");
   if(rows.indexOf(tr)!==3)return;
   const T=[...rows[3].querySelectorAll("input")];
-  const D=rows[4]?[...rows[4].querySelectorAll("input")]:[];
-  const E=rows[5]?[...rows[5].querySelectorAll("input")]:[];
-  const H=[...rows[1].querySelectorAll("input")];
   const idx=T.indexOf(src),v=parseInt(src.value,10);
   if(isNaN(v)||idx<0)return;
   T.forEach((el,j)=>{if(j>=idx)el.value=String(v+(j-idx));});
-  T.forEach((el,j)=>{const x=parseInt(el.value,10);if(D[j]&&!isNaN(x))D[j].value=String(3*x);});
-  D.forEach((el,j)=>{const x=parseInt(el.value,10);const h=parseInt(H[j]&&H[j].value,10);if(E[j]&&!isNaN(x))E[j].value=String(x+(isNaN(h)?24:h));});
+  gearRecalc();
 }
   const ads=n=>String(Math.abs(n)).split("").reduce((a,b)=>a+ +b,0);
 function orderExtracted(arr){
