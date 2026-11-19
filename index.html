@@ -3930,7 +3930,7 @@ function a2Eq7ContentHTML(info){
     const lvl473=!!(c[0]+c[1]===c[2]&&c[3]===c[2]);
     const posG473=(ctx&&ctx.model===2&&c[0]>=10)?1:lvl473?c[2]:c.slice(sI473+1,eI473+1).reduce((a,b)=>a+b,0), skipG473=c.slice(eI473+1).reduce((a,b)=>a+b,0);
   const rows=[
-    ['⏱ تایم اول', tm1, (window.__POSROWS473=window.__POSROWS473||[]).push({tm1:tm1,tm2:tm2,eT:eT473,xT:xT473,cnt:posG473})],
+         ['⏱ تایم اول', tm1, (window.__POSROWS473=window.__POSROWS473||[]).push({tm1:tm1,tm2:tm2,eT:eT473,xT:xT473,cnt:posG473,t1:String(tm1).split('<br>')[0].replace(/<[^>]+>/g,'').trim(),t2:String(tm2).split('<br>')[0].replace(/<[^>]+>/g,'').trim(),cs:c.slice(0,4).join(' ')})],
     [lb473('t2','⏱ تایم دوم'), tm2],
     [lb473('c1','🕯 کندل ۱'), vb473('c1',`${c[0]}`)],
     [lb473('c2','🕯 کندل ۲'), vb473('c2',`${c[1]}`)],
