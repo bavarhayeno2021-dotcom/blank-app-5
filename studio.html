@@ -130,20 +130,20 @@ function renderPosCols(){
   var host=$('posColsBox');
   if(!host){document.addEventListener('DOMContentLoaded',renderPosCols,{once:true});return;}
   if(!Array.isArray(state.cols)) state.cols=Array.from({length:6},()=>POS_COLS.map(()=>({t:'',e:null,u:false})));
-  var rows=[];
-  for(var i=0;i<state.count;i++){ if(state.selection[active]&&state.selection[active][i]) rows.push(i); }
+  var picked=[];
+  for(var i=0;i<state.count;i++){ if(state.selection[active]&&state.selection[active][i]) picked.push(i); }
   host.replaceChildren();
-  if(!rows.length){var tip=document.createElement('p');tip.className='tip';tip.textContent='هیچ پوزیشنی برای این رسانه تیک نخورده است.';host.append(tip);return;}
+  if(!picked.length){var tip=document.createElement('p');tip.className='tip';tip.textContent='هیچ پوزیشنی برای این رسانه تیک نخورده است.';host.append(tip);return;}
   var tbl=document.createElement('table');
   tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
   var head=document.createElement('tr');
-  var th0=document.createElement('th');th0.textContent='پوزیشن';th0.style.cssText='padding:4px;border:1px solid #ccc';head.append(th0);
-  POS_COLS.forEach(function(c){var th=document.createElement('th');th.textContent=c.h;th.style.cssText='padding:4px;border:1px solid #ccc';head.append(th);});
+  var hz=document.createElement('th');hz.textContent='ستون';hz.style.cssText='padding:4px;border:1px solid #ccc';head.append(hz);
+  picked.forEach(function(i){var th=document.createElement('th');th.textContent='P'+(i+1);th.style.cssText='padding:4px;border:1px solid #ccc';head.append(th);});
   tbl.append(head);
-  rows.forEach(function(i){
+  POS_COLS.forEach(function(c,k){
     var tr=document.createElement('tr');
-    var td0=document.createElement('td');td0.textContent='P'+(i+1);td0.style.cssText='padding:4px;border:1px solid #ccc';tr.append(td0);
-    POS_COLS.forEach(function(c,k){
+    var th=document.createElement('th');th.textContent=c.h;th.style.cssText='padding:4px;border:1px solid #ccc;text-align:right;white-space:nowrap';tr.append(th);
+    picked.forEach(function(i){
       var cell=state.cols[i][k]||(state.cols[i][k]={t:'',e:null,u:false});
       var td=document.createElement('td');td.style.cssText='padding:4px;border:1px solid #ccc;vertical-align:top';
       var inp=document.createElement('input');inp.value=cell.t||'';inp.style.width='100%';
@@ -738,4 +738,4 @@ inp.addEventListener('input',show);
 fetch(URL,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}}).then(function(r){return r.ok?r.json():[];}).then(function(j){rows=Array.isArray(j)?j:[];show();}).catch(function(){out.textContent='خطا در دریافت اطلاعات';});
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5cf971c19abd376',t:'MTc5NTA5NTI0NA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5cf971c19abd376',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
+</body></html>
