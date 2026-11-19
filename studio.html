@@ -126,40 +126,61 @@ const POS_COLS=[
 ];
 const POS_EMOJIS=['📆','🚩','⏱','🕯','🎯','🏁'];
 function persistAll(){try{localStorage.setItem(key,JSON.stringify(state))}catch(_){}}
+const TOP_ROWS=[{h:'🎯 ورود (تاریخ و ساعت)',g:'entry'},{h:'تعداد کندل',g:'count'},{h:'🏁 پایان (تاریخ و ساعت)',g:'exit'}];
+function topVal(p,g){if(!p)return '';if(g==='entry')return [p.entryDate,p.entryTime].filter(Boolean).join(' · ');if(g==='exit')return [p.endDate,p.endTime].filter(Boolean).join(' · ');return p.candles||'';}
 function renderPosCols(){
   var host=$('posColsBox');
   if(!host){document.addEventListener('DOMContentLoaded',renderPosCols,{once:true});return;}
   if(!Array.isArray(state.cols)) state.cols=Array.from({length:6},()=>POS_COLS.map(()=>({t:'',e:null,u:false})));
-  var picked=[];
-  for(var i=0;i<state.count;i++){ if(state.selection[active]&&state.selection[active][i]) picked.push(i); }
+  if(!Array.isArray(state.top)) state.top=Array.from({length:6},()=>TOP_ROWS.map(()=>({t:'',a:true})));
+  var n=state.count;
+  var sel=state.selection[active]||[];
+  for(var p=0;p<n;p++){
+    TOP_ROWS.forEach(function(g,j){
+      var c=state.top[p][j]||(state.top[p][j]={t:'',a:true});
+      if(c.a) c.t=sel[p]?topVal(state.positions[p],g.g):'';
+    });
+  }
   host.replaceChildren();
-  if(!picked.length){var tip=document.createElement('p');tip.className='tip';tip.textContent='هیچ پوزیشنی برای این رسانه تیک نخورده است.';host.append(tip);return;}
+  if(!n){var tip=document.createElement('p');tip.className='tip';tip.textContent='تعداد پوزیشن‌ها صفر است.';host.append(tip);return;}
   var tbl=document.createElement('table');
   tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
   var head=document.createElement('tr');
-  var hz=document.createElement('th');hz.textContent='ستون';hz.style.cssText='padding:4px;border:1px solid #ccc';head.append(hz);
-  picked.forEach(function(i){var th=document.createElement('th');th.textContent='P'+(i+1);th.style.cssText='padding:4px;border:1px solid #ccc';head.append(th);});
+  var hz=document.createElement('th');hz.textContent='ردیف';hz.style.cssText='padding:4px;border:1px solid #ccc';head.append(hz);
+  for(var q=0;q<n;q++){var th=document.createElement('th');th.textContent='P'+(q+1);th.style.cssText='padding:4px;border:1px solid #ccc';head.append(th);}
   tbl.append(head);
-  POS_COLS.forEach(function(c,k){
+  function addRow(label,getCell,onEdit){
     var tr=document.createElement('tr');
-    var th=document.createElement('th');th.textContent=c.h;th.style.cssText='padding:4px;border:1px solid #ccc;text-align:right;white-space:nowrap';tr.append(th);
-    picked.forEach(function(i){
-      var cell=state.cols[i][k]||(state.cols[i][k]={t:'',e:null,u:false});
-      var td=document.createElement('td');td.style.cssText='padding:4px;border:1px solid #ccc;vertical-align:top';
-      var inp=document.createElement('input');inp.value=cell.t||'';inp.style.width='100%';
-      inp.oninput=function(){cell.t=inp.value;persistAll();};
-      var sel=document.createElement('select');sel.style.width='100%';
-      var o0=document.createElement('option');o0.value='';o0.textContent='—';sel.append(o0);
-      POS_EMOJIS.forEach(function(em){var o=document.createElement('option');o.value=em;o.textContent=em;sel.append(o);});
-      sel.value=(cell.e===null||cell.e===undefined)?c.e:cell.e;
-      sel.onchange=function(){cell.e=sel.value;persistAll();};
-      var lbl=document.createElement('label');var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!cell.u;
-      cb.onchange=function(){cell.u=cb.checked;persistAll();};
-      lbl.append(cb,document.createTextNode(' در متن فیلم'));
-      td.append(inp,sel,document.createElement('br'),lbl);
-      tr.append(td);
-    });
+    var th=document.createElement('th');th.textContent=label;th.style.cssText='padding:4px;border:1px solid #ccc;text-align:right;white-space:nowrap';tr.append(th);
+    for(var p=0;p<n;p++){
+      (function(p){
+        var cell=getCell(p);
+        var td=document.createElement('td');td.style.cssText='padding:4px;border:1px solid #ccc;vertical-align:top';
+        var inp=document.createElement('input');inp.value=cell.t||'';inp.style.width='100%';
+        inp.oninput=function(){cell.t=inp.value;onEdit(cell);persistAll();};
+        td.append(inp);
+        if(onEdit.emoji){
+          var sel2=document.createElement('select');sel2.style.width='100%';
+          var o0=document.createElement('option');o0.value='';o0.textContent='—';sel2.append(o0);
+          POS_EMOJIS.forEach(function(em){var o=document.createElement('option');o.value=em;o.textContent=em;sel2.append(o);});
+          sel2.value=(cell.e===null||cell.e===undefined)?onEdit.emoji:cell.e;
+          sel2.onchange=function(){cell.e=sel2.value;persistAll();};
+          var lbl=document.createElement('label');var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!cell.u;
+          cb.onchange=function(){cell.u=cb.checked;persistAll();};
+          lbl.append(cb,document.createTextNode(' در متن فیلم'));
+          td.append(sel2,document.createElement('br'),lbl);
+        }
+        tr.append(td);
+      })(p);
+    }
     tbl.append(tr);
+  }
+  TOP_ROWS.forEach(function(g,j){
+    addRow(g.h,function(p){return state.top[p][j];},function(c){c.a=false;});
+  });
+  POS_COLS.forEach(function(c,k){
+    var f=function(){};f.emoji=c.e;
+    addRow(c.h,function(p){return state.cols[p][k]||(state.cols[p][k]={t:'',e:null,u:false});},f);
   });
   host.append(tbl);
 }
@@ -738,4 +759,4 @@ inp.addEventListener('input',show);
 fetch(URL,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}}).then(function(r){return r.ok?r.json():[];}).then(function(j){rows=Array.isArray(j)?j:[];show();}).catch(function(){out.textContent='خطا در دریافت اطلاعات';});
 })();
 </script>
-</body></html>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5cff8d6a940ae55',t:'MTc5NTA5OTI0Nw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5cff8d6a940ae55',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
