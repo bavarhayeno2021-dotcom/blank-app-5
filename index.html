@@ -5509,20 +5509,41 @@ function calculateApprovedRail(message){
   var panel=document.createElement('div');
   panel.id='tabDoor';
   panel.className='hidden';
-  a2.parentNode.insertBefore(panel, a2.nextSibling);
+  a2.parentNode.insertBefore(panel, a2);
 
   function uOk(){
     var u=(typeof CUR!=='undefined'&&CUR)?String(CUR.user||'').trim().toLowerCase():'';
     return !!u && sessionStorage.getItem('gate473_open')===u;
   }
-  function renderDoor(){
-    if(!uOk()) return;
+
+  function render(){
+    if(panel.classList.contains('hidden')) return;
+    if(!uOk()){ panel.innerHTML=''; return; }
     var h=posChainHtml();
-    panel.innerHTML=String(h).replace('id="primary473"','id="primary473door"');
-  }
-  function hideDoor(){
-    panel.classList.add('hidden');
-    door.classList.remove('on');
+    var doc=new DOMParser().parseFromString('<body>'+h+'</body>','text/html');
+    var root=doc.querySelector('#primary473');
+    var sec=document.createElement('section');
+    sec.id='doorPos';
+    sec.setAttribute('dir','rtl');
+    var css=root&&root.querySelector('style');
+    if(css){
+      var st=document.createElement('style');
+      st.textContent=css.textContent.replace(/#primary473/g,'#doorPos');
+      sec.appendChild(st);
+    }
+    if(root){
+      var card=document.createElement('div');
+      card.className='card';
+      root.querySelectorAll('label').forEach(function(l){
+        if(l.querySelector('input,select')) card.appendChild(document.importNode(l,true));
+      });
+      sec.appendChild(card);
+      root.querySelectorAll('article.card[data-primary-position]').forEach(function(a){
+        sec.appendChild(document.importNode(a,true));
+      });
+    }
+    panel.innerHTML='';
+    panel.appendChild(sec);
   }
 
   window.showDoor=function(){
@@ -5533,20 +5554,21 @@ function calculateApprovedRail(message){
     document.querySelectorAll('.tabs button').forEach(function(b){ b.classList.remove('on'); });
     panel.classList.remove('hidden');
     door.classList.add('on');
-    renderDoor();
+    render();
   };
   door.setAttribute('onclick','showDoor()');
 
   var origSet=window.setTab;
-  window.setTab=function(t){
-    hideDoor();
+  window.setTab=function(){
+    panel.classList.add('hidden');
+    door.classList.remove('on');
     return origSet.apply(this, arguments);
   };
 
   var origRef=window.posRefresh;
   window.posRefresh=function(){
     var r=origRef.apply(this, arguments);
-    try{ if(!panel.classList.contains('hidden')) renderDoor(); }catch(e){}
+    try{ render(); }catch(e){}
     return r;
   };
 })();
