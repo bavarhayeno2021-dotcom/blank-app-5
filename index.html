@@ -5506,31 +5506,39 @@ function calculateApprovedRail(message){
   var door=document.getElementById('gameTabBtn');
   var a2=document.getElementById('tabA2');
   if(!door||!a2) return;
+
+  // تیک «دو قانون ورودی افزوده» در تب position door 1 پیش‌فرض خاموش است
+  try{
+    if(typeof POS_PRICES!=='undefined' && POS_PRICES.entryAdditions473===undefined){
+      POS_PRICES.entryAdditions473=false;
+      localStorage.setItem('fl_posPrices',JSON.stringify(POS_PRICES));
+    }
+  }catch(e){}
+
   var panel=document.createElement('div');
   panel.id='tabDoor';
   panel.className='hidden';
   a2.parentNode.insertBefore(panel, a2);
 
-  function uOk(){
-    var u=(typeof CUR!=='undefined'&&CUR)?String(CUR.user||'').trim().toLowerCase():'';
-    return !!u && sessionStorage.getItem('gate473_open')===u;
+  function fmtV(x){
+    if(x==null||x==='') return '—';
+    if(x instanceof Date) return x.toISOString().slice(0,16).replace('T',' ');
+    if(typeof x==='object'){
+      if('value' in x) return fmtV(x.value)+(x.at!=null?' · '+fmtV(x.at):'');
+      try{ return JSON.stringify(x).slice(0,60); }catch(e){ return '—'; }
+    }
+    return String(x);
   }
 
   function render(){
     if(panel.classList.contains('hidden')) return;
-    if(!uOk()){ panel.innerHTML=''; return; }
-    var h=posChainHtml();
+    var h;
+    try{ h=posChainHtml(); }catch(e){ panel.innerHTML='<p style="color:#ffd76a">خطا: '+String(e&&e.message||e)+'</p>'; return; }
     var doc=new DOMParser().parseFromString('<body>'+h+'</body>','text/html');
     var root=doc.querySelector('#primary473');
     var sec=document.createElement('section');
-    sec.id='doorPos';
     sec.setAttribute('dir','rtl');
-    var css=root&&root.querySelector('style');
-    if(css){
-      var st=document.createElement('style');
-      st.textContent=css.textContent.replace(/#primary473/g,'#doorPos');
-      sec.appendChild(st);
-    }
+    sec.style.cssText='font-family:system-ui,sans-serif;color:#eee6ff;max-width:100%;overflow-x:hidden;';
     if(root){
       var card=document.createElement('div');
       card.className='card';
@@ -5538,16 +5546,33 @@ function calculateApprovedRail(message){
         if(l.querySelector('input,select')) card.appendChild(document.importNode(l,true));
       });
       sec.appendChild(card);
-      root.querySelectorAll('article.card[data-primary-position]').forEach(function(a){
-        sec.appendChild(document.importNode(a,true));
-      });
     }
+    var P=(window.__PRIMARY473_POSITIONS||[]);
+    var card2=document.createElement('div');
+    card2.className='card';
+    if(!P.length){
+      card2.innerHTML='<p style="color:#ffd76a">پوزیشنی برای زنجیرهٔ ۱ پیدا نشد؛ ابتدا ریل را اجرا کنید.</p>';
+    }else{
+      var rows=P.map(function(p,i){
+        var e=p._ev||{};
+        return '<tr>'+
+          '<td style="white-space:nowrap;padding:4px 6px">پوزیشن '+(i+1)+'</td>'+
+          '<td style="white-space:nowrap;padding:4px 6px">تایم اول: '+fmtV(e.t1)+'</td>'+
+          '<td style="white-space:nowrap;padding:4px 6px">تایم دوم: '+fmtV(e.t2)+'</td>'+
+          '<td style="white-space:nowrap;padding:4px 6px">ورود: '+fmtV(e.ent)+'</td>'+
+          '<td style="white-space:nowrap;padding:4px 6px">خروج: '+fmtV(e.end)+'</td>'+
+          '</tr>';
+      }).join('');
+      card2.innerHTML='<h3 style="font-size:16px;margin:2px 0 10px;text-align:center">زنجیرهٔ ۱</h3>'+
+        '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px;direction:rtl">'+
+        '<tbody>'+rows+'</tbody></table></div>';
+    }
+    sec.appendChild(card2);
     panel.innerHTML='';
     panel.appendChild(sec);
   }
 
   window.showDoor=function(){
-    if(!uOk()){ setTab('a2'); return; }
     ['tabEq','tabRail','tabTbl','tabA2'].forEach(function(id){
       var e=document.getElementById(id); if(e) e.classList.add('hidden');
     });
