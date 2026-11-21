@@ -5503,15 +5503,52 @@ function calculateApprovedRail(message){
   <style>.pos-eq5-473 .eq-rules-473,.pos-sumeq-473 .eq-rules-473{display:none!important}</style>
 <script>
 (function(){
-  var d=document.getElementById('gameTabBtn');
-  if(!d) return;
-  window.__hiDoor=function(){
-    var a=document.getElementById('tabA2');
-    if(!a||a.classList.contains('hidden')) return;
-    document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on');});
-    d.classList.add('on');
+  var door=document.getElementById('gameTabBtn');
+  var a2=document.getElementById('tabA2');
+  if(!door||!a2) return;
+  var panel=document.createElement('div');
+  panel.id='tabDoor';
+  panel.className='hidden';
+  a2.parentNode.insertBefore(panel, a2.nextSibling);
+
+  function uOk(){
+    var u=(typeof CUR!=='undefined'&&CUR)?String(CUR.user||'').trim().toLowerCase():'';
+    return !!u && sessionStorage.getItem('gate473_open')===u;
+  }
+  function renderDoor(){
+    if(!uOk()) return;
+    var h=posChainHtml();
+    panel.innerHTML=String(h).replace('id="primary473"','id="primary473door"');
+  }
+  function hideDoor(){
+    panel.classList.add('hidden');
+    door.classList.remove('on');
+  }
+
+  window.showDoor=function(){
+    if(!uOk()){ setTab('a2'); return; }
+    ['tabEq','tabRail','tabTbl','tabA2'].forEach(function(id){
+      var e=document.getElementById(id); if(e) e.classList.add('hidden');
+    });
+    document.querySelectorAll('.tabs button').forEach(function(b){ b.classList.remove('on'); });
+    panel.classList.remove('hidden');
+    door.classList.add('on');
+    renderDoor();
   };
-  d.setAttribute('onclick',"setTab('a2');setTimeout(window.__hiDoor,30);");
+  door.setAttribute('onclick','showDoor()');
+
+  var origSet=window.setTab;
+  window.setTab=function(t){
+    hideDoor();
+    return origSet.apply(this, arguments);
+  };
+
+  var origRef=window.posRefresh;
+  window.posRefresh=function(){
+    var r=origRef.apply(this, arguments);
+    try{ if(!panel.classList.contains('hidden')) renderDoor(); }catch(e){}
+    return r;
+  };
 })();
 </script>
 </body>
