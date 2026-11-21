@@ -5501,5 +5501,18 @@ function calculateApprovedRail(message){
 })();
 </script>
   <style>.pos-eq5-473 .eq-rules-473,.pos-sumeq-473 .eq-rules-473{display:none!important}</style>
+<script>
+(function(){
+  var d=document.getElementById('gameTabBtn');
+  if(!d) return;
+  window.__hiDoor=function(){
+    var a=document.getElementById('tabA2');
+    if(!a||a.classList.contains('hidden')) return;
+    document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on');});
+    d.classList.add('on');
+  };
+  d.setAttribute('onclick',"setTab('a2');setTimeout(window.__hiDoor,30);");
+})();
+</script>
 </body>
 </html>
