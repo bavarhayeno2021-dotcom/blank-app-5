@@ -4257,7 +4257,7 @@ async function mediaDel(i){const a=MEDIA();const m=a[i];
   const b=a.slice();b.splice(i,1);saveMedia(b);renderMedia();}
 let _taps=0,_tapT=0;function secretTap(){const n=Date.now();if(n-_tapT>1500)_taps=0;_tapT=n;if(++_taps>=5){_taps=0;openAdmin();}} 
   function stamp(date,h){const text=(Number.isFinite(h)&&date?new Date(Date.parse(date+'T00:00:00Z')+h*3600000).toISOString().slice(0,16).replace('T',' '):'—');return '<span dir="ltr"style="white-space:nowrap;display:inline-block">'+(posTZ()==='TH'?text.slice(0,-2)+'30':text)+'</span>';}function fillPosTable(){try{fillPosTableCore();}catch(err){const b=document.getElementById("posTableBox");if(b)b.innerHTML='<p style="color:#ff8a8a">خطای جدول: '+String(err&&err.message||err)+'</p>';}}function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML='<p style="color:#ffd76a">برای دیدن جدول، با حساب مالک وارد شوید و کد را وارد کنید.</p>';return;}let P=[],ev=[];try{const d=Primary473.calculate();P=d.positions||[];ev=d.events||[];}catch(err){box.innerHTML='<p style="color:#ff8a8a">'+esc(err.message)+'</p>';return;}const date=POS_PRICES.date||"";const rows=P.map(p=>{const en=ev.find(x=>x.id===p.id+"/entry");const sd=en?en.side:"?";const side=sd==="LOW"?"BUY":sd==="HIGH"?"SELL":sd;const cls=side==="BUY"?"#2ecc71":"#ff5c7a";return `<tr><td>P${p.positionOrdinal}</td><td>${stamp(date,p.entry)}</td><td>${p.height?.value??''}</td><td style="color:${cls};font-weight:bold">${side}</td><td>${stamp(date,p.exit)}</td><td><label><input type="checkbox" disabled> منتشر</label></td></tr>`;}).join("");box.innerHTML=`<pre style="direction:ltr;white-space:pre-wrap;font-size:11px;text-align:left">${esc(JSON.stringify({p:P[0]||null,ev:ev.slice(0,12)},null,1))}</pre><h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>🎯 ورود</th><th>کندل</th><th>جهت</th><th>🏁 خروج</th><th>انتشار</th></tr></thead><tbody>${rows}</tbody></table></div>`;}
-  function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML="";return;}{const f=document.createElement("iframe");f.title="position door 1";f.srcdoc=document.getElementById("door1Tpl").textContent;const W=760;const w=document.createElement("div");w.style.cssText="width:100%;overflow:hidden;direction:ltr";f.style.cssText="display:block;border:0;background:#fff;width:"+W+"px;transform-origin:0 0";const fit=function(){const cw=w.clientWidth;if(!cw)return;try{f.__h=f.contentDocument.documentElement.scrollHeight+20;f.style.height=f.__h+"px";}catch(e){}if(!f.__h)return;const s=Math.min(1,cw/W);f.style.transform="scale("+s+")";w.style.height=(f.__h*s)+"px";};f.onload=function(){try{f.__h=f.contentDocument.documentElement.scrollHeight+20;f.style.height=f.__h+"px";fit();}catch(e){}};window.addEventListener("resize",fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(w);w.appendChild(f);box.innerHTML="";box.appendChild(w);setTimeout(fit,300);return;}const P=Primary473.calculate().positions||[];const date=POS_PRICES.date||"";const pick=(o,k,dep)=>{if(!o||typeof o!=="object"||(dep||0)>6)return undefined;if(k in o)return o[k];for(const v of Object.values(o)){const r=pick(v,k,(dep||0)+1);if(r!==undefined)return r;}return undefined;};const T=h=>typeof h==="number"&&isFinite(h)?stamp(date,h):"—";const body=P.map((p,i)=>{const side=pick(p,"entrySide");const dir=side==="LOW"?"BUY":side==="HIGH"?"SELL":"—";const cls=dir==="BUY"?"#2ecc71":"#ff5c7a";const t1=pick(p,"t1")||{},t2=pick(p,"t2")||{};const cnt=pick(p,"height");const en=pick(p,"entry"),ex=pick(p,"exit");return `<tbody><tr><td rowspan="3" style="font-weight:bold">P${i+1}</td><td>⏱ ${T(t1.at)} / ${T(t2.at)}</td><td>🎯 ${T(en)}</td><td rowspan="3" style="color:${cls};font-weight:bold">${dir}</td><td rowspan="3"><label><input type="checkbox" disabled> منتشر</label></td></tr><tr><td colspan="2">🕯 تعداد کندل: ${cnt??"—"}</td></tr><tr><td>⏱ —</td><td>🏁 ${T(ex)}</td></tr></tbody>`;}).join("");box.innerHTML=`<h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>⏱ تایمر</th><th>تاریخ</th><th>جهت</th><th>انتشار</th></tr></thead>${body}</table></div>`;}
+  function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML="";return;}const P=Primary473.calculate().positions||[];const date=POS_PRICES.date||"";const pick=(o,k,dep)=>{if(!o||typeof o!=="object"||(dep||0)>6)return undefined;if(k in o)return o[k];for(const v of Object.values(o)){const r=pick(v,k,(dep||0)+1);if(r!==undefined)return r;}return undefined;};const T=h=>typeof h==="number"&&isFinite(h)?stamp(date,h):"—";const body=P.map((p,i)=>{const side=pick(p,"entrySide");const dir=side==="LOW"?"BUY":side==="HIGH"?"SELL":"—";const cls=dir==="BUY"?"#2ecc71":"#ff5c7a";const t1=pick(p,"t1")||{},t2=pick(p,"t2")||{};const cnt=pick(p,"height");const en=pick(p,"entry"),ex=pick(p,"exit");return `<tbody><tr><td rowspan="3" style="font-weight:bold">P${i+1}</td><td>⏱ ${T(t1.at)} / ${T(t2.at)}</td><td>🎯 ${T(en)}</td><td rowspan="3" style="color:${cls};font-weight:bold">${dir}</td><td rowspan="3"><label><input type="checkbox" disabled> منتشر</label></td></tr><tr><td colspan="2">🕯 تعداد کندل: ${cnt??"—"}</td></tr><tr><td>⏱ —</td><td>🏁 ${T(ex)}</td></tr></tbody>`;}).join("");box.innerHTML=`<h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>⏱ تایمر</th><th>تاریخ</th><th>جهت</th><th>انتشار</th></tr></thead>${body}</table></div>`;}
 function closeAdmin(){$("adminView").classList.add("hidden");$("mainView").classList.remove("hidden");if($("rEqs").innerHTML)runRail();}
 function render(){
   $("authView").classList.toggle("hidden",!!CUR);$("mainView").classList.toggle("hidden",!CUR);$("adminView").classList.add("hidden");
@@ -4378,7 +4378,7 @@ function applyComboColor(container){
 
 /* ================= table tab ================= */
 const OFFS=[0,12,24,48],NB=46;
-function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML="";return;}{const f=document.createElement("iframe");f.title="position door 1";f.srcdoc=document.getElementById("door1Tpl").textContent;const W=760;const w=document.createElement("div");w.style.cssText="width:100%;overflow:hidden;direction:ltr";f.style.cssText="display:block;border:0;background:#fff;width:"+W+"px;transform-origin:0 0";const fit=function(){const cw=w.clientWidth;if(!cw)return;try{f.__h=f.contentDocument.documentElement.scrollHeight+20;f.style.height=f.__h+"px";}catch(e){}if(!f.__h)return;const s=Math.min(1,cw/W);f.style.transform="scale("+s+")";w.style.height=(f.__h*s)+"px";};f.onload=function(){try{f.__h=f.contentDocument.documentElement.scrollHeight+20;f.style.height=f.__h+"px";fit();}catch(e){}};window.addEventListener("resize",fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(w);w.appendChild(f);box.innerHTML="";box.appendChild(w);setTimeout(fit,300);return;}const R=window.__POSROWS473||[];const cards=[...document.querySelectorAll("#primary473 article.card[data-primary-position]")];const MG=[{t:"⏱ 3 نوامبر 11:00 / 18:00",e:"3 نوامبر 19:00",n:27,x:"4 نوامبر 21:00",l:"مگا اولیه"},{t:"⏱ 6 نوامبر 09:00 / 11:00",e:"6 نوامبر 12:00",n:31,x:"9 نوامبر 18:00",l:"مگا اصلی"}];const rowHtml=(lbl,t,e,c,x,dir)=>{const cls=dir==="BUY"?"#2ecc71":"#ff5c7a";return `<tbody><tr><td rowspan="3" style="font-weight:bold">${lbl}</td><td>${t}</td><td>🎯 ${e||"—"}</td><td rowspan="3" style="color:${cls};font-weight:bold">${dir}</td><td rowspan="3"><label><input type="checkbox" disabled> منتشر</label></td></tr><tr><td colspan="2">🕯 کندل‌های پوزیشن: ${c}</td></tr><tr><td></td><td>🏁 ${x||"—"}</td></tr></tbody>`;};if(!R.length&&!MG.length){box.innerHTML='<p style="color:#ffd76a">پوزیشنی برای نمایش نیست. اول position door را باز کنید.</p>';return;}const body=R.map((r,i)=>{const title=cards[i]?cards[i].textContent:"";const dir=title.includes("صعودی")?"BUY":title.includes("نزولی")?"SELL":"—";return rowHtml("P"+(i+1),r.tm1+"<br>"+r.tm2,r.eT,r.cnt,r.xT,dir);}).join("")+MG.map(m=>rowHtml(m.l,m.t,m.e,m.n,m.x,"BUY")).join("");box.innerHTML=`<h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>⏱ تایمرها</th><th>تاریخ</th><th>جهت</th><th>انتشار</th></tr></thead>${body}</table></div>`;} 
+function fillPosTableCore(){const box=document.getElementById("posTableBox");if(!box)return;const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){box.innerHTML="";return;}const R=window.__POSROWS473||[];const cards=[...document.querySelectorAll("#primary473 article.card[data-primary-position]")];const MG=[{t:"⏱ 3 نوامبر 11:00 / 18:00",e:"3 نوامبر 19:00",n:27,x:"4 نوامبر 21:00",l:"مگا اولیه"},{t:"⏱ 6 نوامبر 09:00 / 11:00",e:"6 نوامبر 12:00",n:31,x:"9 نوامبر 18:00",l:"مگا اصلی"}];const rowHtml=(lbl,t,e,c,x,dir)=>{const cls=dir==="BUY"?"#2ecc71":"#ff5c7a";return `<tbody><tr><td rowspan="3" style="font-weight:bold">${lbl}</td><td>${t}</td><td>🎯 ${e||"—"}</td><td rowspan="3" style="color:${cls};font-weight:bold">${dir}</td><td rowspan="3"><label><input type="checkbox" disabled> منتشر</label></td></tr><tr><td colspan="2">🕯 کندل‌های پوزیشن: ${c}</td></tr><tr><td></td><td>🏁 ${x||"—"}</td></tr></tbody>`;};if(!R.length&&!MG.length){box.innerHTML='<p style="color:#ffd76a">پوزیشنی برای نمایش نیست. اول position door را باز کنید.</p>';return;}const body=R.map((r,i)=>{const title=cards[i]?cards[i].textContent:"";const dir=title.includes("صعودی")?"BUY":title.includes("نزولی")?"SELL":"—";return rowHtml("P"+(i+1),r.tm1+"<br>"+r.tm2,r.eT,r.cnt,r.xT,dir);}).join("")+MG.map(m=>rowHtml(m.l,m.t,m.e,m.n,m.x,"BUY")).join("");box.innerHTML=`<h2>پوزیشن‌ها</h2><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>#</th><th>⏱ تایمرها</th><th>تاریخ</th><th>جهت</th><th>انتشار</th></tr></thead>${body}</table></div>`;} 
   async function studioTransfer473(){const u=CUR&&String(CUR.user||"").trim().toLowerCase();if(!u||sessionStorage.getItem("gate473_open")!==u){alert("اول با حساب مالک وارد شوید");return;}let code=localStorage.getItem("studio_owner_code_473");if(!code){code=prompt("کد انتقال مالک را یک‌بار وارد کنید (روی همین دستگاه ذخیره می‌شود):")||"";if(!code)return;localStorage.setItem("studio_owner_code_473",code);}const R=window.__POSROWS473||[];const cards=[...document.querySelectorAll("#primary473 article.card[data-primary-position]")];const pos=R.map((r,i)=>{const title=cards[i]?cards[i].textContent:"";const dir=title.includes("صعودی")?"up":title.includes("نزولی")?"down":"";return {number:i+1,entry_at:String(r.eT||"").replace(/<[^>]+>/g,"").trim(),candle_count:+r.cnt,direction:dir,exit_at:String(r.xT||"").replace(/<[^>]+>/g,"").trim(),published:false,timer_1:String(r.t1||""),timer_2:String(r.t2||""),candle_numbers:String(r.cs||"")};}); const n=pos.length;const megas=[{number:n+1,entry_at:"2026-11-03 19:00",candle_count:27,direction:"up",exit_at:"2026-11-04 23:00",published:false,timer_1:"۰۳/۱۱ ۱۱:۰۰",timer_2:"۰۳/۱۱ ۱۸:۰۰",candle_numbers:""},{number:n+2,entry_at:"2026-11-06 12:00",candle_count:31,direction:"up",exit_at:"2026-11-09 20:00",published:false,timer_1:"۰۶/۱۱ ۰۹:۰۰",timer_2:"۰۶/۱۱ ۱۱:۰۰",candle_numbers:""}];const rows=pos.concat(megas);if(rows.some(r=>!r.entry_at||!r.exit_at||!r.direction||!Number.isFinite(r.candle_count))){alert("بعضی ردیف‌ها کامل نیستند؛ انتقال انجام نشد");return;}if(!confirm("این "+rows.length+" پوزیشن به STUDIO منتقل شود؟"))return;try{const res=await fetch("https://jwzolxpyfxtnrcvnrwds.supabase.co/functions/v1/studio-transfer",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,rows:rows})});const j=await res.json().catch(()=>({}));if(res.ok&&j.ok){alert("انتقال انجام شد: "+rows.length+" پوزیشن");}else{if(res.status===403)localStorage.removeItem("studio_owner_code_473");alert("انتقال ناموفق: "+(j.error||res.status));}}catch(e){alert("خطا در ارتباط: "+e.message);}}
 function setTab(t){if(t==="a2")setTimeout(fillPosTable,0);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",(b.getAttribute("onclick")||"").includes("'"+t+"'")));$("tabEq").classList.toggle("hidden",t!=="eq");$("tabRail").classList.toggle("hidden",t!=="rail");$("tabTbl").classList.toggle("hidden",t!=="tbl");$("tabA2").classList.toggle("hidden",t!=="a2");
   const ord=["eq","rail","tbl","a2"];[...document.querySelectorAll(".tabs button")].forEach((b,i)=>b.classList.toggle("on",ord[i]===t));if(t==="tbl")renderBlocks();if(t==="rail"&&R_SRC==="grid"&&!$("railGrid").innerHTML)buildRail();}
@@ -5360,6 +5360,147 @@ function calculateApprovedRail(message){
 
 </script>
 <!-- OFFICE_READONLY_BRIDGE_END -->
+<script id="codeGate473">
+// قفل ریل و تحلیل ۲ با کد (بهزاد ۲۵ اکتبر ۲۰۲۶: «این قسمت‌ها نمی‌خوام کاربر وارد بشه ، یه کد»).
+// + فقط حساب مدیر (نام حساب هم فقط به‌صورت هش) (بهزاد: «آره اضافه کن») — کاربر عادی حتی با دانستن کد وارد نمی‌شود ؛ ورود جعلیِ «خطای شبکه» (کد F-73A2K) پذیرفته نمی‌شود.
+// فقط هش SHA-256 کد در فایل است ، نه خود کد. قفل سمت مرورگر است (بدون سرور) — جلوی کاربر عادی را می‌گیرد ، نه متخصص.
+(function(){
+ 'use strict';
+ const HASH='25364eaa778fa7fc8a886400d4ab667e1c87a14bad47fbfb30091baf8bb2e06f',KEY='gate473_open',LOCKED=['rail','a2'];
+ function sha256(str){const K=[],H=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225];let n=2,c=0;const isP=x=>{for(let i=2;i*i<=x;i++)if(x%i===0)return false;return true};while(c<64){if(isP(n)){K[c++]=(Math.pow(n,1/3)%1)*4294967296|0;}n++;}
+  const b=Array.from(new TextEncoder().encode(str));const l=b.length*8;b.push(128);while(b.length%64!==56)b.push(0);for(let i=7;i>=0;i--)b.push(i>3?0:(l>>>(i*8))&255);
+  const r=(x,y)=>(x>>>y)|(x<<(32-y));for(let o=0;o<b.length;o+=64){const w=[];for(let i=0;i<16;i++)w[i]=(b[o+4*i]<<24)|(b[o+4*i+1]<<16)|(b[o+4*i+2]<<8)|b[o+4*i+3];for(let i=16;i<64;i++){const s0=r(w[i-15],7)^r(w[i-15],18)^(w[i-15]>>>3),s1=r(w[i-2],17)^r(w[i-2],19)^(w[i-2]>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)|0;}
+   let [a,bb,cc,d,e,f,g,h]=H;for(let i=0;i<64;i++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+w[i])|0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&bb)^(a&cc)^(bb&cc)))|0;h=g;g=f;f=e;e=(d+t1)|0;d=cc;cc=bb;bb=a;a=(t1+t2)|0;}
+   H[0]=(H[0]+a)|0;H[1]=(H[1]+bb)|0;H[2]=(H[2]+cc)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;}
+  return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');}
+ const OWNER_H='2a8888c50f73a801bc009fd0767b21116c53267a639bab618457fcc6a3bddcd0';
+ const cur=()=>{try{return typeof CUR!=='undefined'?CUR:null}catch(e){return null}};
+ const owner=()=>{const c=cur();return !!(c&&typeof c.user==='string'&&!(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))&&sha256(c.user.trim().toLowerCase())===OWNER_H);};
+ const isOpen=()=>{try{return owner()&&sessionStorage.getItem(KEY)===cur().user.trim().toLowerCase()}catch(e){return false}};
+ function deny(){
+    box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
+    const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{localStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
+  box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
+  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center"><div style="font-size:28px">🔒</div><b style="display:block;margin:6px 0 10px">ریل و تحلیل ۲ فقط برای حساب مدیر باز است</b><div style="color:#cbb8ff;font-size:14px;margin-bottom:14px">برای ورود باید با حساب مدیر وارد شده باشید.</div><button id="gate473No" style="width:100%;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">باشه</button></div>';
+  document.body.appendChild(box);box.querySelector('#gate473No').onclick=()=>box.remove();
+ }
+ const mark=()=>document.body&&document.body.classList.toggle('gate473-open',isOpen());
+ function ask(target,go){
+  let box=document.getElementById('gate473Box');if(box)box.remove();
+  box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
+  box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
+  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)"><b style="display:block;margin:6px 0 12px">کد ورود به ریل و تحلیل ۲</b><input id="gate473In" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #7c4dff;background:#120c2b;color:#fff;font-size:16px;text-align:center" placeholder="کد"><div id="gate473Err" style="color:#ff6b6b;min-height:22px;margin-top:6px;font-size:14px"></div><div style="display:flex;gap:10px;margin-top:6px"><button id="gate473Ok" style="flex:1;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">ورود</button><button id="gate473No" style="flex:1;padding:11px;border:1px solid #7c4dff;border-radius:10px;background:transparent;color:#cbb8ff;font-size:15px">انصراف</button></div></div>';
+  document.body.appendChild(box);const inp=box.querySelector('#gate473In');setTimeout(()=>inp.focus(),30);
+  const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{sessionStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
+  box.querySelector('#gate473Ok').onclick=ok;box.querySelector('#gate473No').onclick=()=>box.remove();inp.onkeydown=e=>{if(e.key==='Enter')ok();};
+ }
+ function install(){
+  if(typeof window.setTab!=='function'||window.setTab.__gate473)return;
+  const orig=window.setTab;
+  const gated=function(t){
+   if(LOCKED.includes(t)&&!isOpen()){
+    // فقط وقتی خود کاربر روی تب زده کادر کد باز شود ؛ پرش‌های خودکار برنامه به ریل/تحلیل ۲ بی‌صدا متوقف می‌شوند.
+    const user=!navigator.userActivation||navigator.userActivation.isActive;
+    if(user){if(owner())ask(t,x=>orig.call(window,x));else deny();}
+    return;
+   }
+   return orig.apply(this,arguments);
+  };
+  gated.__gate473=true;window.setTab=gated;
+  try{setTab=gated}catch(e){}
+ }
+ const st=document.createElement('style');st.textContent='body:not(.gate473-open) #railTabBtn::after,body:not(.gate473-open) #a2TabBtn::after{content:\"\";font-size:.85em}';
+ (document.head||document.documentElement).appendChild(st);
+ install();
+ const boot=()=>{install();mark();
+  // اگر صفحه روی ریل/تحلیل ۲ باز شد و قفل است ، به معادله‌ها برگردد
+  if(!isOpen()){const r=document.getElementById('tabRail'),a=document.getElementById('tabA2');if((r&&!r.classList.contains('hidden'))||(a&&!a.classList.contains('hidden'))){const eq=document.getElementById('eqTabBtn');if(eq)eq.click();}}};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+ window.addEventListener('load',boot);
+})();
+
+</script>
+<script id="afice473">
+// AFICE از ۷۱ به ۷۳ منتقل شد (بهزاد ۲۵ اکتبر ۲۰۲۶: «آره از 71 منتقل بشه به 73»).
+// همان لینک و همان طرح ۷۱ (حروف AFICE با سایهٔ طلایی خوابیده) ، بالای «گفتگوی کاربران» ؛ مقصد = دفتر شرکت موجود.
+// فقط ناوبری است: به محاسبات ، آفیس شرکت و مجوزهای سرور دست نمی‌زند. دکمهٔ شناور قدیمی «🏢 دفتر شرکت» برداشته می‌شود.
+(function(){
+ 'use strict';
+ const HREF='https://thepilottmn-company.pages.dev/';
+ function place(){
+  const old=document.querySelector('button#openPilotOffice');if(old)old.remove();
+  if(document.getElementById('aficeLink473'))return;
+  const chat=document.getElementById('chatCard');if(!chat)return;
+  const wrap=document.createElement('div');wrap.style.cssText='display:flex;justify-content:center;margin:6px 0 2px';
+  const a=document.createElement('a');a.id='aficeLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';a.title='ورود به شرکت';a.setAttribute('aria-label','AFICE — ورود به شرکت');
+  a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 0 118 46" direction="ltr" style="direction:ltr" width="118" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE</text></svg>';
+  a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:118px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
+  wrap.appendChild(a);chat.parentNode.insertBefore(wrap,chat);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place);else place();
+ window.addEventListener('load',place);
+})();
+
+</script>
+  <script id="studioLink473">
+(function(){
+  'use strict';
+  var OWNER_H='2a8888c50f73a801bc009fd0767b21116c53267a639bab618457fcc6a3bddcd0';
+  var HREF='https://thepilottmnl001-2eg.pages.dev/studio.html';
+  async function sha(s){
+    var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  }
+  async function isOwner(){
+    try{
+      var c=JSON.parse(localStorage.getItem('fl_cur')||'null');
+      if(!c||typeof c.user!=='string')return false;
+      if(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))return false;
+      return (await sha(c.user.trim().toLowerCase()))===OWNER_H;
+    }catch(e){return false;}
+  }
+  function studioLink(){
+    var wrap=document.createElement('div');
+    wrap.id='studioWrap473';
+    wrap.style.cssText='display:flex;justify-content:center;margin:6px 0 2px';
+    var a=document.createElement('a');
+    a.id='studioLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';
+    a.title='AFICE STUDIO';a.setAttribute('aria-label','AFICE STUDIO');
+    a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 0 260 46" direction="ltr" style="direction:ltr" width="260" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></svg>';
+    a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:260px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
+    wrap.appendChild(a);
+    return wrap;
+  }
+  /* Shows AFICE STUDIO for everyone; AFICE company button only for the owner.
+     Re-checks whenever the login changes (no page reload needed). */
+  async function swap(){
+    var own=await isOwner();
+    var company=document.getElementById('aficeLink473');
+    if(company){
+      /* widen the company mark so the full AFICE word is not clipped */
+      var sv=company.querySelector('svg');
+      if(sv){sv.setAttribute('viewBox','-40 0 150 46');sv.setAttribute('width','150');sv.style.overflow='visible';}
+      company.style.width='150px';
+    }
+    if(company&&company.parentNode)company.parentNode.style.display=own?'':'none';
+    if(!document.getElementById('studioWrap473')){
+      var chat=document.getElementById('chatCard');
+      if(chat&&chat.parentNode)chat.parentNode.insertBefore(studioLink(),chat);
+    }
+  }
+  var lastKey=null,busy=false;
+  async function watch(){
+    if(busy)return;
+    var key=localStorage.getItem('fl_cur')||'';
+    if(key===lastKey)return;
+    busy=true;
+    try{lastKey=key;await swap();}finally{busy=false;}
+  }
+  window.addEventListener('load',function(){setTimeout(watch,300);});
+  setInterval(watch,500);
+})();
+</script>
+  <style>.pos-eq5-473 .eq-rules-473,.pos-sumeq-473 .eq-rules-473{display:none!important}</style>
 <script type="text/plain" id="door1Tpl">
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -5663,146 +5804,32 @@ function calculateApprovedRail(message){
 </html>
 
 </script>
-<script id="codeGate473">
-// قفل ریل و تحلیل ۲ با کد (بهزاد ۲۵ اکتبر ۲۰۲۶: «این قسمت‌ها نمی‌خوام کاربر وارد بشه ، یه کد»).
-// + فقط حساب مدیر (نام حساب هم فقط به‌صورت هش) (بهزاد: «آره اضافه کن») — کاربر عادی حتی با دانستن کد وارد نمی‌شود ؛ ورود جعلیِ «خطای شبکه» (کد F-73A2K) پذیرفته نمی‌شود.
-// فقط هش SHA-256 کد در فایل است ، نه خود کد. قفل سمت مرورگر است (بدون سرور) — جلوی کاربر عادی را می‌گیرد ، نه متخصص.
+<script>
 (function(){
- 'use strict';
- const HASH='25364eaa778fa7fc8a886400d4ab667e1c87a14bad47fbfb30091baf8bb2e06f',KEY='gate473_open',LOCKED=['rail','a2'];
- function sha256(str){const K=[],H=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225];let n=2,c=0;const isP=x=>{for(let i=2;i*i<=x;i++)if(x%i===0)return false;return true};while(c<64){if(isP(n)){K[c++]=(Math.pow(n,1/3)%1)*4294967296|0;}n++;}
-  const b=Array.from(new TextEncoder().encode(str));const l=b.length*8;b.push(128);while(b.length%64!==56)b.push(0);for(let i=7;i>=0;i--)b.push(i>3?0:(l>>>(i*8))&255);
-  const r=(x,y)=>(x>>>y)|(x<<(32-y));for(let o=0;o<b.length;o+=64){const w=[];for(let i=0;i<16;i++)w[i]=(b[o+4*i]<<24)|(b[o+4*i+1]<<16)|(b[o+4*i+2]<<8)|b[o+4*i+3];for(let i=16;i<64;i++){const s0=r(w[i-15],7)^r(w[i-15],18)^(w[i-15]>>>3),s1=r(w[i-2],17)^r(w[i-2],19)^(w[i-2]>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)|0;}
-   let [a,bb,cc,d,e,f,g,h]=H;for(let i=0;i<64;i++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+w[i])|0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&bb)^(a&cc)^(bb&cc)))|0;h=g;g=f;f=e;e=(d+t1)|0;d=cc;cc=bb;bb=a;a=(t1+t2)|0;}
-   H[0]=(H[0]+a)|0;H[1]=(H[1]+bb)|0;H[2]=(H[2]+cc)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;}
-  return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');}
- const OWNER_H='2a8888c50f73a801bc009fd0767b21116c53267a639bab618457fcc6a3bddcd0';
- const cur=()=>{try{return typeof CUR!=='undefined'?CUR:null}catch(e){return null}};
- const owner=()=>{const c=cur();return !!(c&&typeof c.user==='string'&&!(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))&&sha256(c.user.trim().toLowerCase())===OWNER_H);};
- const isOpen=()=>{try{return owner()&&sessionStorage.getItem(KEY)===cur().user.trim().toLowerCase()}catch(e){return false}};
- function deny(){
-    let box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
-    const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{localStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
-  box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
-  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center"><div style="font-size:28px">🔒</div><b style="display:block;margin:6px 0 10px">ریل و تحلیل ۲ فقط برای حساب مدیر باز است</b><div style="color:#cbb8ff;font-size:14px;margin-bottom:14px">برای ورود باید با حساب مدیر وارد شده باشید.</div><button id="gate473No" style="width:100%;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">باشه</button></div>';
-  document.body.appendChild(box);box.querySelector('#gate473No').onclick=()=>box.remove();
- }
- const mark=()=>document.body&&document.body.classList.toggle('gate473-open',isOpen());
- function ask(target,go){
-  let box=document.getElementById('gate473Box');if(box)box.remove();
-  box=document.createElement('div');box.id='gate473Box';box.setAttribute('dir','rtl');
-  box.style.cssText='position:fixed;inset:0;z-index:2147483000;background:rgba(10,6,25,.72);display:flex;align-items:center;justify-content:center;padding:16px';
-  box.innerHTML='<div style="background:#1d1440;border:1px solid #7c4dff;border-radius:16px;padding:20px;max-width:340px;width:100%;color:#fff;font-family:inherit;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)"><b style="display:block;margin:6px 0 12px">کد ورود به ریل و تحلیل ۲</b><input id="gate473In" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #7c4dff;background:#120c2b;color:#fff;font-size:16px;text-align:center" placeholder="کد"><div id="gate473Err" style="color:#ff6b6b;min-height:22px;margin-top:6px;font-size:14px"></div><div style="display:flex;gap:10px;margin-top:6px"><button id="gate473Ok" style="flex:1;padding:11px;border:0;border-radius:10px;background:#7c4dff;color:#fff;font-size:15px">ورود</button><button id="gate473No" style="flex:1;padding:11px;border:1px solid #7c4dff;border-radius:10px;background:transparent;color:#cbb8ff;font-size:15px">انصراف</button></div></div>';
-  document.body.appendChild(box);const inp=box.querySelector('#gate473In');setTimeout(()=>inp.focus(),30);
-  const ok=()=>{if(!owner()){box.remove();deny();return;}if(sha256(inp.value.trim())===HASH){try{sessionStorage.setItem(KEY,cur().user.trim().toLowerCase())}catch(e){}box.remove();mark();go(target);}else{box.querySelector('#gate473Err').textContent='کد اشتباه است';inp.value='';inp.focus();}};
-  box.querySelector('#gate473Ok').onclick=ok;box.querySelector('#gate473No').onclick=()=>box.remove();inp.onkeydown=e=>{if(e.key==='Enter')ok();};
- }
- function install(){
-  if(typeof window.setTab!=='function'||window.setTab.__gate473)return;
-  const orig=window.setTab;
-  const gated=function(t){
-   if(LOCKED.includes(t)&&!isOpen()){
-    // فقط وقتی خود کاربر روی تب زده کادر کد باز شود ؛ پرش‌های خودکار برنامه به ریل/تحلیل ۲ بی‌صدا متوقف می‌شوند.
-    const user=!navigator.userActivation||navigator.userActivation.isActive;
-    if(user){if(owner())ask(t,x=>orig.call(window,x));else deny();}
-    return;
-   }
-   return orig.apply(this,arguments);
+  var d=document.getElementById('gameTabBtn');
+  if(d) d.setAttribute('onclick',"window.__DOOR=true;setTab('a2')");
+  var a=document.getElementById('a2TabBtn');
+  if(a) a.setAttribute('onclick',"window.__DOOR=false;setTab('a2')");
+  var orig=window.fillPosTable;
+  window.fillPosTable=function(){
+    var box=document.getElementById('posTableBox');
+    var u=(typeof CUR!=='undefined'&&CUR)?String(CUR.user||'').trim().toLowerCase():'';
+    if(!window.__DOOR||!box||!u||sessionStorage.getItem('gate473_open')!==u){return orig.apply(this,arguments);}
+    box.innerHTML='';
+    var w=document.createElement('div');
+    w.style.cssText='width:100%;overflow:hidden;direction:ltr';
+    var f=document.createElement('iframe');
+    f.title='position door 1';
+    f.srcdoc=document.getElementById('door1Tpl').textContent;
+    f.style.cssText='display:block;border:0;background:#fff;width:760px;transform-origin:0 0';
+    var fit=function(){var cw=w.clientWidth;if(!cw)return;var s=Math.min(1,cw/760);
+      try{var h=f.contentDocument.documentElement.scrollHeight+20;f.style.height=h+'px';w.style.height=Math.ceil(h*s)+'px';}catch(e){}
+      f.style.transform='scale('+s+')';};
+    f.onload=fit;window.addEventListener('resize',fit);
+    if(window.ResizeObserver)new ResizeObserver(fit).observe(w);
+    w.appendChild(f);box.appendChild(w);
   };
-  gated.__gate473=true;window.setTab=gated;
-  try{setTab=gated}catch(e){}
- }
- const st=document.createElement('style');st.textContent='body:not(.gate473-open) #railTabBtn::after,body:not(.gate473-open) #a2TabBtn::after{content:\"\";font-size:.85em}';
- (document.head||document.documentElement).appendChild(st);
- install();
- const boot=()=>{install();mark();
-  // اگر صفحه روی ریل/تحلیل ۲ باز شد و قفل است ، به معادله‌ها برگردد
-  if(!isOpen()){const r=document.getElementById('tabRail'),a=document.getElementById('tabA2');if((r&&!r.classList.contains('hidden'))||(a&&!a.classList.contains('hidden'))){const eq=document.getElementById('eqTabBtn');if(eq)eq.click();}}};
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
- window.addEventListener('load',boot);
-})();
-
-</script>
-<script id="afice473">
-// AFICE از ۷۱ به ۷۳ منتقل شد (بهزاد ۲۵ اکتبر ۲۰۲۶: «آره از 71 منتقل بشه به 73»).
-// همان لینک و همان طرح ۷۱ (حروف AFICE با سایهٔ طلایی خوابیده) ، بالای «گفتگوی کاربران» ؛ مقصد = دفتر شرکت موجود.
-// فقط ناوبری است: به محاسبات ، آفیس شرکت و مجوزهای سرور دست نمی‌زند. دکمهٔ شناور قدیمی «🏢 دفتر شرکت» برداشته می‌شود.
-(function(){
- 'use strict';
- const HREF='https://thepilottmn-company.pages.dev/';
- function place(){
-  const old=document.querySelector('button#openPilotOffice');if(old)old.remove();
-  if(document.getElementById('aficeLink473'))return;
-  const chat=document.getElementById('chatCard');if(!chat)return;
-  const wrap=document.createElement('div');wrap.style.cssText='display:flex;justify-content:center;margin:6px 0 2px';
-  const a=document.createElement('a');a.id='aficeLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';a.title='ورود به شرکت';a.setAttribute('aria-label','AFICE — ورود به شرکت');
-  a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 0 118 46" direction="ltr" style="direction:ltr" width="118" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE</text></svg>';
-  a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:118px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
-  wrap.appendChild(a);chat.parentNode.insertBefore(wrap,chat);
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place);else place();
- window.addEventListener('load',place);
-})();
-
-</script>
-  <script id="studioLink473">
-(function(){
-  'use strict';
-  var OWNER_H='2a8888c50f73a801bc009fd0767b21116c53267a639bab618457fcc6a3bddcd0';
-  var HREF='https://thepilottmnl001-2eg.pages.dev/studio.html';
-  async function sha(s){
-    var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
-  }
-  async function isOwner(){
-    try{
-      var c=JSON.parse(localStorage.getItem('fl_cur')||'null');
-      if(!c||typeof c.user!=='string')return false;
-      if(c.code==='F-73A2K'&&/@formul\.app$/i.test(String(c.email||'')))return false;
-      return (await sha(c.user.trim().toLowerCase()))===OWNER_H;
-    }catch(e){return false;}
-  }
-  function studioLink(){
-    var wrap=document.createElement('div');
-    wrap.id='studioWrap473';
-    wrap.style.cssText='display:flex;justify-content:center;margin:6px 0 2px';
-    var a=document.createElement('a');
-    a.id='studioLink473';a.href=HREF;a.target=window.top===window?'_self':'_top';a.rel='noopener';
-    a.title='AFICE STUDIO';a.setAttribute('aria-label','AFICE STUDIO');
-    a.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 0 260 46" direction="ltr" style="direction:ltr" width="260" height="46" aria-hidden="true" focusable="false"><g fill="#c4972c" opacity=".74" transform="matrix(1 0 .85 -.4 -23.8 39.2)"><text x="0" y="28" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></g><text x="0" y="28" fill="#e9c46a" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="800" letter-spacing="1">AFICE STUDIO</text></svg>';
-    a.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:260px;height:46px;padding:0;border:0;background:transparent;text-decoration:none;cursor:pointer';
-    wrap.appendChild(a);
-    return wrap;
-  }
-  /* Shows AFICE STUDIO for everyone; AFICE company button only for the owner.
-     Re-checks whenever the login changes (no page reload needed). */
-  async function swap(){
-    var own=await isOwner();
-    var company=document.getElementById('aficeLink473');
-    if(company){
-      /* widen the company mark so the full AFICE word is not clipped */
-      var sv=company.querySelector('svg');
-      if(sv){sv.setAttribute('viewBox','-40 0 150 46');sv.setAttribute('width','150');sv.style.overflow='visible';}
-      company.style.width='150px';
-    }
-    if(company&&company.parentNode)company.parentNode.style.display=own?'':'none';
-    if(!document.getElementById('studioWrap473')){
-      var chat=document.getElementById('chatCard');
-      if(chat&&chat.parentNode)chat.parentNode.insertBefore(studioLink(),chat);
-    }
-  }
-  var lastKey=null,busy=false;
-  async function watch(){
-    if(busy)return;
-    var key=localStorage.getItem('fl_cur')||'';
-    if(key===lastKey)return;
-    busy=true;
-    try{lastKey=key;await swap();}finally{busy=false;}
-  }
-  window.addEventListener('load',function(){setTimeout(watch,300);});
-  setInterval(watch,500);
 })();
 </script>
-  <style>.pos-eq5-473 .eq-rules-473,.pos-sumeq-473 .eq-rules-473{display:none!important}</style>
 </body>
 </html>
